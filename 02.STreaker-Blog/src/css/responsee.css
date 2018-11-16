@@ -1,0 +1,54 @@
+@font-face {
+  font-family: 'Simpds';
+  src: '../assets/font/simpds.ttf';
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Consola';
+  src: url('../assets/font/consola.eot'); /* IE9 Compat Modes */
+  src: url('../assets/font/consola.eot?#iefix') format('embedded-opentype'),
+    url('../assets/font/consola.woff') format('woff'),
+    url('../assets/font/consola.ttf') format('truetype'),
+    url('../assets/font/consola.svg#consola') format('svg');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+li {
+  list-style-position: outside;
+  list-style: none;
+}
+
+a,
+a:link {
+  text-decoration: none;
+  user-select: none;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  zoom: 1;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
