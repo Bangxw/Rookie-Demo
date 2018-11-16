@@ -184,6 +184,8 @@ header {
 .article-author-info{
   color: #cfcfcf;
   font-size: 12px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .article-author-info i{

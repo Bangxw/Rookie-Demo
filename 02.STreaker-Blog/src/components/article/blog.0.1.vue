@@ -1,5 +1,5 @@
 <template>
-  <div id="article">
+  <div id="article-content">
     {{content}}
   </div>
 </template>
@@ -22,3 +22,13 @@ export default {
   }
 }
 </script>
+
+<style>
+#article-content{
+  text-align: justify;
+  color: #818181;
+  line-height: 24px;
+  padding: 15px 30px;
+}
+</style>
+
