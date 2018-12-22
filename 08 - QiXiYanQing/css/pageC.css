@@ -1,0 +1,198 @@
+.c_background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+}
+
+.c_background_top {
+  width: 100%;
+  height: 71.6%;
+  background-image: url(../images/background/c_background_top.png);
+  background-size: 100% 100%;
+}
+
+.c_background_middle {
+  width: 100%;
+  height: 13.1%;
+  background-image: url(../images/background/c_background_middle.png);
+  background-size: 100% 100%;
+}
+
+.c_background_buttom {
+  width: 100%;
+  height: 15.3%;
+  background-image: url(../images/background/c_background_botton.png);
+  background-size: 100% 100%;
+}
+
+/* Young married woman */
+.girl {
+  background: url(../images/girl.png) -755px 0 no-repeat;
+  position: absolute;
+  right: 40%;
+  top: 37%;
+  width: 151px;
+  height: 291px;
+}
+
+.girl-rotate {
+    animation: girl-rotate 850ms 1 step-start forwards;
+}
+
+#snowflake {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+@keyframes girl-rotate {
+    0% {
+        background-position: -604px -0px;
+    }
+    16.7% {
+        background-position: -151px -0px;
+    }
+    33.4% {
+        background-position: -906px -0px;
+    }
+    50.1% {
+        background-position: -0px -0px;
+    }
+    66.8% {
+        background-position: -302px -0px;
+    }
+    83.5% {
+        background-position: -453px -0px;
+    }
+    100% {
+        background-position: -604px -0px;
+    }
+}
+
+.bridge-bottom {
+  position: absolute;
+  width: 41%;
+  height: 24%;
+  left: 29.5%;
+  top: 76%;
+  overflow: hidden;
+}
+
+.water {
+  width: 100%;
+  height: 100%;
+}
+
+.water_1,
+.water_2,
+.water_3,
+.water_4 {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  animation: shake 40s alternate linear infinite;
+}
+
+.water_1 {
+  width: 131px;
+  height: 15px;
+  top: 13%;
+  left: 35%;
+  background: url(../images/water.png) -261px 0 no-repeat;
+}
+
+.water_2 {
+  width: 161px;
+  height: 9px;
+  top: 30%;
+  left: 45%;
+  background: url(../images/water.png) -693px 0 no-repeat;
+  animation-delay: 2s;
+}
+
+.water_3 {
+  width: 261px;
+  height: 29px;
+  top: 50%;
+  left: 15%;
+  background: url(../images/water.png) 0 0 no-repeat;
+  animation-delay: 1s;
+}
+
+.water_4 {
+  width: 301px;
+  height: 12px;
+  top: 75%;
+  left: 30%;
+  background: url(../images/water.png) -392px 0 no-repeat;
+  animation-delay: 3s;
+}
+
+.stars {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.stars > li {
+  position: absolute;
+  width: 30px;
+  height: 31px;
+  background-image: url(../images/stars.png);
+  animation: flash ease-in-out infinite alternate 5s;
+}
+
+.star1 {
+  top: 20%;
+  left: 30%;
+}
+
+.star2 {
+  top: 15%;
+  left: 20%;
+}
+
+.star3 {
+  top: 25%;
+  left: 85%;
+}
+
+.star4 {
+  top: 30%;
+  left: 70%;
+}
+
+.star5 {
+  top: 25%;
+  left: 20%;
+}
+
+.star6 {
+    top: 10%;
+    left: 65%;
+}
+
+@keyframes flash {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+    25%, 75% {
+        opacity: 0;
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translate3d(0, 0, 0)
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translate3d(-30px, 0, 0)
+    }
+    20%, 40%, 60%, 80% {
+        transform: translate3d(30px, 0, 0)
+    }
+}

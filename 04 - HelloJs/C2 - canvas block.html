@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				padding: 0px;
+				margin: 0px;
+			}
+			
+			#canvas {
+				margin: 10px auto;
+				padding: 10px;
+				background: #fff;
+				border: thin inset #aaa;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas" width="300" height="300"> 
+			Canvas not supported!
+		</canvas>
+
+		<script type="text/javascript">
+			var cvs = document.getElementById("canvas"),
+				ctx = cvs.getContext("2d"),
+				CENTER_X = cvs.width / 2,
+				CENTER_Y = cvs.height / 2,
+				FONT_HEIGHT = 15,
+				MARGIN = 35,
+				HAND_TRUNCATION = cvs.width / 25, //300/25
+				HOUR_HAND_TRUNCATION = cvs.width / 10, //300/10
+				NUMERAL_SPACING = 20,
+				RADIUS = cvs.width / 2 - MARGIN, //300/2-35
+				HAND_RADIUS = RADIUS + NUMERAL_SPACING; //150-35+20;
+
+			function drawClock() {
+				ctx.clearRect(0, 0, cvs.width, cvs.height);
+				drawCircle();
+				drawCenter();
+				drawHands();
+			}
+
+			function drawCircle() {
+				ctx.beginPath();
+				ctx.arc(CENTER_X, CENTER_Y, RADIUS, 0, Math.PI * 2, true);
+				ctx.stroke();
+			}
+
+			function drawCenter() {
+				ctx.beginPath();
+				ctx.arc(CENTER_X, CENTER_Y, 5, 0, Math.PI * 2, true);
+				ctx.fill();
+			}
+
+			function drawHands() {
+				var date = new Date(),
+					hour = date.getHours();
+				hour = hour > 12 ? hour - 12 : hour;
+				drawHand(hour * 5 + (date.getMinutes() / 60) * 5, true, 0.5);
+			}
+
+			function drawHand(loc, isHour) {
+				var angle = (Math.PI * 2) * (loc / 60) - Math.PI * 2,
+					handRadius = isHour ? RADIUS - HAND_TRUNCATION - HOUR_HAND_TRUNCATION : RADIUS - HAND_TRUNCATION;
+
+				ctx.moveTo(CENTER_X, CENTER_Y);
+				ctx.lineTo(CENTER_X + Math.sin(angle) * handRadius, CENTER_Y + Math.cos(angle) * handRadius);
+				ctx.stroke();
+
+			}
+
+			ctx.font = FONT_HEIGHT + "px Arial";
+			var timer = setInterval(drawClock, 1000);
+		</script>
+	</body>
+
+</html>

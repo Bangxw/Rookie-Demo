@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>JQuery插件开发模式</title>
+		<script src="js/jquery-1.10.2.js"></script>
+		<script type="text/javascript">
+			var test = function(){
+				//测试分号的作用
+			}
+
+			;(function($,window,document,undefined) { //匿名自调用函数  类似于自己的命名空间
+				$.extend({
+					sayHello: function(name) {
+						console.log("hello " + (name ? name : "STreaker") + "!");
+					},
+					formatTime: function(mat) {
+						var objt = new Date();
+						objT = {
+							"M+": objt.getMonth() + 1,
+							"d+": objt.getDate(),
+							"h+": objt.getHours(),
+							"m+": objt.getMinutes(),
+							"s+": objt.getSeconds()
+						}
+						if(/(y+)/.test(mat)) mat = mat.replace(RegExp.$1, (objt.getFullYear() + "").substr(4 - RegExp.$1.length));
+						for(var k in objT) {
+							if(new RegExp('(' + k + ')').test(mat)) mat = mat.replace(RegExp.$1, objT[k] < 10 ? ("0" + objT[k]) : objT[k]);
+						}
+						return mat;
+					}
+				});
+
+				var Beautifier = function(ele,opt){
+					this._ele = ele,
+					this._default = {
+						color:"#f00",
+						fontSize:"12px",
+						textDecoration:"none"
+					}
+					//extend 合并对象的属性到第一个参数
+					//将空对象作为第一个参数，保护默认参数不被合并
+					this._options = $.extend({},this._default,opt);
+				}
+
+				Beautifier.prototype= {
+					beautify:function(){
+						return this._ele.css({ //return 返回当前JQ对象,不打破链式调用        each遍历操作，比如给每个子对象加一个ID
+							"color":this._options.color,
+							"font-size":this._options.fontSize,
+							"text-decoration":this._options.textDecoration,
+							"font-family":this._options.fontFamily
+						});
+					}
+				}
+
+				$.fn.jQplug = function(options){
+					var beautifier = new Beautifier(this,options);
+					console.log(beautifier);
+					return beautifier.beautify();
+				}
+			})(jQuery,window,document);
+		</script>
+	</head>
+
+	<body>
+		<a class="testa" href="www.baidu.com" target="_blank">百度</a>
+		<a class="testa" href="www.google.com" target="_blank">谷歌</a>
+		<a class="testa" href="www.163.com" target="_blank">网易</a>
+		<script type="text/javascript">
+			$(".testa").jQplug({"position":"absolute","fontFamily":"Microsoft Yahei"});
+		</script>
+	</body>
+
+</html>

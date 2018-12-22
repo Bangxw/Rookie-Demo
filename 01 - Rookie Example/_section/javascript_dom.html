@@ -1,0 +1,58 @@
+<header class="article-desc">
+	<p>JAVASCRIPT是基于对象和事件驱动的客户端脚本语言，弱类型语言，具有交互性、安全性、跨平台性三大特点。包含三个部分: DOM、BOM、ECMASCRIPT</p>
+	<ul>
+		<li>DOM: 当一个页面加载时，浏览器会把html文档呈现为具有元素、属性、属性值、文本的节点树, DOM提供了API并规范我们操作这些节点。</li>
+		<li>BOM: 提供了独立于内容而与浏览器进行窗口进行交互的对象，可以对浏览器窗口进行交互和操作。核心对象window,window又包含子对象: frames、history、location、navigator、screen </li>
+		<li>ECMA规范定义了js作为一门编程语言的标准，包含变量基本类型、对象、函数、作用域、运算符、流程控制语句等</li>
+	</ul>
+</header>
+<article class="article-content">
+	<h3>Javascript Dom 操作</h3>
+	<h4>&#xe9bc; 获取节点</h4>
+	<p class="title-list">一、 通过元素的id属性、name属性、标签名获取节点 :</p>
+	<div class="code-line">
+		<div>
+			<script type="text/javascript">
+				//除getElementById之外，其他获取的都是节点集合
+				document.getElementById("id");
+				document.getElementsByTagName("p");
+				document.getElementsByName("name");
+				document.getElementsByClassName("container-div");
+			</script>
+		</div>
+		<div style="margin:-30px 0 -30px -200px"></div>
+	</div>
+	<br />
+	<p class="title-list">
+		二、 节点指针：<br /> parentObj.firstchild / parentObj.firstElementChild<br /> parentObj.lastchild / parentObj.lastElementChild<br /> parentObj.childnodes
+		<br /> neborNode.previousSibling
+		<br /> neborNode.nextSibling
+		<br /> childNode.parentNode
+	</p>
+	<p class="notice"><span class="icon-warning"></span>节点操作时候html结构中的各种空格，换行符都可能会把文本节点当做同胞元素处理。如firstChild查询的第一个节点为空文本节点, firstElementChild才是你需要的元素节点</p>
+
+	<h4>&#xe9bc; 节点操作</h4>
+	<p class="title-list">
+		一、 创建节点：<br /> &nbsp;&nbsp;&nbsp;&nbsp;document.createElement("元素标签"); <br /> &nbsp;&nbsp;&nbsp;&nbsp;document.createAttribute("元素属性"); <br /> &nbsp;&nbsp;&nbsp;&nbsp;document.createTextNode("文本内容");
+	</p>
+	<p class="title-list">
+		二、 插入节点: <br /> &nbsp;&nbsp;&nbsp;&nbsp;document.insertBefore(newCode,referenceChild);
+		<br /> &nbsp;&nbsp;&nbsp;&nbsp;parentNode.appendChild(newNode);
+	</p>
+	<p class="title-list">三、 替换节点: replaceChild</p>
+	<p class="title-list">四、 复制节点: cloneNode(true/false)</p>
+	<p class="title-list">五、 删除节点: parentNode.removeChild(node)</p>
+
+	<h4>&#xe9bc; 属性操作</h4>
+	<p class="title-list">一、 获取属性: getAttribute(name)</p>
+	<p class="title-list">二、 设置属性: setAttribute(name,value)</p>
+	<p class="title-list">三、 删除属性: removeAttribute(name)</p>
+
+	<h4>&#xe9bc; 文本操作</h4>
+	<p class="title-list">一、 插入文本: insertData(offset,string) -> 从offset指定的位置插入string</p>
+	<p class="title-list">二、 追加文本: appendData(string) -> 将string插入到文本节点的末尾处</p>
+	<p class="title-list">三、 删除文本: deleteData(offset,count) -> 从offset起删除count个字符</p>
+	<p class="title-list">四、 替代文本: replaceData(offset,count,string) -> 从offset起将count个字符替换为string</p>
+	<p class="title-list">五、 分离文本: splitData(offset) -> 从offset起将文本节点分为两个节点</p>
+	<p class="title-list">六、 返回节点: substringData(offset,count) -> 返回由offset起的count个字符</p>
+</article>

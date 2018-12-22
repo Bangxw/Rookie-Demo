@@ -1,0 +1,46 @@
+---
+permalink: /404.html
+layout: default
+title: 裸奔白菜的个人网站
+---
+<link rel="stylesheet" href="css/404.css">
+<div class="div_404Page">
+	<div class="bookrack">
+		<div class="clearfix">
+			<div>
+				<a class="book homePage">HOME PAGE</a>
+				<a class="book aboutUs">ABOUT US</a>
+				<a class="book faq">F.A.Q</a>
+				<a class="book contact">CONTACT</a>
+				<span class="book notFound">
+					<mark>兰<br />陵<br />笑<br />笑<br />生</mark>
+				</span>
+			</div>
+			<div>
+				<span class="bookdoor _left" id="book_leftStore"></span>
+				<span class="bookdoor _right" id="book_rightStore"></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function() {
+		var firstTimes0 = true,
+			firstTimes1 = true;
+		$("#book_leftStore").mouseover(function(e) {
+			if(!firstTimes0) return;
+			$(this).addClass("leftDoorOpen");
+			firstTimes0 = false;
+
+			setTimeout(function() {
+				$(".aboutUs").css("animation", "bookdown ease-out forwards 3s");
+			},3500);
+		})
+		$("#book_rightStore").mouseover(function() {
+			if(!firstTimes1) return;
+			$(this).addClass("rightDoorOpen");
+			firstTimes1 = false;
+		})
+	});
+</script>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Button Style</title>
+		<link rel="stylesheet" type="text/css" href="css/select2.min.css" />
+		<script src="js/jquery-1.10.2.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/select2.min.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			button.btn {
+				position: relative;
+				overflow: hidden;
+				padding: 5px 25px;
+				margin: 0;
+				outline: none;
+				cursor: pointer;
+				background: none;
+				border: 2px solid #ACE7EF;
+				text-transform: uppercase;
+				font: 12px "microsoft yahei";
+				border-radius: 5px;
+				transform: all .5s;
+			}
+
+			.btn-1:before, .btn-1:after {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				height: 100%;
+				width: 0;
+				top: 0;
+				background-color: #ACE7EF;
+				-webkit-transition: all .4s;
+				transition: all .4s;
+			}
+
+			.btn-1:before {
+				left: 0px;
+			}
+
+			.btn-1:after {
+				right: 0px;
+			}
+
+			.btn-1:hover {
+				color: #27323A;
+			}
+
+			.btn-1:hover:before, .btn-1:hover:after {
+				width: 50%;
+			}
+
+			.btn-2:before, .btn-2:after {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				height: 100%;
+				width: 0;
+				top: 0;
+				background-color: #ACE7EF;
+				-webkit-transition: all .4s;
+				transition: all .4s;
+			}
+
+			.btn-2:before {
+				left: -20px;
+				transform: skew(-45deg);
+			}
+
+			.btn-2:after {
+				right: -20px;
+				transform: skew(-45deg);
+			}
+
+			.btn-2:hover:after, .btn-2:hover:before {
+				width: 80%;
+			}
+
+			.btn-3:before, .btn-3:after {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				height: 0;
+				width: 100%;
+				left: 0px;
+				background-color: #ACE7EF;
+				-webkit-transition: all .5s;
+				transition: all .5s;
+			}
+
+			.btn-3:before {
+				top: 0px;
+			}
+
+			.btn-3:after {
+				bottom: 0px;
+			}
+
+			.btn-3:hover:after, .btn-3:hover:before {
+				height: 50%;
+			}
+
+			.btn-4:before, .btn-4:after {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				height: 0;
+				width: 100%;
+				left: 0px;
+				background-color: #ACE7EF;
+				-webkit-transition: all .3s;
+				transition: all .3s;
+			}
+
+			.btn-4:before {
+				top: 50%;
+			}
+
+			.btn-4:after {
+				bottom: 50%;
+			}
+
+			.btn-4:hover:after, .btn-4:hover:before {
+				height: 50%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<button class="btn btn-1">btn-1</button>
+		<button class="btn btn-2">btn-2</button>
+		<button class="btn btn-3">btn-3</button>
+		<button class="btn btn-4">btn-4</button>
+
+		<select class="js-example-basic-single">
+			<option value="AL">Alabama</option>
+			<option value="WY">Wyoming</option>
+		</select>
+		<script type="text/javascript">
+			$(".js-example-basic-single").select2({
+				width: 100,
+				minimumResultsForSearch: Infinity
+			});
+		</script>
+
+	</body>
+
+</html>

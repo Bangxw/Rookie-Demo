@@ -1,0 +1,3 @@
+encoding: utf-8
+permalink: /:month-:day-:year/:title.html
+baseurl : 

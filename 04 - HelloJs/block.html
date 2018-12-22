@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			@font-face {
+				font-family: "DS-DIGIT";
+				src: url("font/DS-DIGIT.TTF");
+			}
+
+			@font-face {
+				font-family: "Doggart";
+				src: url("font/Doggart.ttf");
+			}
+
+			.div-original-clock {
+				position: relative;
+				width: 200px;
+				height: 200px;
+				display: none;
+			}
+
+			.div-original-clock ._animal {
+				text-align: center;
+				line-height: 200px;
+				font-family: "Doggart";
+				font-size: 70px;
+				color: #000;
+			}
+
+			.div-original-clock ._time {
+				position: absolute;
+				width: 100%;
+				top: 140px;
+				text-align: center;
+				font-size: 25px;
+				color: #000;
+				font-family: "DS-DIGIT";
+			}
+
+			.div-original-clock ._seconds {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				border-radius: 125px;
+				transform: rotate(0);
+				border: 1px solid rgba(0, 0, 0, 0.1);
+			}
+
+			.div-original-clock ._seconds> span {
+				position: absolute;
+				z-index: 5;
+				left: 50%;
+				margin-left: -20px;
+				top: -20px;
+				width: 40px;
+				height: 40px;
+				border-radius: 20px;
+				text-align: center;
+				line-height: 40px;
+				font-family: "DS-DIGIT";
+				font-size: 20px;
+				color: #fff;
+				background: rgba(0, 0, 0, 0.1);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="div-original-clock">
+			<div class="_animal"></div>
+			<div class="_time"></div>
+			<div class="_seconds"><span></span></div>
+		</div>
+
+		<p>
+			已经哭晕在去火化场的路上
+		</p>
+
+		<script src="js/jquery-1.10.2.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var date,letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			$(function() {
+				original();
+				setInterval(function() {
+					original();
+				}, 1000);
+				$(".div-original-clock").show();
+			});
+
+			function original() {
+				date = new Date();
+				date.s = date.getSeconds();
+				date.m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+				date.h = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+
+				$("._animal").html(letter.substr(Math.floor(Math.random() * 26), 1));
+				$("._time").text(date.h + " : " + date.m);
+				$("._seconds span").text(date.s < 10 ? "0" + date.s : date.s);
+
+				$("._seconds").css({
+					'transform': 'rotate(' + (date.s / 60 * 360 + 1) + 'deg)'
+				}).find("span").css({
+					'transform': 'rotate(' + -(date.s / 60 * 360 + 1) + 'deg)',
+				});
+			}
+		</script>
+	</body>
+
+</html>
