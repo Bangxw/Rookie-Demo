@@ -4,26 +4,48 @@
       <div class="_container">
         <el-row :gutter="20">
           <el-col :xs="2" :md="2">
-            <div class="page-header-logo"><img src="@/assets/img/logo.jpg" alt=""></div>
+            <div class="page-header-logo">
+              <img src="@/assets/img/logo.jpg" alt>
+            </div>
           </el-col>
           <el-col :xs="19" :md="19">
             <nav class="page-header-nav">
               <ul class="clearfix">
-                <li class="active"><a href="javascript:void(0)">Furniture</a></li>
-                <li><a href="javascript:void(0)">Lighting</a></li>
-                <li><a href="javascript:void(0)">Accessories</a></li>
-                <li><a href="javascript:void(0)">Backpack</a></li>
-                <li><a href="javascript:void(0)">Clothing</a></li>
-                <li><a href="javascript:void(0)">Contact Us</a></li>
-                <li><a href="javascript:void(0)">About Us</a></li>
+                <li class="active">
+                  <a href="javascript:void(0)">Furniture</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">Lighting</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">Accessories</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">Backpack</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">Clothing</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">Contact Us</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">About Us</a>
+                </li>
               </ul>
             </nav>
           </el-col>
           <el-col :xs="3" :md="3" class="header-operate-col">
             <div class="page-header-operate clearfix">
-              <a href=""><span class="iconfont icon-search"></span></a>
-              <a href=""><span class="iconfont icon-gouwudai"></span></a>
-              <a href=""><span class="iconfont icon-user"></span></a>
+              <a href>
+                <span class="iconfont icon-search"></span>
+              </a>
+              <a href>
+                <span class="iconfont icon-gouwudai"></span>
+              </a>
+              <a href>
+                <span class="iconfont icon-user"></span>
+              </a>
             </div>
           </el-col>
         </el-row>
@@ -34,12 +56,13 @@
       <nav class="section-nav-bar">
         <div class="_container clearfix">
           <div class="location-href-link left">
-            <a href="">Home</a>
+            <a href>Home</a>
             <span class="iconfont icon-right"></span>
-            <a href="">Blog</a>
+            <a href>Blog</a>
           </div>
           <div class="location-href-link right">
-            <span class="iconfont icon-cc-left"></span><a href="">Back to Home</a>
+            <span class="iconfont icon-cc-left"></span>
+            <a href>Back to Home</a>
           </div>
         </div>
       </nav>
@@ -50,18 +73,108 @@
         <el-row>
           <el-col :xs="6" :md="6">
             <div class="left-aside">
-              &nbsp;
+              <div id="txt-search-box">
+                <el-input
+                  placeholder="Search Something"
+                  prefix-icon="el-icon-search"
+                  v-model="txtSearch"
+                ></el-input>
+              </div>
+              <div class="left-post-part">
+                <header class="post-title">Post Categories</header>
+                <section class="post-categories">
+                  <ul>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>ALL POSTS</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>TIPS & TRICK</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>TRENDING</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>HOW TO</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>POPULAR NEWS</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>VIEDO</a>
+                    </li>
+                    <li>
+                      <i class="el-icon-arrow-right">&nbsp;&nbsp;&nbsp;</i>
+                      <a href>QUOTE</a>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+
+              <div class="left-post-part">
+                <header class="post-title">Popular Posts</header>
+                <section class="post-popular">
+                  <div class="post-popular-item clearfix">
+                    <div class="left popular-item-logo"></div>
+                    <div class="left popular-item-produ">
+                      <h5>Black Friday Sale! What's Popular?</h5>
+                      <p>Aug 20</p>
+                    </div>
+                  </div>
+                  <div class="post-popular-item clearfix">
+                    <div class="left popular-item-logo"></div>
+                    <div class="left popular-item-produ">
+                      <h5>Customer's Favorite Hand Watch</h5>
+                      <p>Aug 20</p>
+                    </div>
+                  </div>
+                  <div class="post-popular-item clearfix">
+                    <div class="left popular-item-logo"></div>
+                    <div class="left popular-item-produ">
+                      <h5>Black Friday Sale! What's Popular?</h5>
+                      <p>Aug 20</p>
+                    </div>
+                  </div>
+                  <div class="post-popular-item clearfix">
+                    <div class="left popular-item-logo"></div>
+                    <div class="left popular-item-produ">
+                      <h5>Customer's Favorite Handsfree</h5>
+                      <p>Aug 20</p>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="left-post-part">
+                <header class="post-title">Popular Tags</header>
+                <section>
+                  <span class="tags-item">Furniture</span>
+                  <span class="tags-item">Chair</span>
+                  <span class="tags-item">Men Watch</span>
+                  <span class="tags-item">Clothing</span>
+                  <span class="tags-item">Table</span>
+                  <span class="tags-item">Clock</span>
+                </section>
+              </div>
             </div>
           </el-col>
           <el-col :xs="18" :md="18">
             <div class="main-container">
               <div class="article-banner"></div>
               <div class="article-subject">
-                <p>Unboxing New BulBul Men <br>
-                  Watch by Xenom</p>
+                <p>Unboxing New BulBul Men
+                  <br>Watch by Xenom
+                </p>
               </div>
               <div class="article-author-info">
-                Posted in <i>Technology</i> - Jul 13, 2017 By <i>Admin</i>
+                Posted in
+                <i>Technology</i> - Jul 13, 2017 By
+                <i>Admin</i>
               </div>
               <blog-post></blog-post>
             </div>
@@ -77,12 +190,18 @@
 </template>
 
 <script>
-import article from '@/components/article/blog.0.1.vue'
+import article from "@/components/article/blog.0.1.vue";
 
 export default {
-  name: 'home-comp',
-  components: { 'blog-post': article }
-}
+  name: "home-comp",
+  components: { "blog-post": article },
+  data() {
+    return {
+      txtSearch: "",
+      input21: ""
+    };
+  }
+};
 </script>
 
 <style>
@@ -94,7 +213,7 @@ section ._container {
   margin: 0 auto;
 }
 
-header {
+#container-wrap > header {
   border-bottom: 1px solid #c7c7c7;
 }
 
@@ -181,15 +300,82 @@ header {
   text-align: center;
 }
 
-.article-author-info{
+.article-author-info {
   color: #cfcfcf;
   font-size: 12px;
   margin-top: 15px;
   margin-bottom: 15px;
 }
 
-.article-author-info i{
+.article-author-info i {
   color: #7e7e7e;
   font-size: 13px;
+}
+
+#txt-search-box {
+  margin-top: 60px;
+}
+
+#txt-search-box input {
+  height: 54px;
+}
+
+.left-aside {
+  padding-right: 40px;
+}
+
+.post-title {
+  margin-top: 60px;
+  height: 54px;
+  background: #f5f5f5;
+  text-align: left;
+  text-indent: 10px;
+  line-height: 54px;
+}
+
+.post-categories li {
+  text-align: left;
+  line-height: 32px;
+}
+
+.post-popular-item {
+  margin-top: 22px;
+}
+
+.post-popular-item:first-child {
+  margin-top: 0;
+}
+
+.popular-item-logo {
+  width: 92px;
+  height: 75px;
+  background: #818181;
+}
+
+.popular-item-produ {
+  box-sizing: border-box;
+  width: 160px;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.popular-item-produ p {
+  color: #bababa;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.left-post-part > section {
+  padding-top: 27px;
+}
+
+.tags-item {
+  float: left;
+  color: #8d8d8d;
+  font-size: 13px;
+  padding: 7px 15px;
+  border: 1px solid #bababa;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 </style>
