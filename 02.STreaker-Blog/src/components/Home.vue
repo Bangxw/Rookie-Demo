@@ -1,56 +1,6 @@
 <template>
   <div id="container-wrap">
-    <header>
-      <div class="_container">
-        <el-row :gutter="20">
-          <el-col :xs="2" :md="2">
-            <div class="page-header-logo">
-              <img src="@/assets/img/logo.jpg" alt>
-            </div>
-          </el-col>
-          <el-col :xs="19" :md="19">
-            <nav class="page-header-nav">
-              <ul class="clearfix">
-                <li class="active">
-                  <a href="javascript:void(0)">Furniture</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">Lighting</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">Accessories</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">Backpack</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">Clothing</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">Contact Us</a>
-                </li>
-                <li>
-                  <a href="javascript:void(0)">About Us</a>
-                </li>
-              </ul>
-            </nav>
-          </el-col>
-          <el-col :xs="3" :md="3" class="header-operate-col">
-            <div class="page-header-operate clearfix">
-              <a href>
-                <span class="iconfont icon-search"></span>
-              </a>
-              <a href>
-                <span class="iconfont icon-gouwudai"></span>
-              </a>
-              <a href>
-                <span class="iconfont icon-user"></span>
-              </a>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </header>
+    <layout-header></layout-header>
 
     <section>
       <nav class="section-nav-bar">
@@ -190,11 +140,12 @@
 </template>
 
 <script>
+import bolgHeader from '@/components/layout/header.vue/'
 import article from "@/components/article/blog.0.1.vue";
 
 export default {
   name: "home-comp",
-  components: { "blog-post": article },
+  components: { "blog-post": article ,'layout-header': bolgHeader},
   data() {
     return {
       txtSearch: "",
