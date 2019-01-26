@@ -1,0 +1,28 @@
+{
+  "index.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/jquery.js",
+      "fonts/mui.ttf",
+      "js/jQuery.js",
+      "js/common.js",
+      "js/immersed.js",
+      "css/streaker.css",
+      "img/1.jpg",
+      "img/2.jpg",
+      "img/3.jpg",
+      "img/de.png",
+      "img/del.png",
+      "css/mui.css",
+      "js/mui.js"
+    ],
+    "refer": []
+  },
+  "plus/storage.html": {
+    "resources": [
+      "js/common.js",
+      "js/immersed.js"
+    ]
+  }
+}
