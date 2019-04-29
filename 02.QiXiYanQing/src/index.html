@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Hello World</title>
+  <link rel="stylesheet" href="css/resets.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <div id="content-wrap">
+    <div class="list-page-group">
+      <div class="list-page-item"></div>
+      <div class="list-page-item"></div>
+      <div class="list-page-item"></div>
+    </div>
+  </div>
+  <div class="button">
+      <button>点击切换页面</button>
+    </div>
+
+  <script src="js/swipe.js"></script>
+  <script>
+    let container = document.getElementById('content-wrap')
+    let swipe = Swipe(container)
+
+    let buttonDiv = document.getElementsByClassName('button')[0]
+    let button = buttonDiv.firstElementChild
+    button.onclick = function () {
+      swipe.scrollTo(2, 5000)
+    }
+  </script>
+</body>
+
+</html>
