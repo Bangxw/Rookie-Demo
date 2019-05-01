@@ -10,36 +10,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/page.css">
   <style>
-    .charector {
-      width: 151px;
-      height: 291px;
-      background: url(./img/boy.png) no-repeat 0 -291px;
-      position: absolute;
-      left: 6%;
-      top: 55%;
-    }
-    
-    .slow-walk {
-      animation: person-slow 950ms infinite steps(1, start);
-    }
-    
-    @keyframes person-slow {
-      0% {
-        background-position: 0 -291px;
-      }
-      25% {
-        background-position: -602px 0;
-      }
-      50% {
-        background-position: -302px -291px;
-      }
-      75% {
-        background-position: -151px -291px;
-      }
-      100% {
-        background-position: 0 -291px;
-      }
-    }
+
   </style>
 </head>
 
@@ -62,39 +33,29 @@
     <button>点击切换页面</button>
   </div> -->
 
+  <script src="js/jquery.min.js"></script>
+  <!-- <script src="js/jquery.transit.js"></script> -->
   <script src="js/swipe.js"></script>
+  <script src="js/qixi.js"></script>
   <script>
-    let container = document.getElementById('content-wrap')
-    let swipe = Swipe(container)
-
-    var getValue = function(classname) {
-      var ele = document.getElementsByClassName(classname)[0]
-      return {
-        height: ele.offsetHeight,
-        top: ele.offsetTop
-      }
-    }
-
-    let boyDom = document.getElementById('boy')
-    let boyHeight = boyDom.offsetHeight
-
-    // 路的中间Y坐标
-    let pathY = function() {
-      var data = getValue('a_background_middle')
-      return data.top + data.height / 2
-    }
-
-    // 修正小男孩的正确位置
-    // 路的中间值减去小孩的高度，25是一个修正值
-    boyDom.style.top = pathY() - boyHeight + 25 + 'px'
-
-    container.onclick = function() {
+    container.onclick = function () {
       // swipe.scrollTo(2, 5000)
 
-      // ==========================
-      //     增加精灵动画
-      // ==========================
-      boyDom.className += ' slow-walk'
+      // $(boyDom).transition({
+      //   'left': container.clientWidth + 'px'
+      // }, 5000, 'linear')
+
+      var distX = calculateDist('x', 0.5)
+      var distY = calculateDist('y', 0.5)
+      walkRun(distX, distY, 10000)
+    }
+
+    document.onkeyup = function (e) {
+      if (e.keyCode === 32) {
+        var transVal = window.getComputedStyle(boyDom).getPropertyValue("transform")
+        boyDom.className += ' pause-walk'
+        boyDom.style.transform = transVal
+      }
     }
   </script>
 </body>
