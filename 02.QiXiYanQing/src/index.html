@@ -73,6 +73,9 @@
       </div>
     </div>
     <div id="boy" class="charector"></div>
+    <div id="snowflake">
+
+    </div>
   </div>
 
   <!-- <script src="js/jquery.min.js"></script>
@@ -103,8 +106,65 @@
         birdDom.style.transform = 'translateX(-' + container.clientWidth + 'px)'
       }
 
+      function snowflake() {
+        let flakeContainer = document.getElementById('snowflake')
+
+        function getImagesName() {
+          return './img/snowflake' + Math.floor(Math.random() * 6 + 1) + '.png'
+        }
+
+        function createSnowBox() {
+          let url = getImagesName()
+          var newDom = document.createElement('div')
+          newDom.style.width = '41px'
+          newDom.style.height = '41px'
+          newDom.style.position = 'absolute'
+          newDom.style.top = '41px'
+          newDom.style.backgrounSize = 'cover'
+          newDom.style.zIndex = '9999'
+          newDom.style.backgroundImage = 'url(' + url + ')'
+          newDom.classList.add('snowRoll')
+          return newDom
+        }
+
+        setInterval(() => {
+          let initParam = {
+            startLeft: Math.random() * visualWidth - 100,
+            startBottom: visualHeight - 40,
+            startOpacity: 1,
+            endTop: visualHeight - 40,
+            duration: visualHeight * 10 + Math.random() * 5000,
+            randOpacity: (() => {
+              let op = Math.random();
+              return op < 0.5 ? op + 0.5 : op
+            })()
+          }
+
+          let snowdom = createSnowBox()
+          snowdom.style.left = initParam.startLeft + 'px'
+          snowdom.style.opacity = initParam.startOpacity
+
+          flakeContainer.appendChild(snowdom)
+
+          let transX = initParam.startLeft - 100 + Math.random() * 500 - initParam.startLeft
+          // let transY = initParam.endTop - 40
+
+          // return
+
+            // snowdom.style.transition = 'transform 20000ms linear'
+            // snowdom.style.transform = 'translateY(400px)'
+
+          setTimeout(() => {
+            flakeContainer.removeChild(snowdom)
+          }, initParam.duration + 100)
+        },200)
+      }
 
       document.onkeyup = function (e) {
+        if (e.keyCode == 66) {
+          snowflake()
+        }
+
         if (e.keyCode == 65) {
           // 太阳运动
           // document.getElementById('sun').classList.add('rotation')
