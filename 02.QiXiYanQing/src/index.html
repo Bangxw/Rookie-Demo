@@ -23,13 +23,13 @@
           <div class="a-background-middle"></div>
           <div class="a-background-bottom"></div>
         </div>
+        <!-- 太阳 -->
+        <div id="sun"></div>
         <!-- 云朵 -->
         <div class="cloud-area">
           <div class="cloud cloud1"></div>
           <div class="cloud cloud2"></div>
         </div>
-        <!-- 太阳 -->
-        <div id="sun"></div>
       </div>
 
       <div class="list-page-item">
@@ -72,156 +72,12 @@
         </ul>
       </div>
     </div>
-    <div id="boy" class="charector"></div>
-    <div id="snowflake">
 
-    </div>
+    <div id="snowflake"></div>
+    <div id="boy" class="charector"></div>
   </div>
 
-  <!-- <script src="js/jquery.min.js"></script>
-  <script src="js/jquery.transit.js"></script> -->
-  <script src="js/swipe.js"></script>
-  <script src="js/qixi.js"></script>
-  <script>
-    window.onload = function () {
-      let container = document.getElementById('content-wrap')
-      let swipe = Swipe(container)
-      swipe.scrollTo(2, 10)
-
-      ////////////////////////////////////////////////////////
-      // =================== 动画处理 ====================== //
-      ////////////////////////////////////////////////////////
-
-      /////////////
-      // 小孩走路 //
-      /////////////
-
-      let boy = BoyWalk()
-
-      let birdDom = document.getElementsByClassName('bird')[0]
-
-      function birdfly() {
-        birdDom.classList.add('bird-fly')
-        birdDom.style.transition = 'all 15000ms linear'
-        birdDom.style.transform = 'translateX(-' + container.clientWidth + 'px)'
-      }
-
-      function snowflake() {
-        let flakeContainer = document.getElementById('snowflake')
-
-        function getImagesName() {
-          return './img/snowflake' + Math.floor(Math.random() * 6 + 1) + '.png'
-        }
-
-        function createSnowBox() {
-          let url = getImagesName()
-          var newDom = document.createElement('div')
-          newDom.style.width = '41px'
-          newDom.style.height = '41px'
-          newDom.style.position = 'absolute'
-          newDom.style.top = '41px'
-          newDom.style.backgrounSize = 'cover'
-          newDom.style.zIndex = '9999'
-          newDom.style.backgroundImage = 'url(' + url + ')'
-          newDom.classList.add('snowRoll')
-          return newDom
-        }
-
-        setInterval(() => {
-          let initParam = {
-            startLeft: Math.random() * visualWidth - 100,
-            startBottom: visualHeight - 40,
-            startOpacity: 1,
-            endTop: visualHeight - 40,
-            duration: visualHeight * 10 + Math.random() * 5000,
-            randOpacity: (() => {
-              let op = Math.random();
-              return op < 0.5 ? op + 0.5 : op
-            })()
-          }
-
-          let snowdom = createSnowBox()
-          snowdom.style.left = initParam.startLeft + 'px'
-          snowdom.style.opacity = initParam.startOpacity
-
-          flakeContainer.appendChild(snowdom)
-
-          let transX = initParam.startLeft - 100 + Math.random() * 500 - initParam.startLeft
-          // let transY = initParam.endTop - 40
-
-          // return
-
-            // snowdom.style.transition = 'transform 20000ms linear'
-            // snowdom.style.transform = 'translateY(400px)'
-
-          setTimeout(() => {
-            flakeContainer.removeChild(snowdom)
-          }, initParam.duration + 100)
-        },200)
-      }
-
-      document.onkeyup = function (e) {
-        if (e.keyCode == 66) {
-          snowflake()
-        }
-
-        if (e.keyCode == 65) {
-          // 太阳运动
-          // document.getElementById('sun').classList.add('rotation')
-
-          // document.getElementsByClassName('cloud')[0].classList.add('cloud1Anim') // 飘云
-          // document.getElementsByClassName('cloud')[1].classList.add('cloud2Anim')
-
-          // boy.walkTo(2000, .2) // 第一次开始走路
-          //   .then(function () {
-          //     swipe.scrollTo(1, 5000)
-          //     return boy.walkTo(5000, 0.5)
-          //   })
-
-          // boy.toShop(5000) // 走进商店
-          //   .then(() => { //暂停走路
-          //     boy.stopWalk()
-          //   })
-          //   .then(() => { //开门
-          //     return openDoor()
-          //   })
-          //   .then(function () { // 开灯
-          //     lamp.bright()
-          //   })
-          //   .then(() => { // 进商店
-          //     return boy.inShop(2000)
-          //   })
-          //   .then(() => {
-          //     birdfly()
-          //     return boy.takeFlower() //取花
-          //   })
-          //   .then(() => { //出商店
-          //     return boy.outShop(2000)
-          //   })
-          //   .then(() => { //关灯
-          //     lamp.dark()
-          //   })
-
-          boy.walkTo(2000, .15)
-            .then(() => {
-              return boy.walkTo(3500, .36, girlDom.offsetTop / visualHeight)
-            })
-            .then(() => {
-              // 上桥走到小女孩面前
-              return boy.walkTo(1500, (girlDom.offsetLeft - 123) / visualWidth)
-            }).then(() => {
-              boy.resetOrigin()
-            }).then(() => {
-              setTimeout(() => {
-                girl.rotate()
-                boyDomRotate()
-              })
-            })
-        }
-      }
-    }
-
-  </script>
+  <script src="js/main.js"></script>
 </body>
 
 </html>

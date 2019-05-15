@@ -1,3 +1,5 @@
+/* pageC.css */
+
 .c-background {
   width: 100%;
   height: 100%;
@@ -26,6 +28,25 @@
   background-size: 100% 100%;
 }
 
+#snowflake {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.snowRoll {
+  position: absolute;
+  opacity: 0;
+  height: 80px;
+  /* animation: snow-run 20s; */
+  display: block;
+}
+
+/* 小女孩 */
+
 .girl {
   background: url(../img/girl.png) no-repeat -755px 0;
   position: absolute;
@@ -34,6 +55,12 @@
   width: 151px;
   height: 291px;
 }
+
+.girl-rotate {
+  animation: girl-rotate 850ms 1 step-start forwards;
+}
+
+/* 桥 */
 
 .bright-bottom {
   position: absolute;
@@ -141,10 +168,6 @@
   left: 65%;
 }
 
-.girl-rotate {
-  animation: girl-rotate 850ms 1 step-start forwards;
-}
-
 @keyframes shake {
   0% {
     transform: translate3d(0, 0, 0)
@@ -190,30 +213,14 @@
   }
 }
 
-#snowflake {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-}
-
-.snowRoll {
-  position: absolute; 
-  opacity: 0;
-  height: 80px;
-  animation: snow-run 20s;
-}
-
 @keyframes snow-run {
   0% {
     top: 0
   }
   50% {
-    transfrom: rotate(1080deg)
+    transfrom: rotate(1080deg);
   }
   100% {
-    transform: rotate(0deg) translate3d(50px, 100%, 50px)
+    transform: rotate(0deg) translate3d(50px, 50px, 50px)
   }
 }

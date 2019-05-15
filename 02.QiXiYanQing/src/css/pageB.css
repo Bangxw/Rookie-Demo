@@ -1,3 +1,5 @@
+/* pageB.css */
+
 .b-background {
   width: 100%;
   height: 100%;
@@ -35,9 +37,9 @@
 }
 
 .door-left, .door-right {
+  position: absolute;
   width: 50%;
   height: 100%;
-  position: absolute;
 }
 
 .door-left {

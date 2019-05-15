@@ -3,7 +3,8 @@
   height: 100%;
   overflow: hidden;
   position: absolute;
-  /* border: 1px solid #ccc; */
+  left: 0;
+  top: 0
 }
 
 .list-page-group {
@@ -32,12 +33,12 @@
   background-position: -150px 0;
 }
 
-.pause-walk {
-  animation-play-state: paused;
-}
-
 .slow-walk {
   animation: person-slow 950ms infinite steps(1, start);
+}
+
+.pause-walk {
+  animation-play-state: paused;
 }
 
 .slow-flower-walk {
