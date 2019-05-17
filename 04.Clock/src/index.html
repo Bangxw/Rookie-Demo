@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="css/resets.css">
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+    }
+
+    #wrap-container {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      top: 50%;
+      margin-top: -400px;
+      left: 50%;
+      margin-left: -400px;
+    }
+
+    #wrap-container>div {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      backface-visibility: hidden;
+      /* 大神操作 rotate的时候字体模糊问题*/
+      transform: translateZ(0);
+      -webkit-font-smoothing: subpixel-antialiased;
+    }
+
+    div[class^=filed-] span.selected {
+      color: rgb(119, 0, 255);
+      font-weight: bold;
+    }
+
+    .filed-year {
+      width: 80px;
+      height: 20px;
+      margin-left: -40px;
+      margin-top: -10px;
+      z-index: 6;
+    }
+
+    .filed-month {
+      width: 160px;
+      height: 160px;
+      margin-left: -80px;
+      margin-top: -80px;
+      z-index: 5;
+    }
+
+    .filed-day {
+      width: 280px;
+      height: 280px;
+      margin-left: -140px;
+      margin-top: -140px;
+      z-index: 4;
+    }
+
+    .filed-hour {
+      width: 400px;
+      height: 400px;
+      margin-left: -200px;
+      margin-top: -200px;
+      z-index: 3;
+    }
+
+    .filed-minute {
+      width: 560px;
+      height: 560px;
+      margin-top: -280px;
+      margin-left: -280px;
+      z-index: 2;
+    }
+
+    .filed-second {
+      width: 700px;
+      height: 700px;
+      margin-top: -350px;
+      margin-left: -350px;
+      z-index: 1;
+    }
+
+    div[class^=filed-] span {
+      position: absolute;
+      display: inline-block;
+      width: 50%;
+      height: 20px;
+      line-height: 20px;
+      top: 50%;
+      margin-top: -10px;
+      right: 0;
+      color: #fff;
+      text-align: right;
+      font-size: 12px;
+      font-family: '宋体';
+      backface-visibility: hidden;
+      transform-origin: 0% 50%;
+      transform: translate3d(0, 0, 0);
+      -webkit-font-smoothing: subpixel-antialiased;
+    }
+
+    div.filed-year span {
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="wrap-container">
+    <div class="filed-year"><span>二零一九年</span></div>
+    <div class="filed-month"></div>
+    <div class="filed-day"></div>
+    <div class="filed-hour"></div>
+    <div class="filed-minute"></div>
+    <div class="filed-second"></div>
+  </div>
+</body>
+
+<script>
+  /*
+   * 基本思路：
+   * 1. 月、日、时、分、秒初始位置定位在“时钟三点钟位置”， 然后每个子元素旋转度数：360°/子元素个数（如秒针为360/60），构成一个圆盘
+   * 2. 刻度的运动是旋转父级元素，filed-second....
+   * 3. 初始动画加载用`new Promise`控制
+   */
+  (() => {
+    const debug = 0
+    const capitalAmount = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾']
+    const upperNumb = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+
+    let rounds = { // 圈数
+      month: 0, day: 0, hour: 0, minute: 0, second: 0
+    }
+
+    let latestDeg = { // 月、日、时、分 最近一次旋转的度数
+      month: 0, day: 0, hour: 0, minute: 0
+    }
+
+    let runDegMonth, runDegDay, runDegHour, runDegMinute, runDegSecond // 表盘需要旋转的度数
+    let currentDate = null
+
+    var monthElement = document.getElementsByClassName('filed-month')[0]
+    var dayElement = document.getElementsByClassName('filed-day')[0]
+    var hourElement = document.getElementsByClassName('filed-hour')[0]
+    var minuteElement = document.getElementsByClassName('filed-minute')[0]
+    var secondElement = document.getElementsByClassName('filed-second')[0]
+
+    initDial()
+
+    setTimeout(function () {
+      initAnmation(monthElement, 30)
+        .then(() => {
+          return initAnmation(dayElement, 11.613) // 最大31天  360/31
+        })
+        .then(() => {
+          return initAnmation(hourElement, 15)
+        })
+        .then(() => {
+          return initAnmation(minuteElement, 6)
+        })
+        .then(() => {
+          return initAnmation(secondElement, 6)
+        })
+        .then(() => {
+          refreshDate()
+        })
+    }, 500)
+
+    function initDial() { //初始化表盘
+      let _html = {
+        month: [], day: [], hour: [], minute: [], second: []
+      }
+      for (var i = 0; i < 60; i++) {
+        if (i < 12) _html.month.push(`<span>${digCapitHandle(i + 1)}月</span>`)
+        if (i < 31) _html.day.push(`<span>${digCapitHandle(i + 1)}</span>`)
+        if (i < 24) _html.hour.push(`<span>${digCapitHandle(i)}点</span>`)
+        _html.minute.push(`<span>${digCapitHandle(i)}分</span>`)
+        _html.second.push(`<span>${digCapitHandle(i)}秒</span>`)
+      }
+      monthElement.innerHTML = _html.month.join('')
+      dayElement.innerHTML = _html.day.join('')
+      hourElement.innerHTML = _html.hour.join('')
+      minuteElement.innerHTML = _html.minute.join('')
+      secondElement.innerHTML = _html.second.join('')
+    }
+
+    function digCapitHandle(parms) {
+      if (parms <= 10) return capitalAmount[parms]
+      else {
+        let dig = parms.toString().split('')
+        if (parms < 20) return capitalAmount[10] + capitalAmount[dig[1]]
+        else if (parms == 20 || parms == 30 || parms == 40 || parms == 50) return capitalAmount[dig[0]] + capitalAmount[10]
+        else return capitalAmount[dig[0]] + capitalAmount[10] + capitalAmount[dig[1]]
+      }
+    }
+
+    function initAnmation(parentDom, prop) { // 父盒子 && 分配的角度
+      return new Promise((resolve, reject) => {
+        var dom = null
+        for (var item = 0; item < parentDom.children.length; item++) {
+          dom = parentDom.children[item]
+          dom.style.transform = 'rotate(' + -(item + 1) * prop + 'deg)'; //逆时针运动 x轴正向显示时、分、秒最大值
+          if (debug) dom.style.transition = 'all 3000ms linear'
+          else dom.style.transition = 'all 10ms linear'
+        }
+        dom.addEventListener('transitionend', () => {
+          resolve()
+        }, true)
+      })
+    }
+
+    function refreshDate() {
+      currentDate = new Date()
+      runDegMonth = (currentDate.getMonth() + 1) * 30 + rounds.month * 360
+      runDegDay = currentDate.getDate() * 11.613 + rounds.day * 360
+      runDegHour = (currentDate.getHours() + 1) * 15 + rounds.hour * 360
+      runDegMinute = (currentDate.getMinutes() + 1) * 6 + rounds.minute * 360
+      runDegSecond = (currentDate.getSeconds() + 1) * 6 + rounds.second * 360 // 使用累计度数 跑完一圈加360°，界面秒针运动时就不会出现跑完一圈回转360deg的情况
+
+      if (runDegMonth != latestDeg.month) dialAnim(monthElement, runDegMonth) // 避免重复执行动画
+      if (currentDate.getMonth() == 11) rounds.month += 1 // 表盘圈数
+
+      if (runDegDay != latestDeg.day) dialAnim(dayElement, runDegDay)
+      if (currentDate.getDate() == 31) rounds.day += 1
+
+      if (runDegHour != latestDeg.hour) dialAnim(hourElement, runDegHour)
+      if (currentDate.getHours() == 23) rounds.hour += 1
+
+      if (runDegMinute != latestDeg.minute) dialAnim(minuteElement, runDegMinute)
+      if (currentDate.getMinutes() == 59) rounds.minute += 1
+
+      dialAnim(secondElement, runDegSecond)
+      if (currentDate.getSeconds() == 59) rounds.second += 1
+
+      document.getElementsByClassName('filed-year')[0].children[0].innerHTML = currentDate.getFullYear().toString().split().map((element) => {
+        return upperNumb[element]
+      })
+
+      latestDeg = {
+        month: runDegMonth,
+        day: runDegDay,
+        hour: runDegHour,
+        minute: runDegMinute,
+      }
+
+      selectedHandle(monthElement, currentDate.getMonth())
+      selectedHandle(dayElement, currentDate.getDate() - 1)
+      selectedHandle(hourElement, currentDate.getHours())
+      selectedHandle(minuteElement, currentDate.getMinutes())
+      selectedHandle(secondElement, currentDate.getSeconds())
+
+      if (rounds.second > 525600) { // 不要让计数器累加的太大
+        rounds = {
+          month: 0, day: 0, hour: 0, minute: 0, second: 0
+        }
+      }
+
+      setTimeout(() => {
+        refreshDate()
+      }, 1000)
+    }
+
+    function dialAnim(dom, degree) {
+      dom.style.transform = 'rotate(' + degree + 'deg)'
+      dom.style.transition = 'all 800ms ease-in'
+    }
+
+    function selectedHandle(parentDom, id) {
+      var length = parentDom.children.length
+      if (id == 0) parentDom.children[length - 1].classList.remove('selected')
+      else parentDom.children[id - 1].classList.remove('selected')
+      parentDom.children[id].classList.add('selected')
+    }
+  })()
+</script>
+
+</html>
