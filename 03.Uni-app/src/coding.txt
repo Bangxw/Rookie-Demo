@@ -1,5 +1,0 @@
-数据操作：
-	数据存取---plus.stroge的存储方式，及时存储==》setItem()
-	数据备份---plus.io存在_DOC目录下的backup.txt文件中，应用退出之前存储==》wrDate("w")
-	数据加载---加载stroge中的数据==》getItem()
-	数据恢复---把backup.txt文件中的数据读取加载，并恢复到stroge中==》wrDate("r")

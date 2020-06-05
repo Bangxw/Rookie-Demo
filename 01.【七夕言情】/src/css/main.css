@@ -1,0 +1,116 @@
+#content-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0
+}
+
+.list-page-group {
+  position: relative;
+}
+
+.list-page-item {
+  width: 100%;
+  height: 100%;
+  color: red;
+  float: left;
+  overflow: hidden;
+  position: relative;
+}
+
+.charector {
+  width: 151px;
+  height: 291px;
+  background: url(../img/boy.png) no-repeat 0 -291px;
+  position: absolute;
+  left: 6%;
+  top: 55%;
+}
+
+.boy-original {
+  background-position: -150px 0;
+}
+
+.slow-walk {
+  animation: person-slow 950ms infinite steps(1, start);
+}
+
+.pause-walk {
+  animation-play-state: paused;
+}
+
+.slow-flower-walk {
+  animation: person-flower-slow 950ms infinite steps(1, start);
+}
+
+.boy-rotate {
+  animation: boy-rotate 850ms 1 step-start forwards;
+}
+
+@keyframes person-slow {
+  0% {
+    background-position: 0 -291px;
+  }
+  25% {
+    background-position: -602px 0;
+  }
+  50% {
+    background-position: -302px -291px;
+  }
+  75% {
+    background-position: -151px -291px;
+  }
+  100% {
+    background-position: 0 -291px;
+  }
+}
+
+@keyframes person-flower-slow {
+  0% {
+    background-position: -453px -0px;
+  }
+  25% {
+    background-position: -904px -0px;
+  }
+  50% {
+    background-position: -451px -0px;
+  }
+  75% {
+    background-position: -753px -0px;
+  }
+  100% {
+    background-position: -300px -0px;
+  }
+}
+
+@keyframes boy-rotate {
+  0% {
+    background-position: -603px -291px;
+  }
+  16.7% {
+    background-position: -150px -0px;
+  }
+  33.4% {
+    background-position: -453px -291px;
+  }
+  50.1% {
+    background-position: -0px -0px;
+  }
+  66.8% {
+    background-position: -903px -291px;
+  }
+  83.5% {
+    background-position: -753px -291px;
+  }
+  100% {
+    background-position: -603px -291px;
+  }
+}
+
+ul, li {
+  padding-inline-start: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}

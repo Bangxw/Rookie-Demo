@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>STREAKER</title>
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/streaker.css" />
+		<script src="js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jQuery.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">我是词霸</h1>
+			<a href="#forward" class="addWords mui-icon mui-icon-plusempty"></a>
+		</header>
+		<div class="mui-content">
+			<div id="str_theme"></div>
+			<div class="mui-slider">
+				<div class="str-item" id="wordContent">
+					<!--<article class="ws-Item"><em></em>
+						<div>
+							<section>
+								<span class=""></span>
+								<span class="_left">123</span><span class="_right">123</span>
+							</section>
+						</div>
+					</article>-->
+				</div>
+
+				<div id="forward" class="mui-popover mui-popover-action mui-popover-bottom">
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">
+							<div class="mui-input-row">
+								<label>英文:</label>
+								<input type="text" class="mui-input-clear" placeholder="请输入英文单词" data-input-clear="5" id="iptEnWord"><span class="mui-icon mui-icon-clear"></span>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-input-row">
+								<label>汉语:</label>
+								<input type="text" class="mui-input-clear" placeholder="请输入英文释义" data-input-clear="5" id="iptCnWord"><span class="mui-icon mui-icon-clear"></span>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-input-row">
+								<button type="button" class="mui-btn mui-btn-success" id="btnAddWords">添加</button>
+							</div>
+						</li>
+					</ul>
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">
+							<a href="#forward"><b>取消</b></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<script type="text/javascript">
+				var canRock = true,
+					showListS = 0;
+				$(function() {
+					mui.init({
+						gestureConfig: {
+							tap: true, //默认为true
+							doubletap: true, //默认为false
+							longtap: true, //默认为false
+							swipe: true, //默认为true
+							drag: true, //默认为true
+							hold: false, //默认为false，不监听
+							release: false //默认为false，不监听
+						}
+					});
+
+					if(window.plus) {
+						plusReady();
+					} else {
+						document.addEventListener("plusready", plusReady, false);
+					}
+
+					$(".mui-icon-clear").click(function() {
+						$(this).parent().find("input").val("");
+					});
+
+					$("#btnAddWords").click(function() {
+						var $w1 = $("#iptEnWord").val(),
+							$w2 = $("#iptCnWord").val(),
+							formDate = formatDate().formTime,
+							emtime = formatDate().emtime,
+							secDom = $(".ws-Item:last-child() section:eq(0)");
+
+						if($w1 == "") {
+							$("#iptEnWord").focus();
+							return;
+						} else if($w2 == "") {
+							$("#iptCnWord").focus();
+							return;
+						}
+
+						if($w1 == "WBX_2018" && $w2 == "read") {
+							wrDate("r");
+							return;
+						} else if($w1 == "WBX_2018" && $w2 == "write") {
+							wrDate("w");
+							return;
+						}
+
+						if(secDom.length != 0 && (secDom.attr("dtime").substr(0, 8) == formDate.substr(0, 8))) {
+							var $html = [],
+								len = ++$(".ws-Item:last-child section").length;
+							len = len < 10 ? "0" + len : len;
+							$html.push('<section dtime="' + formDate + '" id="' + formDate + '">');
+							$html.push('<span class="mui-badge">' + len + '</span>');
+							$html.push('<span class="_left">' + $w1 + '</span><span class="_right">' + $w2 + '</span>');
+							$(".ws-Item:last-child() div").append($html.join(""));
+						} else {
+							var $html = [];
+							$html.push('<article class="ws-Item"><em>' + emtime + '</em><div><section dtime="' + formDate + '" id="' + formDate + '">');
+							$html.push('<span class="mui-badge">01</span>');
+							$html.push('<span class="_left">' + $w1 + '</span><span class="_right">' + $w2 + '</span>');
+							$html.push('</section></div></article>');
+							$("#wordContent").append($html.join(""));
+						}
+
+						$("#iptEnWord").val("");
+						$("#iptCnWord").val("");
+						setItem(formDate, $w1, $w2, 0);
+					});
+
+					$(document).on("click", ".str-item section .delSection", function(e) {
+						e.stopPropagation();
+
+						var $length,
+							$dom = $(this).parent(),
+							$domP = $dom.parent(),
+							dtime = $dom.attr("dtime");
+
+						$dom.remove();
+						$length = $domP.find("span.mui-badge").length;
+						for(var i = 0; i < $length; i++) {
+							$domP.find("section:eq(" + i + ") span.mui-badge").text(i + 1 < 10 ? "0" + (i + 1) : i + 1);
+						}
+						if($length == 0) {
+							$domP.parent().remove();
+						}
+						delItem(dtime);
+						mui.toast('删除成功!');
+					}).on("blur", ".str-item section input", function() {
+						var $this = $(this),
+							va = $this.val(),
+							leftV, rightV,
+							$parent = $this.parent(),
+							isRemeber = $parent.parent().find("span:eq(0)").hasClass("mui-badge-sure") ? "1" : "0",
+							dTime = $(this).parent().parent().attr("dtime");
+						if($parent.hasClass("_left")) {
+							leftV = va;
+							rightV = $parent.parent().find("._right").text();
+						} else {
+							rightV = va;
+							leftV = $parent.parent().find("._left").text();
+						}
+						setItem(dTime, leftV, rightV, isRemeber);
+						$(this).parent().text(va).end().remove();
+					}).on("click", ".ws-Item>em", function() {
+						showWorldList($(this).parent());
+					});
+
+					mui(".str-item").on("swiperight", "section", function(e) {
+						var $htm = '<div class="delSection"><span><i class="mui-icon mui-icon-trash"></i>Del</span></div>',
+							$dom = $(this);
+						if($(this).find(".delSection").length == 0) {
+							$dom.animate({
+								"left": "40px"
+							}).prepend($htm);
+						} else {
+							$dom.animate({
+								"left": "40px"
+							});
+						}
+					}).on("swipeleft", "section", function(e) {
+						$(this).animate({
+							"left": "0px"
+						});
+					}).on("longtap", "section>._left,section>._right", function(e) {
+						var va = $(this).text().trim();
+						$(this).text("").append('<input tyle="text" value="' + va + '" />');
+						$(this).find("input").focus();
+					}).on("doubletap", "section>._left,section>._right", function(e) {
+						showWorldList($(this).parent());
+					}).on("tap", ".mui-badge,.mui-badge-sure", function(e) {
+						var $this = $(this),
+							$parent = $this.parent(),
+							isRemeber = "0",
+							dtime = $parent.attr("dtime");
+						if($this.hasClass("mui-badge-sure")) {
+							$this.removeClass("mui-badge-sure");
+						} else {
+							$this.addClass("mui-badge-sure");
+							isRemeber = "1";
+						}
+						setItem(dtime, $parent.find("._left").text(), $parent.find("._right").text(), isRemeber);
+					});
+
+				});
+
+				function plusReady() {
+					setBodyTheme(); //设置主题背景
+					loadingData(); //加载数据
+					AccelerometerX(); //监听手机摇晃
+				}
+
+				function setBodyTheme() {
+					var bgOrder = plus.storage.getItem("bgThemeOrder");
+					bgOrder = bgOrder == null ? 1 : bgOrder;
+
+					$("#str_theme").css({
+						"width": $(window).width(),
+						"height": $(window).height() - 44
+					}).addClass("str-theme" + bgOrder).attr("bgTheme", bgOrder).css({
+						"background-attachment": "fixed"
+					});
+				}
+
+				function AccelerometerX() { //摇一摇切换背景
+					if(canRock) {
+						plus.accelerometer.watchAcceleration(function(a) {
+							if(Math.abs(a.xAxis) + Math.abs(a.yAxis) + Math.abs(a.zAxis) > 24) {
+								var bgTheme = parseInt($("#str_theme").attr("bgTheme"));
+								if(isNaN(bgTheme)) {
+									bgTheme = 1;
+								} else {
+									bgTheme = (bgTheme + 1) > 3 ? 1 : (++bgTheme);
+								}
+								plus.storage.setItem("bgThemeOrder", bgTheme.toString());
+								$("#str_theme").removeClass().addClass("str-theme" + bgTheme).attr("bgTheme", bgTheme).css({
+									"background-attachment": "fixed"
+								});
+								canRock = false;
+								setTimeout(function() {
+									canRock = true;
+								}, 1500);
+							}
+						}, function(e) {
+							alert("Acceleration error: " + e.message);
+						});
+					}
+				}
+
+				function getItem(para) {
+					//clrItem();
+					var i = 0,
+						resValL = "",
+						oldArr = [],
+						newArr = [],
+						$count = 0,
+						$temp = null,
+						$length = plus.storage.getLength();
+
+					for(; i < $length; i++) {
+						if(plus.storage.key(i) != "bgThemeOrder") { //在srotage中去除key值爲“bgThemeOrder”的這條記錄
+							oldArr.push(plus.storage.key(i));
+						}
+					}
+
+					for(i = 0; i < oldArr.length; i++) {
+						for(var j = 0; j < $length; j++) {
+							if(oldArr[i] < oldArr[j]) {
+								$temp = oldArr[j];
+								oldArr[j] = oldArr[i];
+								oldArr[i] = $temp;
+							}
+						}
+					}
+
+					for(i = 0; i < oldArr.length; i++) {
+						if(i == 0) {
+							newArr[0] = [];
+						}
+						if(i != 0 && oldArr[i].toString().substr(0, 8) != oldArr[i - 1].toString().substr(0, 8)) {
+							newArr[++$count] = [];
+						}
+						newArr[$count].push(oldArr[i]);
+					}
+
+					for(i = 0; i < newArr.length; i++) {
+						for(var j = 0; j < newArr[i].length; j++) {
+							//{dtime:{Dt:"",En:"",Cn:"",IsR:""}}
+							if(i == 0 && j == 0) {
+								resValL += plus.storage.getItem(newArr[i][j]);
+							} else {
+								resValL += "&&" + plus.storage.getItem(newArr[i][j]);
+							}
+						}
+					}
+
+					if(para == "val") {
+						return resValL;
+					} else if(para == "key") {
+						return newArr;
+					}
+				}
+
+				function setItem(dtime, keyEn, valueCn, isRemmber) { //存储数据
+					plus.storage.setItem(dtime, '{"Dt":"' + dtime + '","En":"' + keyEn + '","Cn":"' + valueCn + '","IsR":"' + isRemmber + '"}');
+				}
+
+				function delItem(dtime) { //删除数据
+					plus.storage.removeItem(dtime);
+				}
+
+				function clrItem() {
+					plus.storage.clear();
+				}
+
+				function loadingData() { //加载数据
+					var emtime, isRemeber, resCnEn,
+						$html = [],
+						keyListArr = getItem("key");
+
+					for(var i = 0; i < keyListArr.length; i++) {
+						emtime = keyListArr[i][0].toString().substr(0, 4) + "." + keyListArr[i][0].toString().substr(4, 2) + "." + keyListArr[i][0].toString().substr(6, 2);
+						$html.push('<article class="ws-Item"><em>' + emtime + '</em><div>');
+						for(var j = 0; j < keyListArr[i].length; j++) {
+							resCnEn = $.parseJSON(plus.storage.getItem(keyListArr[i][j]));
+							isRemeber = resCnEn.IsR == "0" ? "mui-badge" : "mui-badge mui-badge-sure";
+							$html.push('<section id="' + keyListArr[i][j] + '" dtime="' + keyListArr[i][j] + '"><span class="' + isRemeber + '">' + ((j + 1) < 10 == 1 ? "0" + (j + 1) : (j + 1)) + '</span>');
+							$html.push('<span class="_left">' + resCnEn.En + '</span><span class="_right">' + resCnEn.Cn + '</span></section>');
+						}
+						$html.push('</div></article>');
+					}
+
+					$("#wordContent").html($html.join(""));
+				}
+
+				function wrDate(wrType) {
+					//wrType ==>w写   / r读
+					plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
+						fs.root.getFile("backup.txt", {
+								create: true
+							}, function(entry) {
+								if(wrType == "w") {
+									entry.createWriter(function(writer) {
+										writer.seek(0);
+										writer.write(getItem("val"));
+										writer.onwriteend = function() {
+											mui.toast('文件备份成功!');
+										};
+										writer.abort();
+									});
+								} else if(wrType == "r") {
+									entry.file(function(file) {
+										var Reader = new plus.io.FileReader();
+										Reader.readAsText(file, 'utf-8');
+										Reader.onloadend = function(evt) {
+											try {
+												var dataRes, dataArr, dataJson;
+												dataRes = evt.target.result;
+												dataArr = dataRes.split("&&");
+												clrItem();
+												for(var i = 0; i < dataArr.length; i++) {
+													dataJson = $.parseJSON(dataArr[i]);
+													setItem(dataJson.Dt, dataJson.En, dataJson.Cn, dataJson.IsR)
+												}
+												loadingData();
+												mui.toast('加载成功!');
+											} catch(e) {
+												alert("文件解析出错!");
+											}
+										}
+									});
+								}
+							},
+							function(e) {
+								console.log(e.message)
+							})
+					})
+				}
+
+				function showWorldList($dom) {
+					var $domR = $dom.find("._right"),
+						$domL = $dom.find("._left"),
+						$domPLP = $domR.parent();
+
+					$.each($domPLP, function(index) {
+						showListS = $domPLP.eq(index).attr("showListS");
+						showListS = typeof(showListS) == "undefined" ? '0' : showListS;
+						switch(showListS) {
+							case '0':
+								$domR.eq(index).hide();
+								$domL.eq(index).css({
+									"width": "100%"
+								})
+								$domPLP.eq(index).attr("showLists", '1');
+								break;
+							case '1':
+								$domR.eq(index).show().css({
+									"text-indent": "45px",
+									"width": "100%"
+								});
+								$domL.eq(index).hide();
+								$domPLP.eq(index).attr("showLists", '2');
+								break;
+							default:
+								$domR.eq(index).css({
+									"text-indent": "0px",
+									"width": "50%"
+								});
+								$domL.eq(index).show().css({
+									"width": "50%"
+								});
+								$domPLP.eq(index).attr("showLists", '0');
+								break;
+						}
+					});
+
+				}
+
+				function formatDate() { //格式化时间
+					var formTime, emtime,
+						MyDate = new Date(),
+						d = MyDate.getDate(),
+						m = MyDate.getMonth() + 1,
+						h = MyDate.getHours(),
+						mi = MyDate.getMinutes(),
+						s = MyDate.getSeconds(),
+						y = MyDate.getFullYear().toString();
+					m = m < 10 ? "0" + m : m;
+					d = d < 10 ? "0" + d : d;
+					s = s < 10 ? "0" + s : s;
+					y = y < 10 ? "0" + y : y;
+					mi = mi < 10 ? "0" + mi : mi;
+
+					formTime = y + m + d + h + mi + s;
+					emtime = formTime.substr(0, 4) + "." + formTime.substr(4, 2) + "." + formTime.substr(6, 2);
+
+					return {
+						"formTime": formTime,
+						"emtime": emtime
+					};
+				}
+			</script>
+	</body>
+
+</html>
