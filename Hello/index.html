@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <style>
+    html {
+      font-size: 14px;
+    }
+
+    body {
+      font-size: 1rem;
+    }
+
+    .container {
+      max-width: 500px;
+    }
+  </style>
+
+</head>
+
+<body onload="init_load()">
+  <div class="container pt-5">
+    <div class="card border-primary mb-5">
+      <div class="card-header">王氏科学取名</div>
+      <div class="card-body">
+        <form>
+          <div class="form-group row">
+            <label for="name_template" class="col-sm-4 col-form-label">姓名模板</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="name_template" placeholder="王**">
+              <small id="emailHelp" class="form-text text-muted">想替换的字用*表示，例如王**，王伟*，*大卫</small>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-4 col-form-label">生成个数</label>
+            <div class="col-sm-8">
+              <select class="form-control" name="names_count" id="names_count"></select>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="generate_names()">Random Generate</button>
+        </form>
+      </div>
+    </div>
+
+
+    <ul class="list-group" id="name_list"></ul>
+  </div>
+
+
+  <!-- https://github.com/theajack/cnchar#610-%E4%BD%BF%E7%94%A8%E5%AE%9E%E4%BE%8B%E5%A4%A7%E5%85%A8 -->
+  <script src="cnchar.all.min.js"></script>
+  <script>
+    function init_load() {
+      render_names_count_node(16)
+    }
+
+    function render_names_count_node(max_count) {
+      let node = []
+      for (let i = 0; i < max_count; i++) {
+        node.push(`<option ${i === 6 ? 'selected' : ''} value="${i}">${i}</option>`)
+      }
+      document.getElementById('names_count').innerHTML = node.join('')
+    }
+
+    function generate_names() {
+      const namesCount = document.getElementById('names_count').value
+      const nameTemp = document.getElementById('name_template').value
+
+
+      const resultListThemes = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
+      const node = []
+      for (let i = 0; i < namesCount; i++) {
+        let names = cnchar.random.word({
+          number: 2, // 生成数量 默认1
+          stroke: 5, // 笔画数 默认不限制
+          trad: false // 是否查找繁体字 默认否
+        })
+        
+        var aa = nameTemp.match(/\*/g)
+        node.push(`<li class="list-group-item list-group-item-${resultListThemes[i]}">${names}</li>`)
+      }
+
+
+
+      document.getElementById('name_list').innerHTML = node.join('')
+    }
+
+
+  </script>
+</body>
+
+</html>
