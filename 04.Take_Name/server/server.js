@@ -1,8 +1,44 @@
 //node.js读取数据
 const http = require("http")
 const url = require("url")
-const queryString = require("querystring")
 const fs = require("fs")
+
+const database = {};
+(function () {
+  database.libsAChar = JSON.parse(fs.readFileSync("data/libsA/word.json"))   // 16142
+  // database.commonChar = JSON.parse(fs.readFileSync("data/libsB/character/char_common.json"))   // 3500
+})();
+
+
+function append_file(content) {
+  fs.appendFile('data/word-index.database', content, err => {
+    if (err) {
+      console.error(err)
+      return
+    }
+  })
+}
+
+
+function get_words(stroke) {
+  let data = {
+    index: [],
+    words: []
+  }
+
+  while (data.words.length < 2) {
+    let index = Math.floor(Math.random() * 3500)
+    let word = commonChar[index]
+
+    // if (word.strokes < stroke) {
+    data.words.push(word)
+    data.index.push(index)
+    // }
+  }
+
+  return data
+}
+
 
 const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -22,17 +58,30 @@ const server = http.createServer((req, res) => {
     })
     if (params.pathname == "/api/list") {
       req.on("end", () => {
-        const { number } = queryString.parse(data)
 
-        // rawdata length => 26129191
-        let rawdata = fs.readFileSync("data/ci.json")
-        let data1 = JSON.parse(rawdata)
+        const { number } = JSON.parse(data)
 
-        var libs = Array(number || 6).fill(null)
-        libs = libs.map(() => data1[Math.floor(Math.random() * 26129191)])
+
+        const options = {
+          number: 10,
+          stroke: 10,
+          nameTemp: '***'
+        }
+
+        const groupWordsIndex = []
+        let libs = Array(number || 6).fill(null).map(() => {
+          var res = get_words({
+            maxStroke: 15
+          })
+          groupWordsIndex.push(res.indexs)
+
+          return res.words
+        })
+
+        append_file(groupWordsIndex.join(';') + '\r\n')
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 1, message: 'Add success', list: JSON.parse(libs) }));
+        res.end(JSON.stringify({ status: 1, message: 'Add success', list: libs }));
       })
     }
   } else if (methods == "OPTIONS") {
@@ -41,6 +90,7 @@ const server = http.createServer((req, res) => {
   }
 })
 
-server.listen(3288, function () {
-  console.log('server listen at http://127.0.0.1:3288')
+
+server.listen(8800, function () {
+  console.log('server listen at http://127.0.0.1:8800')
 })

@@ -1,11 +1,8 @@
 import React from 'react';
-import { Card, Button, Select, Form, Input, List, InputNumber } from 'antd';
+import { Card, Button, Select, Form, Input, List, InputNumber, Avatar } from 'antd';
 import './App.css';
-import cnchar from 'cnchar';
-import 'cnchar-random';
-import 'cnchar-info'
-
-let aa = '111'
+import HanziWriter from 'hanzi-writer'
+import axios from 'axios'
 
 class App extends React.Component {
   constructor(props) {
@@ -17,43 +14,30 @@ class App extends React.Component {
   }
 
   onFinish(values) {
+    const { nameTemplate, number, strokes } = values
 
-    const { nameTemplate, number, gender } = values
-
-    // const names = cnchar.name(nameTemplate || '王', {
-    //   number: number || 8,
-    //   gender: gender || 'both',
-    //   length: 2
-    // });
-
-    let libs = Array(number).fill(null)
-    libs = libs.map(() => {
-      return cnchar.random.word({
-        number: 2,
-        stroke: 5,
-        trad: false,
+    axios.post('http://127.0.0.1:8800/api/list', {
+      number, strokes
+    }).then((response) => {
+      this.setState({
+        data: response.data.list
       })
+
+      // var writer = HanziWriter.create('my-writer', '王', {
+      //   width: 100,
+      //   height: 100,
+      //   padding: 5,
+      //   delayBetweenLoops: 3000
+      // });
+
+      // writer.loopCharacterAnimation()
     })
-
-    this.setState({
-      data: libs
-    })
-
-
-    fetch('http://127.0.0.1:3288/api/list', { method: 'POST', body: {number: 5} }).then(response => response.json())
-      .then(data => {
-        console.log(data.list)
-        console.log(data.list[0])
-      })
-      .catch(e => console.log("Oops, error", e))
   }
 
   render() {
     return (
       <div className="container">
-        <Card
-          title="Default size card"
-          type="inner"
+        <Card title="Default size card" type="inner"
           style={{
             width: 500,
             marginBottom: 20
@@ -63,11 +47,11 @@ class App extends React.Component {
             name="basic"
             labelCol={{ span: 8, }}
             wrapperCol={{ span: 16, }}
-            initialValues={{ nameTemplate: '王**', number: 10, gender: '2' }}
+            initialValues={{ nameTemplate: '王**', number: 10, strokes: 0 }}
             onFinish={(e) => this.onFinish(e)}
             autoComplete="off"
           >
-            <Form.Item label="Username" name="nameTemplate">
+            <Form.Item label="Template" name="nameTemplate">
               <Input placeholder="王**" />
             </Form.Item>
 
@@ -75,13 +59,9 @@ class App extends React.Component {
               <InputNumber min={1} max={10} />
             </Form.Item>
 
-            {/* <Form.Item label="Gender" name="gender">
-              <Select>
-                <Select.Option key="1" value="1">男</Select.Option>
-                <Select.Option key="0" value="0">女</Select.Option>
-                <Select.Option key="2" value="2">Both</Select.Option>
-              </Select>
-            </Form.Item> */}
+            <Form.Item label="Max Strokes" name="strokes">
+              <InputNumber min={0} max={20} />
+            </Form.Item>
 
             <Form.Item
               wrapperCol={{
@@ -98,10 +78,16 @@ class App extends React.Component {
 
         <List
           size="small"
-          header={<div>List</div>}
+          header={<div id="my-writer">List</div>}
           bordered
           dataSource={this.state.data}
-          renderItem={item => <List.Item>{item}</List.Item>}
+          renderItem={item =>
+            <List.Item actions={[<a key="list-loadmore-edit">Add</a>]}>
+              <List.Item.Meta
+                title={<a href="https://ant.design">{item[0].char + item[1].char}</a>}
+                description={item[0].explanation}
+              />
+            </List.Item>}
         />
       </div>
 
