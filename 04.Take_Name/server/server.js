@@ -3,11 +3,35 @@ const http = require("http")
 const url = require("url")
 const fs = require("fs")
 
+
+
 const database = {};
 (function () {
   database.libsAChar = JSON.parse(fs.readFileSync("data/libsA/word.json"))   // 16142
   // database.commonChar = JSON.parse(fs.readFileSync("data/libsB/character/char_common.json"))   // 3500
 })();
+
+
+
+function collect_words(stroke) {
+  let data = {
+    index: [],
+    chars: []
+  }
+
+  while (data.chars.length < 2) {
+    let index = Math.floor(Math.random() * database.libsAChar.length)
+    let word = database.libsAChar[index]
+
+    // if (word.strokes < stroke) {
+    data.chars.push(word)
+    data.index.push(index)
+    // }
+  }
+
+  return data
+}
+
 
 
 function append_file(content) {
@@ -19,25 +43,6 @@ function append_file(content) {
   })
 }
 
-
-function get_words(stroke) {
-  let data = {
-    index: [],
-    words: []
-  }
-
-  while (data.words.length < 2) {
-    let index = Math.floor(Math.random() * 3500)
-    let word = commonChar[index]
-
-    // if (word.strokes < stroke) {
-    data.words.push(word)
-    data.index.push(index)
-    // }
-  }
-
-  return data
-}
 
 
 const server = http.createServer((req, res) => {
@@ -70,7 +75,7 @@ const server = http.createServer((req, res) => {
 
         const groupWordsIndex = []
         let libs = Array(number || 6).fill(null).map(() => {
-          var res = get_words({
+          var res = collect_words({
             maxStroke: 15
           })
           groupWordsIndex.push(res.indexs)
