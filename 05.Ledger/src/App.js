@@ -48,7 +48,7 @@ const App = () => {
           />
         </Card>
 
-        <LedgerListTable classificationTags={ledgerTags} ledgerList={ledgerList} />
+        <LedgerListTable classificationTags={ledgerTags} ledgerList={ledgerList} onRefreshData={() => get_ledger_list()} />
       </div>
 
       <AddMultipleModal

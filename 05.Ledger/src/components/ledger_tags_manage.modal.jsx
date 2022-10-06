@@ -52,54 +52,53 @@ const LedgerTagsManageModal = props => {
     {
       title: '名称',
       dataIndex: 'text',
-      width: '25%',
-      render(dom, entity) {
-        if(!entity.icon) return(<></>)
-        return (
-          <Tag color={entity?.icon[0]} icon={<IconFont type={entity?.icon[1]} />}>{entity.text}</Tag>
-        )
-      }
+      width: '25%'
     },
     {
       title: '图标',
       dataIndex: 'icon',
       width: '25%',
-      // renderFormItem() {
-      //   return <Popover trigger="click" placement='right' open={popoverShow} content={
-      //     <>
-      //       {
-      //         Object.keys(iconList).map(item => (
-      //           <>
-      //             <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
-      //             <Space size='large'>
-      //               {
-      //                 iconList[item]['icon'].map(icon => (
-      //                   <a className="icon-link" onClick={() => handleClick(iconList[item]['color'], icon)}><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
-      //                 ))
-      //               }
-      //             </Space>
-      //           </>
-      //         ))
-      //       }
-      //     </>
-      //   }>
-      //     <a onClick={() => setPopoverShow(true)}>
-      //       {
-      //         iconValue.length ? <IconFont type={iconValue[1]} style={{ fontSize: '24px' }} /> : '选择图标'
-      //       }
-      //     </a>
-      //   </Popover >
-      // },
+      render(dom,  record) {
+        if(Array.isArray(dom)) {
+          return <IconFont type={dom[1]} style={{ fontSize: '24px' }} />
+        }
+      },
+      renderFormItem() {
+        return <Popover trigger="click" placement='right' open={popoverShow} content={
+          <>
+            {
+              Object.keys(iconList).map((item, index) => (
+                <div key={index}>
+                  <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
+                  <Space size='large'>
+                    {
+                      iconList[item]['icon'].map((icon, _index) => (
+                        <a className="icon-link" key={_index} onClick={() => handleClick(iconList[item]['color'], icon)}><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
+                      ))
+                    }
+                  </Space>
+                </div>
+              ))
+            }
+          </>
+        }>
+          <a onClick={() => setPopoverShow(true)}>
+            {
+              iconValue.length ? <IconFont type={iconValue[1]} style={{ fontSize: '24px' }} /> : '选择图标'
+            }
+          </a>
+        </Popover >
+      },
     },
     {
       title: '操作',
       valueType: 'option',
       render: (text, record, _, action) => [
-        <a key="editable" onClick={() => {
-          console.log(record, action)
-          var _a;
-          (_a = action === null || action === void 0 ? void 0 : action.startEditable) === null || _a === void 0 ? void 0 : _a.call(action, record.id);
-        }}>编辑</a>,
+        // <a key="editable" onClick={() => {
+        //   console.log(record, action)
+        //   var _a;
+        //   (_a = action === null || action === void 0 ? void 0 : action.startEditable) === null || _a === void 0 ? void 0 : _a.call(action, record.id);
+        // }}>编辑</a>,
         <a key="delete" onClick={() => {
           setIsSpinning(true)
           fetch('http://127.0.0.1:8800/ledger/tags/delete_one:id', {
@@ -129,9 +128,13 @@ const LedgerTagsManageModal = props => {
           toolBarRender={() => []}
           request={async () => ({
             data: props.classificationTags,
-            total: 3,
+            total: 20,
             success: true,
           })}
+          pagination={{
+            pageSize: 5,
+            onChange: (page) => console.log(page),
+          }}
           editable={{
             type: 'multiple',
             editableKeys,

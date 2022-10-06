@@ -79,6 +79,7 @@ const server = http.createServer((req, res) => {
         const dataObj = JSON.parse(data)
         if (params.pathname == "/ledger/list/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
         if (params.pathname == "/ledger/list/insert_many") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
+        if (params.pathname == "/ledger/list/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
         if (params.pathname == "/ledger/tags/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'classificationTags', res, dataObj)
         if (params.pathname == "/ledger/tags/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'classificationTags', res, dataObj)
       })
