@@ -1,33 +1,37 @@
-import { Modal, Spin, message, Tag, Popover, Row, Col, Button, Popconfirm, Divider } from 'antd';
+import { Modal, Spin, message, Tag, Popover, Row, Col, Button, Popconfirm, Divider, Space, Layout } from 'antd';
 import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
 import React, { useState } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
 import { SketchPicker } from 'react-color';
-import ICONFONT_URL from '../const'
+import { ICONFONT_URL } from '../const'
 
 const IconFont = createFromIconfontCN({
   scriptUrl: [ICONFONT_URL,],
 });
 
-const valueEnum = {}
-const iconList = [
-  'icon-cooking',
-  'icon-plane',
-  'icon-daily',
-  'icon-rent',
-  'icon-bus',
-  'icon-fruit',
-  'icon-taxi',
-  'icon-badminton',
-  'icon-clothing',
-  'icon-subway',
-  'icon-snacks',
-  'icon-comm',
-  'icon-fastfood',
-]
-iconList.forEach((item, index) => {
-  valueEnum[item] = { text: item, key: index }
-})
+
+const iconList = {
+  '饮食': {
+    color: '#F5222D',
+    icon: ['icon-fastfood', 'icon-cooking', 'icon-fruit', 'icon-snacks',],
+  },
+  '消费': {
+    color: '#FADB14',
+    icon: ['icon-clothing', 'icon-daily',],
+  },
+  '交通': {
+    color: '#52C41A',
+    icon: ['icon-bus', 'icon-taxi', 'icon-plane',],
+  },
+  '家庭支出': {
+    color: '#13C2C2',
+    icon: ['icon-rent', 'icon-comm', 'icon-badminton',],
+  },
+  '其它': {
+    color: '#1890FF',
+    icon: ['icon-unknown'],
+  }
+}
 
 
 const LedgerTagsManageModal = props => {
@@ -35,82 +39,64 @@ const LedgerTagsManageModal = props => {
   const [editableKeys, setEditableRowKeys] = useState([]);
   const [dataSource, setDataSource] = useState(props.classificationTags);
   const [position, setPosition] = useState('bottom');
-  const [subtitleColor, setSubtitleColor] = useState('#f0f0f0');
-  const [selectIcon, setSelectIcon] = useState('');
   const [popoverShow, setPopoverShow] = useState(false);
-  const [popoverShow1, setPopoverShow1] = useState(false);
+  const [iconValue, setIconValue] = useState([]);
 
-  console.log(dataSource)
-
-  const handleClick = (item) => {
-    setSelectIcon(item);
-    setPopoverShow1(false)
+  const handleClick = (color, icon) => {
+    setIconValue([color, icon])
+    setPopoverShow(false)
   }
+
 
   const columns = [
     {
-      title: '展示',
+      title: '名称',
       dataIndex: 'text',
       width: '25%',
       render(dom, entity) {
+        if(!entity.icon) return(<></>)
         return (
-          <Tag color={entity.color} icon={<IconFont type={entity.icon} />}>{entity.text}</Tag>
+          <Tag color={entity?.icon[0]} icon={<IconFont type={entity?.icon[1]} />}>{entity.text}</Tag>
         )
       }
     },
     {
-      title: '色值',
-      dataIndex: 'color',
-      width: '25%',
-      renderFormItem() {
-        return <Popover trigger="click" content={
-          // <SketchPicker
-          //   color={subtitleColor}
-          //   disableAlpha={false}
-          //   width={250}
-          //   onChange={(e) => { setSubtitleColor(e.hex) }}
-          //   onChangeComplete={(e) => { setSubtitleColor(e.hex); setPopoverShow(false) }}
-          // />
-          <>
-            <Divider orientation="left">Left Text</Divider>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista
-              probare, quae sunt a te dicta? Refert tamen, quo modo.
-            </p>
-          </>
-        }>
-          {/* <div className="color-set-field" onClick={() => setPopoverShow(true)}>
-            <div className="color-set-show" style={{ backgroundColor: subtitleColor }}></div>
-            <div className="color-set-value">{subtitleColor}</div>
-          </div> */}
-          aaaa
-        </Popover>
-      },
-    },
-    {
-      title: '标签类名',
+      title: '图标',
       dataIndex: 'icon',
       width: '25%',
-      renderFormItem() {
-        return (<></>)
-
-        // return <Popover trigger="click" open={popoverShow1} content={
-        //   <Row gutter={[16, 16]}>{
-        //     iconList.map((item, index) => (
-        //       <Col span={6} key={index} style={{ fontSize: '18px' }} onClick={() => handleClick(item)} className="icon-class"><IconFont type={item} /></Col>
-        //     ))
-        //   }
-        //   </Row>
-        // }>
-        //   <Button type="link" size="small" onClick={() => setPopoverShow1(true)}>图示</Button>
-        // </Popover>
-      },
+      // renderFormItem() {
+      //   return <Popover trigger="click" placement='right' open={popoverShow} content={
+      //     <>
+      //       {
+      //         Object.keys(iconList).map(item => (
+      //           <>
+      //             <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
+      //             <Space size='large'>
+      //               {
+      //                 iconList[item]['icon'].map(icon => (
+      //                   <a className="icon-link" onClick={() => handleClick(iconList[item]['color'], icon)}><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
+      //                 ))
+      //               }
+      //             </Space>
+      //           </>
+      //         ))
+      //       }
+      //     </>
+      //   }>
+      //     <a onClick={() => setPopoverShow(true)}>
+      //       {
+      //         iconValue.length ? <IconFont type={iconValue[1]} style={{ fontSize: '24px' }} /> : '选择图标'
+      //       }
+      //     </a>
+      //   </Popover >
+      // },
     },
     {
       title: '操作',
       valueType: 'option',
       render: (text, record, _, action) => [
         <a key="editable" onClick={() => {
+          console.log(record, action)
           var _a;
           (_a = action === null || action === void 0 ? void 0 : action.startEditable) === null || _a === void 0 ? void 0 : _a.call(action, record.id);
         }}>编辑</a>,
@@ -133,7 +119,7 @@ const LedgerTagsManageModal = props => {
   ];
 
   return (
-    <Modal title="Tags Table" width="600px" open={props.showLedgerTagsManageModal} onOk={() => props.onShowLedgerTagsManageModal(true)} onCancel={() => props.onShowLedgerTagsManageModal(false)}>
+    <Modal maskClosable={false} title="Tags Table" width="600px" open={props.showLedgerTagsManageModal} onOk={() => props.onShowLedgerTagsManageModal(true)} onCancel={() => props.onShowLedgerTagsManageModal(false)}>
       <Spin spinning={isSpinning}>
         <EditableProTable loading={false} rowKey="id" dataSource={props.classificationTags} value={dataSource} onChange={setDataSource} maxLength={20} columns={columns}
           recordCreatorProps={position !== 'hidden' ? {
@@ -141,22 +127,20 @@ const LedgerTagsManageModal = props => {
             record: () => ({ id: (Math.random() * 1000000).toFixed(0) }),
           } : false}
           toolBarRender={() => []}
-          // request={async () => ({
-          //   data: props.classificationTags,
-          //   total: 3,
-          //   success: true,
-          // })}
+          request={async () => ({
+            data: props.classificationTags,
+            total: 3,
+            success: true,
+          })}
           editable={{
             type: 'multiple',
             editableKeys,
             onSave: async (rowKey, data, row) => {
-              console.log(data, row, subtitleColor)
               fetch('http://127.0.0.1:8800/ledger/tags/insert_one', {
                 method: 'POST',
                 body: JSON.stringify({
                   text: data.text,
-                  color: subtitleColor,
-                  icon: selectIcon
+                  icon: iconValue
                 })
               })
                 .then(response => response.json())

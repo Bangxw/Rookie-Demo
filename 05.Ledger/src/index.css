@@ -9,3 +9,6 @@
 
 .icon-class { border: 1px dashed #fff; text-align: center;}
 .icon-class:hover { border: 1px dotted #999999;}
+
+.icon-link { border: 1px dotted #fff; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;}
+.icon-link:hover { border: 1px dotted #aaa; background: coral;}

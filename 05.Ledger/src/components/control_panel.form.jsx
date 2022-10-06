@@ -1,7 +1,7 @@
 import { Button, Form, DatePicker, InputNumber, Select } from 'antd';
 import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
-import ICONFONT_URL from '../const'
+import { ICONFONT_URL } from '../const'
 
 const IconFont = createFromIconfontCN({
   scriptUrl: [ICONFONT_URL],
