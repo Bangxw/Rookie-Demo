@@ -1,4 +1,4 @@
-import { Modal, Spin, message, Tag, Popover, Row, Col, Button, Popconfirm, Divider, Space, Layout } from 'antd';
+import { Modal, Spin, message, Tag, Popover, Row, Col, Button, Popconfirm, Divider, Space, Layout, Drawer } from 'antd';
 import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
 import React, { useState } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
@@ -41,6 +41,7 @@ const LedgerTagsManageModal = props => {
   const [position, setPosition] = useState('bottom');
   const [popoverShow, setPopoverShow] = useState(false);
   const [iconValue, setIconValue] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const handleClick = (color, icon) => {
     setIconValue([color, icon])
@@ -58,8 +59,8 @@ const LedgerTagsManageModal = props => {
       title: '图标',
       dataIndex: 'icon',
       width: '25%',
-      render(dom,  record) {
-        if(Array.isArray(dom)) {
+      render(dom, record) {
+        if (Array.isArray(dom)) {
           return <IconFont type={dom[1]} style={{ fontSize: '24px' }} />
         }
       },
@@ -118,9 +119,9 @@ const LedgerTagsManageModal = props => {
   ];
 
   return (
-    <Modal maskClosable={false} title="Tags Table" width="600px" open={props.showLedgerTagsManageModal} onOk={() => props.onShowLedgerTagsManageModal(true)} onCancel={() => props.onShowLedgerTagsManageModal(false)}>
+    <Modal maskClosable={false} width="600px" open={props.showLedgerTagsManageModal} onOk={() => props.onShowLedgerTagsManageModal(true)} onCancel={() => props.onShowLedgerTagsManageModal(false)}>
       <Spin spinning={isSpinning}>
-        <EditableProTable loading={false} rowKey="id" dataSource={props.classificationTags} value={dataSource} onChange={setDataSource} maxLength={20} columns={columns}
+        {/* <EditableProTable loading={false} rowKey="id" dataSource={props.classificationTags} value={dataSource} onChange={setDataSource} maxLength={20} columns={columns}
           recordCreatorProps={position !== 'hidden' ? {
             position: position,
             record: () => ({ id: (Math.random() * 1000000).toFixed(0) }),
@@ -152,7 +153,39 @@ const LedgerTagsManageModal = props => {
                 });
             },
             onChange: setEditableRowKeys,
-          }} />
+          }} /> */}
+        <div  className='site-drawer-render-in-current-wrapper'>
+          {
+            Object.keys(iconList).map((item, index) => (
+              <div key={index}>
+                <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
+                <Space size='large'>
+                  {
+                    iconList[item]['icon'].map((icon, _index) => (
+                      <div key={_index} className='category-sub-block'>
+                        <IconFont type='icon-cooking' style={{ fontSize: '24px' }} />
+                        <div>做饭</div>
+                      </div>
+                    ))
+                  }
+                </Space>
+              </div>
+            ))
+          }
+          <Drawer
+            title="Basic Drawer"
+            placement="right"
+            closable={false}
+            onClose={() => setOpen(false)}
+            open={open}
+            getContainer={false}
+            style={{
+              position: 'absolute',
+            }}
+          >
+            <p>Some contents...</p>
+          </Drawer>
+        </div>
       </Spin>
     </Modal>
   );

@@ -12,3 +12,16 @@
 
 .icon-link { border: 1px dotted #fff; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;}
 .icon-link:hover { border: 1px dotted #aaa; background: coral;}
+
+.category-sub-block { width: 50px; height: 50px; border: 1px dotted #ccc; font-size: 12px; display: flex; align-items: center; flex-direction:column;}
+
+.site-drawer-render-in-current-wrapper {
+    position: relative;
+    /* height: 200px; */
+    /* padding: 48px; */
+    overflow: hidden;
+    /* text-align: center; */
+    /* background: #fafafa; */
+    /* border: 1px solid #ebedf0; */
+    /* border-radius: 2px; */
+  }
