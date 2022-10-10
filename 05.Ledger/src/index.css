@@ -1,5 +1,8 @@
 @import '~antd/dist/antd.css';
 
+
+body { background: #f0f2f5;}
+
 .container { max-width: 1000px; margin: 0 auto; font-family: 'Operator Mono Light'; }
 
 

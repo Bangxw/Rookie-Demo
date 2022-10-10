@@ -65,10 +65,6 @@ const ControlPanelForm = props => {
         {/* <Form.Item wrapperCol={{ span: 24, }} >
           <Button type="primary" onClick={() => props.onShowMultiRecordsModal(true)} icon={<IconFont type="icon-witty" style={{ fontSize: '20px' }} />}>点我，新增多条</Button>
         </Form.Item> */}
-
-        <Form.Item wrapperCol={{ span: 24, offset: 24 }} >
-          <Button type="primary" onClick={() => props.onShowLedgerTagsManageModal(true)}>类型标签管理</Button>
-        </Form.Item>
       </Form>
     </>
   );

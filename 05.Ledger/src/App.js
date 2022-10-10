@@ -11,7 +11,6 @@ const App = () => {
   const [ledgerSubTypes, setLedgerTags] = useState([]);
   const [ledgerList, setLedgerList] = useState([]);
   const [showAddMultiModal, setShowAddMultiModal] = useState(false);
-  const [showLedgerTagsManageModal, setShowLedgerTagsManageModal] = useState(false);
 
   const [menuKey, setMenuKey] = useState('list')
 
@@ -68,7 +67,6 @@ const App = () => {
                       ledgerSubTypes={ledgerSubTypes}
                       onRefreshData={() => get_ledger_list()}
                       onShowMultiRecordsModal={value => setShowAddMultiModal(value)}
-                      onShowLedgerTagsManageModal={value => setShowLedgerTagsManageModal(value)}
                     />
                   </Card>
                   <LedgerListTable ledgerSubTypes={ledgerSubTypes} ledgerList={ledgerList} onRefreshData={() => get_ledger_list()} />
@@ -83,8 +81,6 @@ const App = () => {
                   onIsSpinning={value => setIsSpinning(value)}
                   ledgerSubTypes={ledgerSubTypes}
                   onRefreshledgerSubTypes={() => get_ledger_subtypes()}
-                  showLedgerTagsManageModal={showLedgerTagsManageModal}
-                  onShowLedgerTagsManageModal={value => setShowLedgerTagsManageModal(value)}
                 />
               ) : ''
             }

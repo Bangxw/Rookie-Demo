@@ -1,4 +1,4 @@
-import { Modal, Spin, message, Tag, Row, Col, Divider, Space, Input } from 'antd';
+import { Modal, Spin, message, Tag, Row, Col, Divider, Space, Input, Card, Tabs } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
 import { ICONFONT_URL } from '../const'
@@ -95,30 +95,40 @@ const LedgerTagsManageModal = props => {
         okText='新增'
         cancelText='取消'
       > */}
+      <Card type="inner" style={{ marginBottom: 20 }}>
         <Spin spinning={isSpinning}>
-          {
-            Category.map((c, cIndex) => (
-              <div key={cIndex}>
-                <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{c.text}</Divider>
-                <Space size='small'>
-                  {
-                    Array.isArray(ledgerSubTypesByCategory[c.text]) &&
-                    ledgerSubTypesByCategory[c.text].map((s, sIndex) => (
-                      <Tag className='category-sub-tag' color={c.color} key={sIndex} onMouseEnter={() => setShowIndex(`${cIndex},${sIndex}`)} onMouseLeave={() => setShowIndex('-1,-1')}>
-                        <div className='mask-layer' hidden={showIndex === `${cIndex},${sIndex}` ? false : true}>
-                          <IconFont type='icon-edit' className='operation-icon' onClick={() => AddEditSubType(s)} />
-                          <IconFont type='icon-delete' className='operation-icon' onClick={() => handleDelete(s._id)} />
-                        </div>
-                        <IconFont type={s.icon} style={{ fontSize: '24px', marginLeft: '5px' }} />
-                        {s.text}
-                      </Tag>
-                    ))
-                  }
-                </Space>
-              </div>
-            ))
-          }
+          <Tabs
+            tabPosition='left'
+            items={Category.map((_, i) => {
+              const id = String(i + 1);
+              return {
+                label: _.text,
+                key: id,
+                children: <>
+                  <Space size='small'>
+                    {
+                      Array.isArray(ledgerSubTypesByCategory[_.text]) &&
+                      ledgerSubTypesByCategory[_.text].map((s, sIndex) => (
+                        <Tag className='category-sub-tag' color={_.color} key={sIndex} onMouseEnter={() => setShowIndex(`${i},${sIndex}`)} onMouseLeave={() => setShowIndex('-1,-1')}>
+                          <div className='mask-layer' hidden={showIndex === `${i},${sIndex}` ? false : true}>
+                            <IconFont type='icon-edit' className='operation-icon' onClick={() => AddEditSubType(s)} />
+                            <IconFont type='icon-delete' className='operation-icon' onClick={() => handleDelete(s._id)} />
+                          </div>
+                          <IconFont type={s.icon} style={{ fontSize: '24px', marginLeft: '5px' }} />
+                          {s.text}
+                        </Tag>
+                      ))
+                    }
+                  </Space>
+                </>,
+              };
+            })}
+          />
+
+
+
         </Spin>
+      </Card>
       {/* </Modal> */}
 
       <Modal maskClosable={false} open={editModal} closable={false} okText='Apply'
