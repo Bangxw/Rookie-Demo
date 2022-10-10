@@ -11,7 +11,7 @@ const AddMultipleModal = props => {
   const poroverNode = <List
     size="small"
     bordered
-    dataSource={props.classificationTags}
+    dataSource={props.ledgerSubTypes}
     renderItem={(item, index) =>
       <List.Item>
         {`${index} => `}<IconFont type={item.icon} style={{ fontSize: '16px' }} />{item.text}

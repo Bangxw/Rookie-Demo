@@ -19,7 +19,7 @@ const LedgerListTable = (props) => {
   const handleDelete = (_id) => {
     // const newData = dataSource.filter((item) => item.key !== key);
     // setDataSource(newData);
-    fetch('http://127.0.0.1:8800/ledger/list/delete_one:id', {
+    fetch('http://127.0.0.1:8800/ledger/bill_list/delete_one:id', {
       method: 'POST',
       body: JSON.stringify({
         id: _id
@@ -52,7 +52,7 @@ const LedgerListTable = (props) => {
       title: 'Tags',
       dataIndex: 'Tags',
       width: '150px',
-      filters: props.classificationTags,
+      filters: props.ledgerSubTypes,
       onFilter: (value, record) => record.address.startsWith(value),
       filterSearch: true,
       render(item, record, index) {

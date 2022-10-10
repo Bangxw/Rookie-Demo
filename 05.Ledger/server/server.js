@@ -6,7 +6,8 @@ const url = require("url")
 const MONGO_CLIENT = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
-const DB_URL = 'mongodb://127.0.0.1:27017/ledger';
+// mpx7cvod2iC980R8
+const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
 
 
 
@@ -68,8 +69,9 @@ const server = http.createServer((req, res) => {
 
   switch (methods) {
     case 'GET':
-      if (params.pathname == "/ledger/list") connect_db_get_data(MONGO_CLIENT, DB_URL, 'datailBillList', res)
-      if (params.pathname == "/ledger/tags") connect_db_get_data(MONGO_CLIENT, DB_URL, 'classificationTags', res)
+      if (params.pathname == "/ledger/bill_list") connect_db_get_data(MONGO_CLIENT, DB_URL, 'BillList', res)
+      if (params.pathname == "/ledger/sub_types") connect_db_get_data(MONGO_CLIENT, DB_URL, 'SubTypes', res)
+      if (params.pathname == "/ledger/category") connect_db_get_data(MONGO_CLIENT, DB_URL, 'Category', res)
       break;
 
     case 'POST':
@@ -77,11 +79,11 @@ const server = http.createServer((req, res) => {
       req.on("data", chunk => { data += chunk })
       req.on("end", () => {
         const dataObj = JSON.parse(data)
-        if (params.pathname == "/ledger/list/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
-        if (params.pathname == "/ledger/list/insert_many") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
-        if (params.pathname == "/ledger/list/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'datailBillList', res, dataObj)
-        if (params.pathname == "/ledger/tags/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'classificationTags', res, dataObj)
-        if (params.pathname == "/ledger/tags/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'classificationTags', res, dataObj)
+        if (params.pathname == "/ledger/bill_list/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'BillList', res, dataObj)
+        if (params.pathname == "/ledger/bill_list/insert_many") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'BillList', res, dataObj)
+        if (params.pathname == "/ledger/bill_list/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'BillList', res, dataObj)
+        if (params.pathname == "/ledger/sub_types/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'SubTypes', res, dataObj)
+        if (params.pathname == "/ledger/sub_types/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'SubTypes', res, dataObj)
       })
       break;
 

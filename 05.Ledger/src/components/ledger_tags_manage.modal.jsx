@@ -1,8 +1,6 @@
-import { Modal, Spin, message, Tag, Popover, Row, Col, Button, Popconfirm, Divider, Space, Layout, Drawer } from 'antd';
-import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
-import React, { useState } from 'react';
+import { Modal, Spin, message, Tag, Row, Col, Divider, Space, Input } from 'antd';
+import React, { useState, useEffect } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
-import { SketchPicker } from 'react-color';
 import { ICONFONT_URL } from '../const'
 
 const IconFont = createFromIconfontCN({
@@ -11,183 +9,150 @@ const IconFont = createFromIconfontCN({
 
 
 const iconList = {
-  '饮食': {
-    color: '#F5222D',
-    icon: ['icon-fastfood', 'icon-cooking', 'icon-fruit', 'icon-snacks',],
-  },
-  '消费': {
-    color: '#FADB14',
-    icon: ['icon-clothing', 'icon-daily',],
-  },
-  '交通': {
-    color: '#52C41A',
-    icon: ['icon-bus', 'icon-taxi', 'icon-plane',],
-  },
-  '家庭支出': {
-    color: '#13C2C2',
-    icon: ['icon-rent', 'icon-comm', 'icon-badminton',],
-  },
-  '其它': {
-    color: '#1890FF',
-    icon: ['icon-unknown'],
-  }
+  '饮食': ['icon-fastfood', 'icon-cooking', 'icon-fruit', 'icon-snacks',],
+  '消费': ['icon-clothing', 'icon-daily',],
+  '交通': ['icon-bus', 'icon-taxi', 'icon-plane',],
+  '家庭支出': ['icon-rent', 'icon-comm', 'icon-badminton',],
+  '其它': ['icon-unknown'],
 }
+
+const Category = [
+  { text: '饮食', color: '#F5222D' },
+  { text: '消费', color: '#FADB14' },
+  { text: '交通', color: '#52C41A' },
+  { text: '家庭支出', color: '#13C2C2' },
+  { text: '其它', color: '#13C2C2' },
+]
 
 
 const LedgerTagsManageModal = props => {
   const [isSpinning, setIsSpinning] = useState(false);
-  const [editableKeys, setEditableRowKeys] = useState([]);
-  const [dataSource, setDataSource] = useState(props.classificationTags);
-  const [position, setPosition] = useState('bottom');
-  const [popoverShow, setPopoverShow] = useState(false);
-  const [iconValue, setIconValue] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [showIndex, setShowIndex] = useState('-1,-1');
+  const [operateName, setOperateName] = useState('');
+  const [operateIcon, setOperateIcon] = useState('');
+  const [operateCategory, setOperateCategory] = useState('');
+  const [ledgerSubTypesByCategory, setLedgerSubTypesByCategory] = useState({})
 
-  const handleClick = (color, icon) => {
-    setIconValue([color, icon])
-    setPopoverShow(false)
+  const handleDelete = (id) => {
+    setIsSpinning(true)
+    fetch('http://127.0.0.1:8800/ledger/sub_types/delete_one:id', {
+      method: 'POST',
+      body: JSON.stringify({
+        id: id
+      })
+    })
+      .then(data => {
+        setIsSpinning(false)
+        message.success(`Delete id:${id} success!`, 5);
+        props.onRefreshledgerSubTypes()
+      });
   }
 
+  const handleIconOperate = (category, icon) => {
+    setOperateIcon(icon)
+    setOperateCategory(category)
+  }
 
-  const columns = [
-    {
-      title: '名称',
-      dataIndex: 'text',
-      width: '25%'
-    },
-    {
-      title: '图标',
-      dataIndex: 'icon',
-      width: '25%',
-      render(dom, record) {
-        if (Array.isArray(dom)) {
-          return <IconFont type={dom[1]} style={{ fontSize: '24px' }} />
-        }
-      },
-      renderFormItem() {
-        return <Popover trigger="click" placement='right' open={popoverShow} content={
-          <>
-            {
-              Object.keys(iconList).map((item, index) => (
-                <div key={index}>
-                  <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
-                  <Space size='large'>
-                    {
-                      iconList[item]['icon'].map((icon, _index) => (
-                        <a className="icon-link" key={_index} onClick={() => handleClick(iconList[item]['color'], icon)}><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
-                      ))
-                    }
-                  </Space>
-                </div>
-              ))
-            }
-          </>
-        }>
-          <a onClick={() => setPopoverShow(true)}>
-            {
-              iconValue.length ? <IconFont type={iconValue[1]} style={{ fontSize: '24px' }} /> : '选择图标'
-            }
-          </a>
-        </Popover >
-      },
-    },
-    {
-      title: '操作',
-      valueType: 'option',
-      render: (text, record, _, action) => [
-        // <a key="editable" onClick={() => {
-        //   console.log(record, action)
-        //   var _a;
-        //   (_a = action === null || action === void 0 ? void 0 : action.startEditable) === null || _a === void 0 ? void 0 : _a.call(action, record.id);
-        // }}>编辑</a>,
-        <a key="delete" onClick={() => {
-          setIsSpinning(true)
-          fetch('http://127.0.0.1:8800/ledger/tags/delete_one:id', {
-            method: 'POST',
-            body: JSON.stringify({
-              id: record._id
-            })
-          })
-            .then(data => {
-              setIsSpinning(false)
-              message.success(`Delete id:${record._id} success!`, 5);
-              props.onRefreshClassificationTags()
-            });
-        }}>删除</a>,
-      ],
-    },
-  ];
+  const AddEditSubType = item => {
+    setOperateIcon(item ? item.icon : '')
+    setOperateName(item ? item.text : '')
+    setEditModal(true)
+  }
+
+  const handleApply = () => {
+    fetch('http://127.0.0.1:8800/ledger/sub_types/insert_one', {
+      method: 'POST',
+      body: JSON.stringify({
+        text: operateName,
+        icon: operateIcon,
+        category: operateCategory
+      })
+    })
+      .then(data => {
+        message.success(`Create new item success!`, 5);
+        props.onRefreshledgerSubTypes()
+      });
+  }
+
+  useEffect(() => {
+    let SubTypeByCategory = {}
+    Category.forEach(item => {
+      if (!(item.text in SubTypeByCategory)) SubTypeByCategory[item.text] = []
+    })
+    props.ledgerSubTypes.forEach(item => {
+      SubTypeByCategory[item.category].push(item)
+    })
+    setLedgerSubTypesByCategory(SubTypeByCategory)
+  }, props.ledgerSubTypes);
 
   return (
-    <Modal maskClosable={false} width="600px" open={props.showLedgerTagsManageModal} onOk={() => props.onShowLedgerTagsManageModal(true)} onCancel={() => props.onShowLedgerTagsManageModal(false)}>
-      <Spin spinning={isSpinning}>
-        {/* <EditableProTable loading={false} rowKey="id" dataSource={props.classificationTags} value={dataSource} onChange={setDataSource} maxLength={20} columns={columns}
-          recordCreatorProps={position !== 'hidden' ? {
-            position: position,
-            record: () => ({ id: (Math.random() * 1000000).toFixed(0) }),
-          } : false}
-          toolBarRender={() => []}
-          request={async () => ({
-            data: props.classificationTags,
-            total: 20,
-            success: true,
-          })}
-          pagination={{
-            pageSize: 5,
-            onChange: (page) => console.log(page),
-          }}
-          editable={{
-            type: 'multiple',
-            editableKeys,
-            onSave: async (rowKey, data, row) => {
-              fetch('http://127.0.0.1:8800/ledger/tags/insert_one', {
-                method: 'POST',
-                body: JSON.stringify({
-                  text: data.text,
-                  icon: iconValue
-                })
-              })
-                .then(response => response.json())
-                .then(data => {
-                  props.onRefreshClassificationTags()
-                });
-            },
-            onChange: setEditableRowKeys,
-          }} /> */}
-        <div  className='site-drawer-render-in-current-wrapper'>
+    <>
+      {/* <Modal maskClosable={false} width="600px"
+        open={props.showLedgerTagsManageModal}
+        onOk={() => AddEditSubType()}
+        onCancel={() => props.onShowLedgerTagsManageModal(false)}
+        okText='新增'
+        cancelText='取消'
+      > */}
+        <Spin spinning={isSpinning}>
           {
-            Object.keys(iconList).map((item, index) => (
-              <div key={index}>
-                <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{item}</Divider>
-                <Space size='large'>
+            Category.map((c, cIndex) => (
+              <div key={cIndex}>
+                <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px' }}>{c.text}</Divider>
+                <Space size='small'>
                   {
-                    iconList[item]['icon'].map((icon, _index) => (
-                      <div key={_index} className='category-sub-block'>
-                        <IconFont type='icon-cooking' style={{ fontSize: '24px' }} />
-                        <div>做饭</div>
-                      </div>
+                    Array.isArray(ledgerSubTypesByCategory[c.text]) &&
+                    ledgerSubTypesByCategory[c.text].map((s, sIndex) => (
+                      <Tag className='category-sub-tag' color={c.color} key={sIndex} onMouseEnter={() => setShowIndex(`${cIndex},${sIndex}`)} onMouseLeave={() => setShowIndex('-1,-1')}>
+                        <div className='mask-layer' hidden={showIndex === `${cIndex},${sIndex}` ? false : true}>
+                          <IconFont type='icon-edit' className='operation-icon' onClick={() => AddEditSubType(s)} />
+                          <IconFont type='icon-delete' className='operation-icon' onClick={() => handleDelete(s._id)} />
+                        </div>
+                        <IconFont type={s.icon} style={{ fontSize: '24px', marginLeft: '5px' }} />
+                        {s.text}
+                      </Tag>
                     ))
                   }
                 </Space>
               </div>
             ))
           }
-          <Drawer
-            title="Basic Drawer"
-            placement="right"
-            closable={false}
-            onClose={() => setOpen(false)}
-            open={open}
-            getContainer={false}
-            style={{
-              position: 'absolute',
-            }}
-          >
-            <p>Some contents...</p>
-          </Drawer>
-        </div>
-      </Spin>
-    </Modal>
+        </Spin>
+      {/* </Modal> */}
+
+      <Modal maskClosable={false} open={editModal} closable={false} okText='Apply'
+        onOk={() => handleApply(true)}
+        onCancel={() => setEditModal(false)}
+      >
+        <Row>
+          <Col>名称：</Col>
+          <Col><Input showCount maxLength={20} value={operateName} onChange={e => setOperateName(e.target.value)} /></Col>
+        </Row>
+        <Row style={{ marginTop: '10px' }}>
+          <Col>图标：</Col>
+          <Col style={{ border: '1px dotted #ccc', padding: '5px 10px' }}>
+            {
+              Object.keys(iconList).map((item, index) => (
+                <div key={index}>
+                  <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px', margin: '0px' }}>{item}</Divider>
+                  <Space size='large'>
+                    {
+                      iconList[item].map((icon, _index) => (
+                        <a key={_index}
+                          className={`block-icon-link ${icon === operateIcon ? 'active' : ''}`}
+                          onClick={() => handleIconOperate(item, icon)}
+                        ><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
+                      ))
+                    }
+                  </Space>
+                </div>
+              ))
+            }
+          </Col>
+        </Row>
+      </Modal>
+    </>
   );
 };
 

@@ -12,12 +12,12 @@ const ControlPanelForm = props => {
 
   const handleClick = (values) => {
     let formFields = form.getFieldsValue()
-    fetch('http://127.0.0.1:8800/ledger/list/insert_one', {
+    fetch('http://127.0.0.1:8800/ledger/bill_list/insert_one', {
       method: 'POST',
       body: JSON.stringify({
         Date: formFields.Date.toString(),
         Amount: formFields.Amount,
-        Tags: props.classificationTags[formFields.Tags],
+        Tags: props.ledgerSubTypes[formFields.Tags],
         PayWay: formFields.PayWay,
       })
     })
@@ -45,7 +45,7 @@ const ControlPanelForm = props => {
         <Form.Item name="Tags">
           <Select style={{ width: 150, }} placeholder="消费类型">
             {
-              props.classificationTags.map((item, index) => <Select.Option key={index}>{<IconFont type={item.icon[1]} style={{ fontSize: '18px' }} />}&nbsp;<Tag color={item.icon[0]}>{item.text}</Tag></Select.Option>)
+              props.ledgerSubTypes.map((item, index) => <Select.Option key={index}>{<IconFont type={item.icon[1]} style={{ fontSize: '18px' }} />}&nbsp;<Tag color={item.icon[0]}>{item.text}</Tag></Select.Option>)
             }
           </Select>
         </Form.Item>
