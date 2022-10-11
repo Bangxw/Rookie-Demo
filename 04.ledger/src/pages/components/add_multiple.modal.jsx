@@ -1,7 +1,7 @@
 import { Modal, Input, List, Popover } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
-import { ICONFONT_URL } from '../const'
+import { ICONFONT_URL } from '@/const.js'
 
 const IconFont = createFromIconfontCN({
   scriptUrl: [ICONFONT_URL],

@@ -1,7 +1,7 @@
 import { Modal, Spin, message, Tag, Row, Col, Divider, Space, Input, Card, Tabs, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
-import { ICONFONT_URL } from '../../const'
+import { ICONFONT_URL } from '@/const'
 
 const IconFont = createFromIconfontCN({
   scriptUrl: [ICONFONT_URL,],

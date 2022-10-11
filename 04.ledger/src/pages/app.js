@@ -1,10 +1,10 @@
 import { Card, Spin, Layout, Menu, Button } from 'antd';
 import React, { useState, useEffect, useMemo, memo } from 'react';
 
-// import ControlPanelForm from '@components/control_panel.form'
-// import AddMultipleModal from '@components/add_multiple.modal'
-// import LedgerTagsManageModal from '@components/ledger_tags_manage.modal'
-// import LedgerListTable from '@components/ledger_list.table'
+import ControlPanelForm from '@components/control_panel.form'
+import AddMultipleModal from '@components/add_multiple.modal'
+import LedgerTagsManageModal from '@components/ledger_tags_manage.modal'
+import LedgerListTable from '@components/ledger_list.table'
 
 const App = () => {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -55,11 +55,11 @@ const App = () => {
     <>
       <Layout style={{ background: 'transparent' }}>
         <Layout.Header className='header'>
-          {/* <Menu items={items} mode="horizontal" onSelect={e => setMenuKey(e.key)} /> */}
+          <Menu items={items} mode="horizontal" onSelect={e => setMenuKey(e.key)} />
         </Layout.Header>
         <Layout.Content>
           <div className='container'>
-            {/* {
+            {
               menuKey === 'list' ? (
                 <>
                   <Card type="inner" style={{ marginBottom: 20 }} className="new-record-control">
@@ -83,7 +83,7 @@ const App = () => {
                   onRefreshledgerSubTypes={() => get_ledger_subtypes()}
                 />
               ) : ''
-            } */}
+            }
           </div>
         </Layout.Content>
       </Layout>
