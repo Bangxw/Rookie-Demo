@@ -53,8 +53,8 @@ const App = () => {
 
   return (
     <>
-      <Layout style={{ background: 'transparent' }}>
-        <Layout.Header className='header'>
+      <Layout>
+        <Layout.Header>
           <Menu items={items} mode="horizontal" onSelect={e => setMenuKey(e.key)} />
         </Layout.Header>
         <Layout.Content>
@@ -62,7 +62,7 @@ const App = () => {
             {
               menuKey === 'list' ? (
                 <>
-                  <Card type="inner" style={{ marginBottom: 20 }} className="new-record-control">
+                  <Card type="inner" bordered={false}>
                     <ControlPanelForm
                       ledgerSubTypes={ledgerSubTypes}
                       onRefreshData={() => get_ledger_list()}

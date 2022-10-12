@@ -11,12 +11,12 @@ const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net
 
 
 
-function connect_db_get_data(MongoClient, dburl, collectionName, res) {
+function connect_db_find_data(MongoClient, dburl, collectionName, res) {
   MongoClient.connect(dburl).then(db => {
     const dbase = db.db("ledger").collection(collectionName)
     dbase.find().toArray().then((result) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 1, data: result }));
+      res.end(JSON.stringify({ status: 'Successful', data: result }));
     }).finally(() => {
       db.close()
     })
@@ -29,9 +29,8 @@ function connect_db_inset_data(MongoClient, dburl, collectionName, res, insetObj
   MongoClient.connect(dburl).then(db => {
     const dbase = db.db("ledger").collection(collectionName)
     dbase.insertOne(insetObj).then((result) => {
-      console.log('文档插入成功')
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 1 }));
+      res.end(JSON.stringify(result));
     }).finally(() => {
       db.close()
     })
@@ -44,11 +43,9 @@ function connect_db_delete_data(MongoClient, dburl, collectionName, res, whereSt
   MongoClient.connect(dburl).then(db => {
     const dbase = db.db("ledger").collection(collectionName)
 
-    
     dbase.deleteOne({_id: ObjectId(whereStr.id)}).then((result) => {
-      console.log(result)
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 1 }));
+      res.end(JSON.stringify(result));
     }).finally(() => {
       db.close()
     })
@@ -56,6 +53,24 @@ function connect_db_delete_data(MongoClient, dburl, collectionName, res, whereSt
     if (err) throw err;
   });
 }
+
+function connect_db_update_data(MongoClient, dburl, collectionName, res, obj) {
+  MongoClient.connect(dburl).then(db => {
+    const dbase = db.db("ledger").collection(collectionName)
+
+    dbase.updateOne({_id: ObjectId(obj.id)}, obj.data).then((result) => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }).finally(() => {
+      db.close()
+    })
+  }).catch((err) => {
+    if (err) throw err;
+  });
+}
+
+
+
 
 const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -69,9 +84,9 @@ const server = http.createServer((req, res) => {
 
   switch (methods) {
     case 'GET':
-      if (params.pathname == "/ledger/bill_list") connect_db_get_data(MONGO_CLIENT, DB_URL, 'BillList', res)
-      if (params.pathname == "/ledger/sub_types") connect_db_get_data(MONGO_CLIENT, DB_URL, 'SubTypes', res)
-      if (params.pathname == "/ledger/category") connect_db_get_data(MONGO_CLIENT, DB_URL, 'Category', res)
+      if (params.pathname == "/ledger/bill_list") connect_db_find_data(MONGO_CLIENT, DB_URL, 'BillList', res)
+      if (params.pathname == "/ledger/sub_types") connect_db_find_data(MONGO_CLIENT, DB_URL, 'SubTypes', res)
+      if (params.pathname == "/ledger/category") connect_db_find_data(MONGO_CLIENT, DB_URL, 'Category', res)
       break;
 
     case 'POST':
@@ -84,6 +99,7 @@ const server = http.createServer((req, res) => {
         if (params.pathname == "/ledger/bill_list/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'BillList', res, dataObj)
         if (params.pathname == "/ledger/sub_types/insert_one") connect_db_inset_data(MONGO_CLIENT, DB_URL, 'SubTypes', res, dataObj)
         if (params.pathname == "/ledger/sub_types/delete_one:id") connect_db_delete_data(MONGO_CLIENT, DB_URL, 'SubTypes', res, dataObj)
+        if (params.pathname == "/ledger/sub_types/update_one:id") connect_db_update_data(MONGO_CLIENT, DB_URL, 'SubTypes', res, dataObj)
       })
       break;
 
