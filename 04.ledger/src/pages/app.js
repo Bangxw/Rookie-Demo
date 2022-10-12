@@ -42,8 +42,8 @@ const App = () => {
   }
 
   useEffect(() => {
-    // get_ledger_subtypes()
-    // get_ledger_list()
+    get_ledger_subtypes()
+    get_ledger_list()
   }, []);
 
   const items = [
@@ -54,7 +54,7 @@ const App = () => {
   return (
     <>
       <Layout>
-        <Layout.Header>
+        <Layout.Header className='mb-4'>
           <Menu items={items} mode="horizontal" onSelect={e => setMenuKey(e.key)} />
         </Layout.Header>
         <Layout.Content>
@@ -62,7 +62,7 @@ const App = () => {
             {
               menuKey === 'list' ? (
                 <>
-                  <Card type="inner" bordered={false}>
+                  <Card type="inner" bordered={false} className='mb-4'>
                     <ControlPanelForm
                       ledgerSubTypes={ledgerSubTypes}
                       onRefreshData={() => get_ledger_list()}

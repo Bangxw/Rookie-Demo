@@ -31,7 +31,7 @@ const LedgerTagsManageModal = props => {
   const [showIndex, setShowIndex] = useState('-1,-1');
   const [operateName, setOperateName] = useState('');
   const [operateIcon, setOperateIcon] = useState('');
-  const [operateCategory, setOperateCategory] = useState('');
+  const [operateCategory, setOperateCategory] = useState(Category[0].text);
   const [ledgerSubTypesByCategory, setLedgerSubTypesByCategory] = useState({})
 
   const handleDelete = (id) => {
@@ -47,11 +47,6 @@ const LedgerTagsManageModal = props => {
         message.success(`Delete id:${id} success!`, 5);
         props.onRefreshledgerSubTypes()
       });
-  }
-
-  const handleIconOperate = (category, icon) => {
-    setOperateIcon(icon)
-    setOperateCategory(category)
   }
 
   const AddEditSubType = item => {
@@ -88,30 +83,25 @@ const LedgerTagsManageModal = props => {
 
   return (
     <>
-      {/* <Modal maskClosable={false} width="600px"
-        open={props.showLedgerTagsManageModal}
-        onOk={() => AddEditSubType()}
-        onCancel={() => props.onShowLedgerTagsManageModal(false)}
-        okText='新增'
-        cancelText='取消'
-      > */}
-      <Card type="inner" style={{ marginBottom: 20 }}>
+      <Card type="inner" bordered={false}>
         <Spin spinning={isSpinning}>
-          <Tabs
-            tabPosition='left'
+          <Tabs tabPosition='left' activeKey={operateCategory}
+            // tabBarExtraContent={<Button>+</Button>}
+            onChange={activeKey => setOperateCategory(activeKey)}
             items={Category.map((_, i) => {
-              const id = String(i + 1);
               return {
                 label: _.text,
-                key: id,
-                children: <>
-                  <Button type="primary" onClick={() => AddEditSubType()}>新增</Button> <br />
+                key: _.text,
+                children: <div className='category-fields'>
                   <Space size='small'>
                     {
                       Array.isArray(ledgerSubTypesByCategory[_.text]) &&
                       ledgerSubTypesByCategory[_.text].map((s, sIndex) => (
-                        <Tag className='category-sub-tag' color={_.color} key={sIndex} onMouseEnter={() => setShowIndex(`${i},${sIndex}`)} onMouseLeave={() => setShowIndex('-1,-1')}>
-                          <div className='mask-layer' hidden={showIndex === `${i},${sIndex}` ? false : true}>
+                        <Tag className='category-sub-tag' color={_.color} key={sIndex}
+                          onMouseEnter={() => setShowIndex(`${i},${sIndex}`)}
+                          onMouseLeave={() => setShowIndex('-1,-1')}
+                        >
+                          <div className='mask-layer' hidden={showIndex === `${i},${sIndex}` ? false : true} >
                             <IconFont type='icon-edit' className='operation-icon' onClick={() => AddEditSubType(s)} />
                             <IconFont type='icon-delete' className='operation-icon' onClick={() => handleDelete(s._id)} />
                           </div>
@@ -121,16 +111,15 @@ const LedgerTagsManageModal = props => {
                       ))
                     }
                   </Space>
-                </>,
+
+                  <Button type="primary" onClick={() => AddEditSubType()} className='mb-4'>新增</Button>
+                </div>,
               };
             })}
           />
-
-
-
         </Spin>
       </Card>
-      {/* </Modal> */}
+
 
       <Modal maskClosable={false} open={editModal} closable={false} okText='Apply'
         onOk={() => handleApply(true)}
@@ -144,21 +133,17 @@ const LedgerTagsManageModal = props => {
           <Col>图标：</Col>
           <Col style={{ border: '1px dotted #ccc', padding: '5px 10px' }}>
             {
-              Object.keys(iconList).map((item, index) => (
-                <div key={index}>
-                  <Divider orientation="left" orientationMargin={0} style={{ fontSize: '12px', margin: '0px' }}>{item}</Divider>
-                  <Space size='large'>
-                    {
-                      iconList[item].map((icon, _index) => (
-                        <a key={_index}
-                          className={`block-icon-link ${icon === operateIcon ? 'active' : ''}`}
-                          onClick={() => handleIconOperate(item, icon)}
-                        ><IconFont type={icon} style={{ fontSize: '24px' }} /></a>
-                      ))
-                    }
-                  </Space>
-                </div>
-              ))
+              <Space size='large'>
+                {
+                  iconList[operateCategory].map((icon, index) => (
+                    <IconFont key={index + 1} type={icon}
+                      style={{ fontSize: '24px' }}
+                      className={`block-icon-link ${icon === operateIcon ? 'active' : ''}`}
+                      onClick={() => setOperateIcon(icon)}
+                    />
+                  ))
+                }
+              </Space>
             }
           </Col>
         </Row>

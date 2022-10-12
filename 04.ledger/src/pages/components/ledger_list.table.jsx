@@ -1,4 +1,4 @@
-import { Table, Tag, Popconfirm, message } from 'antd';
+import { Table, Tag, Popconfirm, message, Card } from 'antd';
 import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
 import { ICONFONT_URL } from '@/const'
@@ -76,7 +76,10 @@ const LedgerListTable = (props) => {
   ];
 
   return (
-    <Table columns={columns} dataSource={props.ledgerList} size="middle" />
+    <Card type="inner" bordered={false} className='mb-4'>
+      <Table columns={columns} dataSource={props.ledgerList} size="middle" />
+    </Card>
+
   );
 };
 
