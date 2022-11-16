@@ -1,61 +1,75 @@
-import { Card, Spin, Layout, Menu, Button } from 'antd';
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import { connect } from 'react-redux'
+import { Card, Layout, Menu, Spin } from 'antd';
+import React, { useState, useEffect, memo } from 'react';
+
+import { get_ledger_category } from '../redux/actions'
 
 import ControlPanelForm from '@components/control_panel.form'
 import AddMultipleModal from '@components/add_multiple.modal'
 import LedgerTagsManageModal from '@components/ledger_tags_manage.modal'
 import LedgerListTable from '@components/ledger_list.table'
 
-const App = () => {
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [ledgerSubTypes, setLedgerTags] = useState([]);
+import { ORIGIN_CATEGORY, ORIGIN_SUBTYPES } from '@/const'
+
+const defaultSelectedKeys = localStorage.getItem('defaultSelectedKeys') || 'list'
+const MENU_ITEMS = [
+  { label: '列表', key: 'list' }, // 菜单项务必填写 key
+  { label: '消费类型管理', key: 'manage' },
+];
+
+const App = props => {
+  const [appSpinning, setAppSpinning] = useState(false);
+  const [ledgerCategory, setLedgerCategory] = useState([]);
+  const [ledgerSubTypes, setLedgerTypes] = useState([]);
   const [ledgerList, setLedgerList] = useState([]);
   const [showAddMultiModal, setShowAddMultiModal] = useState(false);
 
-  const [menuKey, setMenuKey] = useState('list')
+  const [menuKey, setMenuKey] = useState(defaultSelectedKeys)
 
-  const get_ledger_list = () => {
-    fetch('http://127.0.0.1:8800/ledger/bill_list')
+
+
+  const get_ledger_subtypes = async () => {
+    return fetch('http://127.0.0.1:8800/ledger/sub_types')
+      .then(response => response.json())
+      .then(response => {
+        response.data.map(item => item.key = item._id)
+        setLedgerTypes(response.data || [])
+      }).catch(() => {
+        setLedgerTypes(ORIGIN_SUBTYPES)
+      })
+  }
+
+  const get_ledger_list = async () => {
+    return fetch('http://127.0.0.1:8800/ledger/bill_list')
       .then(response => response.json())
       .then(response => {
         response.data.map(item => item.key = item._id)
         setLedgerList(response.data || [])
-      });
+      }).catch(() => {
+        setLedgerTypes(ORIGIN_SUBTYPES)
+      })
   }
 
-  const get_ledger_subtypes = () => {
-    fetch('http://127.0.0.1:8800/ledger/sub_types')
-      .then(response => response.json())
-      .then(response => {
-        response.data.map(item => item.key = item._id)
-        setLedgerTags(response.data || [])
-      });
-  }
+  const handleMenuSelect = (key) => {
+    setMenuKey(key);
+    localStorage.setItem('defaultSelectedKeys', key)
 
-  const get_ledger_category = () => {
-    fetch('http://127.0.0.1:8800/ledger/category')
-      .then(response => response.json())
-      .then(response => {
-        response.data.map(item => item.key = item._id)
-        // setLedgerTags(response.data || [])
-      });
+    props.get_ledger_category()
   }
 
   useEffect(() => {
-    get_ledger_subtypes()
-    get_ledger_list()
+    // setAppSpinning(true)
+    // Promise.all([get_ledger_category(), get_ledger_subtypes(), get_ledger_list()]).then(function () {
+    //   setAppSpinning(false)
+    // })
   }, []);
 
-  const items = [
-    { label: '列表', key: 'list' }, // 菜单项务必填写 key
-    { label: '消费类型管理', key: 'manage' },
-  ];
 
   return (
-    <>
+    <Spin tip="Loading..." spinning={appSpinning}>
       <Layout>
         <Layout.Header className='mb-4'>
-          <Menu items={items} mode="horizontal" onSelect={e => setMenuKey(e.key)} />
+          <Menu items={MENU_ITEMS} mode="horizontal" defaultSelectedKeys={defaultSelectedKeys} onSelect={e => handleMenuSelect(e.key)} />
         </Layout.Header>
         <Layout.Content>
           <div className='container'>
@@ -74,16 +88,16 @@ const App = () => {
               ) : ''
             }
 
-            {
+            {/* {
               menuKey === 'manage' ? (
                 <LedgerTagsManageModal
-                  isSpinning={isSpinning}
-                  onIsSpinning={value => setIsSpinning(value)}
+                  ledgerCategory={ledgerCategory}
                   ledgerSubTypes={ledgerSubTypes}
+                  onRefreshledgerCategory={() => get_ledger_category()}
                   onRefreshledgerSubTypes={() => get_ledger_subtypes()}
                 />
               ) : ''
-            }
+            } */}
           </div>
         </Layout.Content>
       </Layout>
@@ -93,8 +107,11 @@ const App = () => {
         showAddMultiModal={showAddMultiModal}
         onShowAddMultiModal={value => setShowAddMultiModal(value)}
       /> */}
-    </>
+    </Spin>
   );
 };
 
-export default memo(App);
+export default connect(
+  state => ({ ledgerCategory: state }),
+  { get_ledger_category }
+)(App);

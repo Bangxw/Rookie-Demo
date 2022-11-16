@@ -84,9 +84,9 @@ const server = http.createServer((req, res) => {
 
   switch (methods) {
     case 'GET':
-      if (params.pathname == "/ledger/bill_list") connect_db_find_data(MONGO_CLIENT, DB_URL, 'BillList', res)
-      if (params.pathname == "/ledger/sub_types") connect_db_find_data(MONGO_CLIENT, DB_URL, 'SubTypes', res)
       if (params.pathname == "/ledger/category") connect_db_find_data(MONGO_CLIENT, DB_URL, 'Category', res)
+      if (params.pathname == "/ledger/sub_types") connect_db_find_data(MONGO_CLIENT, DB_URL, 'SubTypes', res)
+      if (params.pathname == "/ledger/bill_list") connect_db_find_data(MONGO_CLIENT, DB_URL, 'BillList', res)
       break;
 
     case 'POST':

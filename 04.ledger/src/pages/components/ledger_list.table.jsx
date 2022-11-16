@@ -34,7 +34,7 @@ const LedgerListTable = (props) => {
   const columns = [
     {
       title: 'Date',
-      dataIndex: 'Date',
+      dataIndex: 'date',
       width: '150px',
       render(text) {
         return <>{format_date(text)}</>
@@ -42,26 +42,26 @@ const LedgerListTable = (props) => {
     },
     {
       title: 'Amount',
-      dataIndex: 'Amount',
+      dataIndex: 'amount',
       width: '150px',
       render(text) {
         return <>{`￥${text}`}</>
       }
     },
     {
-      title: 'Tags',
-      dataIndex: 'Tags',
+      title: '交易类型',
+      dataIndex: 'subtype',
       width: '150px',
       filters: props.ledgerSubTypes,
       onFilter: (value, record) => record.address.startsWith(value),
       filterSearch: true,
       render(item, record, index) {
-        return <div style={{ display: 'flex', alignItems: 'center' }}><IconFont type={item.icon[1]} style={{ fontSize: '26px' }} />&nbsp;<Tag color={item.icon[0]}>{item.text}</Tag></div>
+        return <div style={{ display: 'flex', alignItems: 'center' }}><IconFont type={item.icon} style={{ fontSize: '26px' }} />&nbsp;<Tag color={item.icon}>{item.text}</Tag></div>
       }
     },
     {
       title: '支付通道',
-      dataIndex: 'PayWay',
+      dataIndex: 'payway',
     },
     {
       title: 'operation',
