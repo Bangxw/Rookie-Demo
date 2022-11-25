@@ -1,27 +1,20 @@
-const ORIGIN_CATEGORY = [
-  { text: '饮食', color: '#cf1322' },
-  { text: '消费', color: '#ffec3d' },
-  { text: '交通', color: '#52c41a' },
-  { text: '休闲', color: '#13c2c2' },
-  { text: '家庭支出', color: '#1890ff' },
-  { text: '其它', color: '#722ed1' },
-]
+import { ORIGIN_CATEGORY, ORIGIN_SUBTYPES, ORIGIN_LEDGER_LIST } from '@/const'
+import { map_list_insert_key } from '@utils/common'
 
 const ORIGIN_DATA = {
-  ledgerCategory: ORIGIN_CATEGORY,
-  ledgerSubTypes: [],
-  ledgerList: [],
+  ledgerCategory: map_list_insert_key(ORIGIN_CATEGORY),
+  ledgerSubTypes: map_list_insert_key(ORIGIN_SUBTYPES),
+  ledgerList: map_list_insert_key(ORIGIN_LEDGER_LIST),
+  appSpinning: false
 }
 
 export default function countReduce(preState = ORIGIN_DATA, action) {
-  const { type, data } = action
-
-  console.log('a2')
-
+  const { type, ledgerCategory, ledgerSubTypes, ledgerList, appSpinning } = action
   switch (type) {
-    case 'UPDATE_LEDGER_CATEGORY': return {...preState, data};
-    case 'UPDATE_LEDGER_SUBTYPES': return data;
-    case 'UPDATE_LEDGER_LIST': return data;
+    case 'UPDATE_LEDGER_CATEGORY': return { ...preState, ledgerCategory: map_list_insert_key(ledgerCategory) };
+    case 'UPDATE_LEDGER_SUBTYPES': return { ...preState, ledgerSubTypes: map_list_insert_key(ledgerSubTypes) };
+    case 'UPDATE_LEDGER_LIST': return { ...preState, ledgerList: map_list_insert_key(ledgerList) };
+    case 'UPDATE_APP_SPINNING': return { ...preState, appSpinning };
     default: return preState;
   }
 }

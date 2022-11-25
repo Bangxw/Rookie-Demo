@@ -1,0 +1,23 @@
+{
+  "target_dir": "web",
+  "compiled_dir": "dist",
+  "filter_path":  [".git", ".idea", ".cfg", ".conf", ".types", "README", ".ico", "OPEN_SOURCE_SOFTWARE_NOTICE.txt"],
+  "html_minifier_config": {
+    "collapseWhitespace": true,
+    "removeAttributeQuotes": true, 
+    "removeComments": true, 
+    "removeCommentsFromCDATA": true, 
+    "minifyCSS": true, 
+    "minifyJS": true
+  },
+  "js_obfuscator_config": {
+    "compact": true,
+    "controlFlowFlattening": true,
+    "controlFlowFlatteningThreshold": 1,
+    "numbersToExpressions": true,
+    "simplify": true,
+    "shuffleStringArray": true,
+    "splitStrings": true,
+    "stringArrayThreshold": 1
+  }
+}

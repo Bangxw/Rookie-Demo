@@ -10,6 +10,8 @@ module.exports = {
       '@pages': pathResolve('src/pages'),
       '@components': pathResolve('src/pages/components'),
       '@styles': pathResolve('src/styles'),
+      '@redux': pathResolve('src/redux'),
+      '@utils': pathResolve('src/utils'),
     }
   },
   babel: {

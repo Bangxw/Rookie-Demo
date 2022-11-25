@@ -1,34 +1,31 @@
-import { Table, Tag, Popconfirm, message, Card } from 'antd';
 import React from 'react';
-import { createFromIconfontCN } from '@ant-design/icons';
-import { ICONFONT_URL } from '@/const'
+import { connect } from 'react-redux'
+import { Table, Tag, Popconfirm, message, Card } from 'antd';
 
-const IconFont = createFromIconfontCN({
-  scriptUrl: [ICONFONT_URL],
-});
+import { set_app_spinning, get_ledger_list } from '@redux/actions'
+import { ICON_FONT as IconFont } from '@/const'
 
 const WEEK_STRINGS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
-const format_date = text => {
-  var _d = new Date(text)
+function format_date(text) {
+  let _d = new Date(text)
   return `${_d.toLocaleDateString()} ${WEEK_STRINGS[_d.getDay()]}`
 }
 
-const LedgerListTable = (props) => {
-
-  const handleDelete = (_id) => {
-    // const newData = dataSource.filter((item) => item.key !== key);
-    // setDataSource(newData);
+const LedgerListTable = props => {
+  const handleDelete = _id => {
+    props.set_app_spinning(true)
     fetch('http://127.0.0.1:8800/ledger/bill_list/delete_one:id', {
       method: 'POST',
       body: JSON.stringify({
         id: _id
       })
-    })
-      .then(data => {
+    }).then(data => {
+      props.get_ledger_list().then(() => {
+        props.set_app_spinning(false)
         message.success(`Delete id:${_id} success!`, 5);
-        props.onRefreshData()
-      });
+      })
+    });
   };
 
   const columns = [
@@ -50,13 +47,19 @@ const LedgerListTable = (props) => {
     },
     {
       title: '交易类型',
-      dataIndex: 'subtype',
+      dataIndex: 'subtype_id',
       width: '150px',
       filters: props.ledgerSubTypes,
       onFilter: (value, record) => record.address.startsWith(value),
       filterSearch: true,
-      render(item, record, index) {
-        return <div style={{ display: 'flex', alignItems: 'center' }}><IconFont type={item.icon} style={{ fontSize: '26px' }} />&nbsp;<Tag color={item.icon}>{item.text}</Tag></div>
+      render(_id, record, index) {
+        const findLedgerSubtypeByID = props.ledgerSubTypes.find(item => item._id === _id)
+        if (!findLedgerSubtypeByID) return;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <IconFont type={findLedgerSubtypeByID.icon} style={{ fontSize: '26px' }} />&nbsp;<Tag>{findLedgerSubtypeByID.text}</Tag>
+          </div>
+        )
       }
     },
     {
@@ -79,8 +82,13 @@ const LedgerListTable = (props) => {
     <Card type="inner" bordered={false} className='mb-4'>
       <Table columns={columns} dataSource={props.ledgerList} size="middle" />
     </Card>
-
   );
 };
 
-export default LedgerListTable
+export default connect(
+  state => ({
+    ledgerList: state.ledgerList,
+    ledgerSubTypes: state.ledgerSubTypes,
+  }),
+  { set_app_spinning, get_ledger_list }
+)(LedgerListTable);

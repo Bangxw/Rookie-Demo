@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux'
-import { Modal, Spin, message, Input, Card, Tabs, Button, Popconfirm } from 'antd';
-import { createFromIconfontCN, DeleteOutlined } from '@ant-design/icons';
+import { Modal, Spin, message, Input, Card, Tabs, List } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { set_app_spinning, get_ledger_subtypes } from '@redux/actions'
-import { ICONFONT_URL, ICON_LIST } from '@/const'
+import { ICON_FONT as IconFont, ICON_LIST } from '@/const'
 
 
-
-const IconFont = createFromIconfontCN({ scriptUrl: [ICONFONT_URL,], })
 const CategoryOfSubtypes = {}
 
-const LedgerCategorySubtypesManage = props => {
+const CategorySubtypesManage = props => {
   const [showSpinning, setShowSpinning] = useState(false);
   const [addEditModal, setAddEditModal] = useState(false);
+  const [categoryConfigModal, setCategoryConfigModal] = useState(false);
   const [showIndex, setShowIndex] = useState('-1,-1');
   const [operateSubtypeID, setOperateSubtypeID] = useState(-1); // 当前操作-交易类型的ID
   const [operateSubtypeName, setOperateSubtypeName] = useState(''); // 交易类型名称
@@ -99,8 +98,12 @@ const LedgerCategorySubtypesManage = props => {
       <Card type="inner" bordered={false}>
         <Tabs tabPosition='left' className='category-ant-tabs'
           activeKey={operateCategory}
-          tabBarExtraContent={<Button type="primary" onClick={() => openEditModal()}>Add+</Button>}
           onChange={handleTabsChange}
+          tabBarExtraContent={
+            <span className='category-control-button' onClick={() => setCategoryConfigModal(true)}>
+              <IconFont type='icon-setting' />
+            </span>
+          }
           items={
             Object.keys(ledgerCategoryOfSubtypes).map((category, index) => ({
               label: category,
@@ -108,7 +111,7 @@ const LedgerCategorySubtypesManage = props => {
               children: <div className='category-fields'>
                 {
                   ledgerCategoryOfSubtypes[category].subtypes.map((_, i) => (
-                    <div className='category-sub-tags' key={i}
+                    <div className='category-subtags' key={i}
                       onMouseEnter={() => setShowIndex(`${index},${i}`)}
                       onMouseLeave={() => setShowIndex('-1,-1')}
                     >
@@ -123,6 +126,11 @@ const LedgerCategorySubtypesManage = props => {
                     </div>
                   ))
                 }
+                <div className='category-subtags' onClick={() => openEditModal()}>
+                  <div className='add-new-subtag'>
+                    <IconFont type='icon-add' style={{ fontSize: '24px' }} />
+                  </div>
+                </div>
               </div>,
             }))
           }
@@ -160,6 +168,25 @@ const LedgerCategorySubtypesManage = props => {
           </table>
         </Spin>
       </Modal>
+
+      <Modal maskClosable={false} open={categoryConfigModal} closable={false} okText='Apply' width={300}
+        onOk={() => handleOperateSubtype(true)}
+        onCancel={() => setCategoryConfigModal(false)}
+      >
+        <Spin tip="Loading..." spinning={showSpinning}>
+          <List size="small" bordered dataSource={props.ledgerCategory}
+            renderItem={(item, index) => (
+              <List.Item className='category-list-item font-13'>
+                {`${index + 1}. ${item.text}`}
+                <div className="item-operate">
+                  <IconFont type='icon-edit' className="text-success" />
+                  <IconFont type='icon-delete' className="text-danger" />
+                </div>
+              </List.Item>
+            )}
+          />
+        </Spin>
+      </Modal>
     </>
   );
 };
@@ -171,4 +198,4 @@ export default connect(
     appSpinning: state.appSpinning
   }),
   { set_app_spinning, get_ledger_subtypes }
-)(LedgerCategorySubtypesManage);
+)(CategorySubtypesManage);
