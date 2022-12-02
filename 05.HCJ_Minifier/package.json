@@ -6,5 +6,9 @@
   },
   "scripts": {
     "build": "node config.js"
+  },
+  "author": {
+    "name" : "basir",
+    "email" : "wangbx@we-wins.com"
   }
 }

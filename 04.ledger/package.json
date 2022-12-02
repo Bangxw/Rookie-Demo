@@ -29,6 +29,8 @@
     "build": "craco build",
     "test": "craco test",
     "server": "node server/server.js",
+    "sync.remote": "node server/sync-db.js --clone-from-remote",
+    "sync.local": "node server/sync-db.js --clone-from-local",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

@@ -9,18 +9,21 @@ import LedgerListTable from '@components/ledger_list.table'
 import { get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spinning } from '@redux/actions'
 import { MENU_ITEMS } from '@/const'
 
-
+let hasInitData = false; // 初始化只请求一次数据
 
 const App = props => {
   const [showAddMultiModal, setShowAddMultiModal] = useState(false);
   const [menuKey, setMenuKey] = useState(localStorage.getItem('defaultSelectedKeys') || 'list')
 
   useEffect(() => {
-    props.set_app_spinning(true)
-    Promise.all([props.get_ledger_category(), props.get_ledger_subtypes(), props.get_ledger_list()]).then(function () {
-      props.set_app_spinning(false)
-    })
-  }, []);
+    if (!hasInitData) {
+      hasInitData = true;
+      props.set_app_spinning(true)
+      Promise.all([props.get_ledger_category(), props.get_ledger_subtypes(), props.get_ledger_list()]).then(() => {
+        props.set_app_spinning(false)
+      })
+    }
+  });
 
   const handleMenuSelect = (key) => {
     setMenuKey(key);
@@ -60,6 +63,9 @@ const App = props => {
 };
 
 export default connect(
-  state => ({ appSpinning: state.appSpinning }),
+  state => ({
+    ledgerList: state.ledgerList,
+    appSpinning: state.appSpinning,
+  }),
   { get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spinning }
 )(App);

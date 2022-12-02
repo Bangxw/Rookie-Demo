@@ -3,28 +3,26 @@ import { connect } from 'react-redux'
 import { Button, Form, DatePicker, InputNumber, Select, Tag, Card } from 'antd';
 
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { ICON_FONT as IconFont } from '@/const'
+import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 
 
 const ControlPanelForm = props => {
   const [form] = Form.useForm();
 
-  const add_new_record = () => {
+  const addNewRecord = () => {
     let formFields = form.getFieldsValue()
-    console.log(form, formFields)
-    debugger
 
     props.set_app_spinning(true)
-    fetch('http://127.0.0.1:8800/ledger/bill_list/insert_one', {
+    fetch('http://127.0.0.1:8800/ledger/bill_list/insert', {
       method: 'POST',
       body: JSON.stringify({
-        date: formFields.date.toString(),
-        amount: formFields.amount,
+        date: new Date(formFields.date).getTime(),
+        amount: parseFloat(formFields.amount),
         subtype_id: props.ledgerSubTypes[formFields.subtype]._id,
         payway: formFields.payway,
       })
-    })
-      .then(data => {
+    }).then(response => response.json())
+      .then(response => {
         props.get_ledger_list().then(() => {
           form.setFieldsValue({ amount: '', date: '', subtype: [''], payway: [''] })
           props.set_app_spinning(false)
@@ -34,36 +32,42 @@ const ControlPanelForm = props => {
 
   return (
     <Card type="inner" bordered={false} className='mb-4'>
-      <Form form={form} name="basic" layout="inline" autoComplete="off" onFinish={add_new_record}>
+      <Form form={form} name="basic" layout="inline" autoComplete="off" onFinish={addNewRecord}>
         <Form.Item name="date" rules={[{ required: true, message: 'Required Date!' }]}>
-          <DatePicker style={{ width: 150, }} placeholder="日期" />
+          <DatePicker style={{ width: 140, }} placeholder="日期" />
         </Form.Item>
 
         <Form.Item name="amount" rules={[{ required: true, message: 'Required Amount!' }]} >
           <InputNumber
-            style={{ width: 150, }}
+            style={{ width: 100, }}
             placeholder="金额"
           />
         </Form.Item>
 
         <Form.Item name="subtype" rules={[{ required: true, message: 'Required Subtypes!' }]}>
-          <Select style={{ width: 150, }} placeholder="消费类型">
+          <Select style={{ width: 200, }} placeholder="消费类型" className='font-13'>
             {
-              props.ledgerSubTypes.map((_, i) => <Select.Option key={i}>{<IconFont type={_.icon} style={{ fontSize: '18px' }} />}&nbsp;<Tag>{_.text}</Tag></Select.Option>)
+              props.ledgerSubTypes.map((_, i) => (
+                <Select.Option key={i} className="font-13">
+                  <IconFont type={_.icon} className="font-18 mr-2" />
+                  {_.text}
+                  <Tag className='ml-2'>{props.ledgerCategory.find(item => item._id === _.categoryID)?.text}</Tag>
+                </Select.Option>)
+              )
             }
           </Select>
         </Form.Item>
 
         <Form.Item name="payway" rules={[{ required: true, message: 'Required Payway!' }]}>
-          <Select style={{ width: 150, }} placeholder="支付途径">
-            <Select.Option value='支付宝'>支付宝</Select.Option>
-            <Select.Option value='微信'>微信</Select.Option>
-            <Select.Option value='招商信用卡'>招商信用卡</Select.Option>
+          <Select style={{ width: 100, }} placeholder="支付途径"  className='font-13'>
+            {
+              PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)
+            }
           </Select>
         </Form.Item>
 
         <Form.Item wrapperCol={{ span: 24, }} >
-          <Button type="primary"  htmlType="submit">记一笔</Button>
+          <Button type="primary" htmlType="submit">记一笔</Button>
         </Form.Item>
 
         <Form.Item wrapperCol={{ span: 24, }} >
@@ -75,6 +79,9 @@ const ControlPanelForm = props => {
 };
 
 export default connect(
-  state => ({ ledgerSubTypes: state.ledgerSubTypes }),
+  state => ({
+    ledgerCategory: state.ledgerCategory,
+    ledgerSubTypes: state.ledgerSubTypes
+  }),
   { set_app_spinning, get_ledger_list }
 )(ControlPanelForm);

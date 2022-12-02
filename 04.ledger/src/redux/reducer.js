@@ -1,10 +1,9 @@
-import { ORIGIN_CATEGORY, ORIGIN_SUBTYPES, ORIGIN_LEDGER_LIST } from '@/const'
 import { map_list_insert_key } from '@utils/common'
 
 const ORIGIN_DATA = {
-  ledgerCategory: map_list_insert_key(ORIGIN_CATEGORY),
-  ledgerSubTypes: map_list_insert_key(ORIGIN_SUBTYPES),
-  ledgerList: map_list_insert_key(ORIGIN_LEDGER_LIST),
+  ledgerCategory: map_list_insert_key([]),
+  ledgerSubTypes: map_list_insert_key([]),
+  ledgerList: map_list_insert_key([]),
   appSpinning: false
 }
 

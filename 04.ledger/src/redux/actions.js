@@ -10,6 +10,7 @@ export const get_ledger_category = () => {
       }).catch((e) => {
         dispatch({
           type: 'UPDATE_LEDGER_CATEGORY',
+          ledgerCategory: []
         })
       })
   }
@@ -27,6 +28,7 @@ export const get_ledger_subtypes = () => {
       }).catch((e) => {
         dispatch({
           type: 'UPDATE_LEDGER_SUBTYPES',
+          ledgerSubTypes: []
         })
       })
   }
@@ -44,6 +46,7 @@ export const get_ledger_list = () => {
       }).catch((e) => {
         dispatch({
           type: 'UPDATE_LEDGER_LIST',
+          ledgerList: []
         })
       })
   }

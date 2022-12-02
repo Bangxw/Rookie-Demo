@@ -6,7 +6,8 @@ const MONGO_CLIENT = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
 // mpx7cvod2iC980R8
-const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
+// const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
+const DB_URL = 'mongodb://127.0.0.1:27017';
 
 
 
@@ -16,15 +17,10 @@ function connect_db_find_data(...rest) {
   }, rest, 'FIND')
 }
 
-function connect_db_insert_data(...rest) {
-  const insertObj = rest[3]
-  handle_mongo_connect(function (dbase) {
-    return dbase.insertOne(insertObj)
-  }, rest, 'INSERT')
-}
-
 function connect_db_insert_many_data(...rest) {
-  const insertObj = rest[3]
+  let insertObj = rest[3]
+  if (!Array.isArray(insertObj)) insertObj = [insertObj]
+  console.log(insertObj)
   handle_mongo_connect(function (dbase) {
     return dbase.insertMany(insertObj)
   }, rest, 'INSERT')
@@ -35,6 +31,16 @@ function connect_db_delete_data(...rest) {
   handle_mongo_connect(function (dbase) {
     return dbase.deleteOne({ _id: ObjectId(whereStr.id) })
   }, rest, 'DELETE')
+}
+
+function connect_db_delete_many_data(...rest) {
+  const whereStr = rest[3]
+  let ids = whereStr.ids
+  if (Array.isArray(ids)) {
+    handle_mongo_connect(function (dbase) {
+      return dbase.deleteMany({ _id: { '$in': ids.map(id => ObjectId(id)) } })
+    }, rest, 'DELETE')
+  }
 }
 
 function connect_db_update_data(...rest) {
@@ -51,24 +57,25 @@ function handle_mongo_connect(handleDBaseOperate, [MongoClient, dburl, response,
     case 'INSERT': message = ['INSERT SUCCESSFUL!', 'INSERT ERROR!']; break;
     case 'DELETE': message = ['DELETE SUCCESSFUL!', 'DELETE ERROR!']; break;
     case 'UPDATE': message = ['UPDATE SUCCESSFUL!', 'UPDATE ERROR!']; break;
+    default: ;
   }
 
   MongoClient.connect(dburl).then(db => {
     const dbase = db.db("ledger").collection(collectionName)
     handleDBaseOperate(dbase).then(result => {
       response.writeHead(200, { 'Content-Type': 'application/json' })
-      response.end(JSON.stringify({ status: message[0], data: result }))
+      response.end(JSON.stringify({ message: message[0], data: result }))
     }).catch(error => {
       console.log('Operate dbase error--------:', error)
       response.writeHead(200, { 'Content-Type': 'application/json' })
-      response.end(JSON.stringify({ status: message[1], data: result }))
+      response.end(JSON.stringify({ message: message[1] }))
     }).finally(() => {
       db.close()
     })
   }).catch((e) => {
     console.log('操作数据库出错-------:', e);
     response.writeHead(500, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify({ status: '操作数据库出错' }));
+    response.end(JSON.stringify({ message: '操作数据库出错' }));
   });
 }
 
@@ -86,9 +93,9 @@ const server = http.createServer((request, response) => {
 
   switch (methods) {
     case 'GET':
-      if (params.pathname == "/ledger/category") connect_db_find_data(...actualParameter, 'Category')
-      if (params.pathname == "/ledger/sub_types") connect_db_find_data(...actualParameter, 'SubTypes')
-      if (params.pathname == "/ledger/bill_list") connect_db_find_data(...actualParameter, 'BillList')
+      if (params.pathname === "/ledger/category") connect_db_find_data(...actualParameter, 'Category')
+      if (params.pathname === "/ledger/sub_types") connect_db_find_data(...actualParameter, 'SubTypes')
+      if (params.pathname === "/ledger/bill_list") connect_db_find_data(...actualParameter, 'BillList')
       break;
 
     case 'POST':
@@ -100,16 +107,21 @@ const server = http.createServer((request, response) => {
         } catch (error) {
           console.log('Request payload error, 1. Non-json data--------:', error)
           response.writeHead(200, { 'Content-Type': 'application/json' })
-          response.end(JSON.stringify({ status: 'Request payload error, 1.Non-json data' }))
+          response.end(JSON.stringify({ message: 'Request payload error, 1.Non-json data' }))
           return;
         }
 
-        if (params.pathname == "/ledger/bill_list/insert_one") connect_db_insert_data(...actualParameter, 'BillList')
-        if (params.pathname == "/ledger/bill_list/insert_many") connect_db_insert_many_data(...actualParameter, 'BillList')
-        if (params.pathname == "/ledger/bill_list/delete_one:id") connect_db_delete_data(...actualParameter, 'BillList')
-        if (params.pathname == "/ledger/sub_types/insert_one") connect_db_insert_data(...actualParameter, 'SubTypes')
-        if (params.pathname == "/ledger/sub_types/delete_one:id") connect_db_delete_data(...actualParameter, 'SubTypes')
-        if (params.pathname == "/ledger/sub_types/update_one:id") connect_db_update_data(...actualParameter, 'SubTypes')
+        if (params.pathname === "/ledger/bill_list/insert") connect_db_insert_many_data(...actualParameter, 'BillList')
+        if (params.pathname === "/ledger/sub_types/insert") connect_db_insert_many_data(...actualParameter, 'SubTypes')
+        if (params.pathname === "/ledger/category/insert") connect_db_insert_many_data(...actualParameter, 'Category')
+
+        if (params.pathname === "/ledger/bill_list/delete_one:id") connect_db_delete_data(...actualParameter, 'BillList')
+        if (params.pathname === "/ledger/bill_list/delete:ids") connect_db_delete_many_data(...actualParameter, 'BillList')
+        if (params.pathname === "/ledger/sub_types/delete_one:id") connect_db_delete_data(...actualParameter, 'SubTypes')
+        if (params.pathname === "/ledger/category/delete_one:id") connect_db_delete_data(...actualParameter, 'Category')
+
+        if (params.pathname === "/ledger/sub_types/update_one:id") connect_db_update_data(...actualParameter, 'SubTypes')
+        if (params.pathname === "/ledger/category/update_one:id") connect_db_update_data(...actualParameter, 'Category')
       })
       break;
 
