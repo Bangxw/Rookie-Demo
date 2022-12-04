@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux'
 import { Layout, Menu, Spin } from 'antd';
 
-import ControlPanelForm from '@components/control_panel.form'
-import AddMultipleModal from '@components/add_multiple.modal'
-import CategorySubtypesManage from '@components/category_subtypes_manage'
-import LedgerListTable from '@components/ledger_list.table'
+import ControlPanelForm from './control_panel.form'
+import AddMultipleModal from './add_multiple.modal'
+import CategorySubtypesManage from './category_subtypes_manage'
+import LedgerListTable from './ledger_list.table'
 import { get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spinning } from '@redux/actions'
 import { MENU_ITEMS } from '@/const'
 

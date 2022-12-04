@@ -24,9 +24,12 @@ const PAY_WAY_LIST = [
   { key: 'Credit_Card', label: '信用卡' }
 ]
 
+const WEEK_STRINGS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
 export {
   ICON_FONT,
   MENU_ITEMS,
   ICON_LIST,
-  PAY_WAY_LIST
+  PAY_WAY_LIST,
+  WEEK_STRINGS
 }

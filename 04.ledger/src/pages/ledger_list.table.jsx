@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux'
-import { Table, Tag, Popconfirm, message, Card, Button } from 'antd';
+import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
+import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
+import { PAY_WAY_LIST, WEEK_STRINGS } from '@/const'
 
-const WEEK_STRINGS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
 
 function format_date(text) {
   let _d = new Date(text)
   return `${_d.toLocaleDateString()} ${WEEK_STRINGS[_d.getDay()]}`
 }
 
+
 const LedgerListTable = props => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  const [filterDateSelectValue, setFilterDateSelectValue] = useState(7)
+  const [filterDateDefineValue, setFilterDateDefineValue] = useState()
+
 
   const handleDelete = _id => {
     props.set_app_spinning(true)
@@ -48,12 +55,74 @@ const LedgerListTable = props => {
       });
   }
 
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+  };
+
+  const handleDateFilterd = () => {
+    if (filterDateSelectValue !== 0) {
+
+    }
+  }
+
+
   const columns = [
     {
       title: 'Date',
       dataIndex: 'date',
       width: '150px',
-      sortDirections: ['descend'],
+      filterDropdown({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) {
+        return (
+          <div className='p-2 font-13'>
+            <span>按条件过滤：</span>
+            <Select
+              style={{ width: 120, }}
+              value={filterDateSelectValue}
+              onChange={value => setFilterDateSelectValue(value)}
+              defaultValue={7}
+              options={[
+                { value: 7, label: '最近一周', },
+                { value: 30, label: '最近一月', },
+                { value: 182, label: '最近半年', },
+                { value: 365, label: '最近一年', },
+                { value: 0, label: '自定义', },
+              ]}
+            />
+            {
+              filterDateSelectValue === 0 ? <DatePicker.RangePicker className="ml-2" onChange={value => { setFilterDateDefineValue(value) }} /> : ''
+            }
+            <Space align='end' className="mt-3 filter-buttons">
+              <Button type="primary" size="small" icon={<SearchOutlined />} onClick={() => {
+                confirm({
+                  closeDropdown: true,
+                });
+                setSelectedKeys(filterDateSelectValue)
+                // console.log(setSelectedKeys, selectedKeys, confirm)
+                // confirm();
+              }}>Filter</Button>
+              <Button size="small" style={{ width: 90, }}
+                onClick={() => clearFilters && handleReset(clearFilters)}
+              >Reset</Button>
+            </Space>
+          </div>
+        )
+      },
+      onFilter: (value, record) => {
+
+        console.log(record, value)
+        // return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      },
+      onFilterDropdownOpenChange: (visible) => {
+        console.log(visible)
+        if (visible) {
+          setTimeout(() => {}, 100);
+        }  
+      },
+      sortDirections: ['ascend', 'descend', 'ascend'],
+      sorter: (a, b) => {
+        return a.date - b.date
+      },
       render(text) {
         return <>{format_date(text)}</>
       }
@@ -63,36 +132,31 @@ const LedgerListTable = props => {
       dataIndex: 'amount',
       width: '150px',
       sorter: (a, b) => {
-        const s = a.amount - b.amonut
-        console.log(a, b, '------', a.amonut, b.amount, s)
-        return s
+        return a.amount - b.amount
       },
-      // render(text) {
-      //   return <>{`￥${text}`}</>
-      // }
+      render(text) {
+        return <>{`￥${text}`}</>
+      }
     },
     {
       title: '交易类型',
       dataIndex: 'subtype_id',
       width: '180px',
       filters: props.ledgerSubTypes,
-      onFilter: (value, record) => record.address.startsWith(value),
       filterSearch: true,
+      onFilter: (value, record) => record.address.startsWith(value),
       render(_id, record, index) {
         const subtype = props.ledgerSubTypes.find(item => item._id === _id)
-        const categoty = props.ledgerCategory.find(item => item._id === subtype?.categoryID)
-        return (
-          <div className='font-13'>
-            <IconFont type={subtype?.icon} className="font-18 mr-2" />
-            {subtype?.text}
-            <Tag className='font-12 ml-1'>{categoty?.text}</Tag>
-          </div>
-        )
+        const category = props.ledgerCategory.find(item => item._id === subtype?.categoryID)
+        return <RenderSubtype subtype={subtype} category={category} />
       }
     },
     {
       title: '支付通道',
       dataIndex: 'payway',
+      filterSearch: true,
+      filters: PAY_WAY_LIST.map(item => ({ text: item.label, value: item.key })),
+      onFilter: (value, record) => record.payway.startsWith(value),
       render: _ => (
         PAY_WAY_LIST.find(item => item.key === _)?.label
       ),
@@ -130,6 +194,7 @@ const LedgerListTable = props => {
       <Table size="middle" columns={columns}
         dataSource={props.ledgerList}
         pagination={pagination}
+        sortDirections={['ascend', 'descend', 'ascend']}
         rowSelection={rowSelection} />
     </Card>
   );

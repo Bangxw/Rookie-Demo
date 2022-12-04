@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Button, Form, DatePicker, InputNumber, Select, Tag, Card } from 'antd';
 
+import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
 import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 
@@ -49,9 +50,7 @@ const ControlPanelForm = props => {
             {
               props.ledgerSubTypes.map((_, i) => (
                 <Select.Option key={i} className="font-13">
-                  <IconFont type={_.icon} className="font-18 mr-2" />
-                  {_.text}
-                  <Tag className='ml-2'>{props.ledgerCategory.find(item => item._id === _.categoryID)?.text}</Tag>
+                  <RenderSubtype subtype={_} category={props.ledgerCategory.find(item => item._id === _.categoryID)} />
                 </Select.Option>)
               )
             }

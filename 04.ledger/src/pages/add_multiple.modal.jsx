@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux'
 import { Modal, Input, List, Spin, Drawer, Button, Tag, Divider, message } from 'antd';
 
+import { RenderSubtype } from '@components'
 import { get_ledger_list } from '@redux/actions'
 import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 
@@ -118,12 +119,10 @@ const AddMultipleModal = props => {
             <List size="small" bordered dataSource={props.ledgerSubTypes} renderItem={(_, index) => (
               <List.Item className='font-13'>
                 {
-                  <div>
-                    <span className='mr-2'>{llop[index]}</span> =&gt;
-                    <IconFont type={_.icon} className="font-18 mr-2 ml-2" />
-                    {_.text}
-                    <Tag className='font-12 ml-2'>{props.ledgerCategory.find(item => item._id === _.categoryID)?.text}</Tag>
-                  </div>
+                  <>
+                    <span className='mr-2'>{llop[index]}  &nbsp;=&gt;</span>
+                    <RenderSubtype subtype={_} category={props.ledgerCategory.find(item => item._id === _.categoryID)} />
+                  </>
                 }
               </List.Item>
             )} />
