@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux'
-import { Modal, Input, List, Spin, Drawer, Button, Tag, Divider, message } from 'antd';
+import { Modal, Input, List, Spin, Drawer, Button, Divider, message } from 'antd';
 
 import { RenderSubtype } from '@components'
 import { get_ledger_list } from '@redux/actions'

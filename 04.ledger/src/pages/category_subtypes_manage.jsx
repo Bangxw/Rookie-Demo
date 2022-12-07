@@ -148,7 +148,7 @@ const CategoryConfig = props => {
 
 // 小分类的管理
 const CategorySubtypesManage = props => {
-  const [activeTabKey, setActiveTabKey] = useState(localStorage.getItem('defaultActiveTabKey') || props.ledgerCategory[0]?.text);   // 用Category的id作为tabs的key
+  const [activeTabKey, setActiveTabKey] = useState(localStorage.getItem('defaultActiveTabKey') || props.ledgerCategory[0]?._id);   // 用Category的id作为tabs的key
   const [showIndex, setShowIndex] = useState('-1,-1');
 
   const [subtypeAddEditModal, setAddEditModal] = useState(false);

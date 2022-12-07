@@ -120,6 +120,7 @@ const server = http.createServer((request, response) => {
         if (params.pathname === "/ledger/sub_types/delete_one:id") connect_db_delete_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/delete_one:id") connect_db_delete_data(...actualParameter, 'Category')
 
+        if (params.pathname === "/ledger/bill_list/update_one:id") connect_db_update_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/sub_types/update_one:id") connect_db_update_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/update_one:id") connect_db_update_data(...actualParameter, 'Category')
       })
