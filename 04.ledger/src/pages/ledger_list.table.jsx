@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux'
-import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal } from 'antd';
+import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal, Tooltip } from 'antd';
 import { SearchOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import dayjs from 'dayjs'
 import weekday from "dayjs/plugin/weekday"
@@ -221,7 +221,7 @@ const LedgerListTable = props => {
       width: '150px',
       editable: true,
       sorter: (a, b) => a.amount - b.amount,
-      render: text => <>{`￥${text}`}</>
+      render: (text, record) => record.description ? <Tooltip title={record.description} color='gold'>{`￥${text}`}</Tooltip> : `￥${text}`
     },
     {
       title: '交易类型',

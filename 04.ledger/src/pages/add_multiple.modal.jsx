@@ -1,13 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux'
-import { Modal, Input, List, Spin, Drawer, Button, Divider, message } from 'antd';
+import { Modal, Input, List, Spin, Drawer, Button, Divider, message, Tag } from 'antd';
 
-import { RenderSubtype } from '@components'
 import { get_ledger_list } from '@redux/actions'
 import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 
-const llop = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳']
-const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
 
 const AddMultipleModal = props => {
   const multiRecordsRef = useRef(null);
@@ -29,20 +26,20 @@ const AddMultipleModal = props => {
       if (Array.isArray(arrMutiRecords)) {
         arrMutiRecords.forEach((rowItem, index) => {
           const arrRowItem = rowItem.split(' ')
-          if (arrRowItem.length !== 4) throw new Error(`第${index + 1}行数据校验出错，请检查是否有多的空格、多输入或少输入数据`)
+          if (arrRowItem.length < 4) throw new Error(`第${index + 1}行数据校验出错，请检查是否有多的空格、多输入或少输入数据`)
 
-          const [date, subtype, payway, amount] = arrRowItem
+          const [date, subtype, payway, amount, description] = arrRowItem
           if ((new Date(date)).toString() === 'Invalid Date') throw new Error(`第${index + 1}行数据检验出错，请检查时间格式`)
 
           let subtypeID = null;
-          props.ledgerSubTypes.forEach((item, index) => {
-            if (index === llop.indexOf(subtype)) subtypeID = item._id;
+          props.ledgerSubTypes.forEach(item => {
+            if (item.text.includes(subtype)) subtypeID = item._id;
           })
           if (!subtypeID) throw new Error(`第${index + 1}行数据-类别校验异常，请输入预定义的类别`)
 
           let strPayway = null
           PAY_WAY_LIST.forEach((item, index) => {
-            if (index === alphabet.indexOf(payway)) strPayway = item.key;
+            if (item.label.includes(payway)) strPayway = item.key;
           })
           if (!strPayway) throw new Error(`第${index + 1}行数据-支付途径校验异常，请输入预定义的支付途径`)
 
@@ -54,6 +51,7 @@ const AddMultipleModal = props => {
             amount: parseFloat(amount),
             subtype_id: subtypeID,
             payway: strPayway,
+            description
           })
         })
       }
@@ -105,24 +103,24 @@ const AddMultipleModal = props => {
         <div className='multi-records-desc font-13'>
           <p>示例：每组数据之间用空格分隔，分别表示<strong className='text-purple'>日期、消费类别、支付途径和金额</strong></p>
           <p className='p-2 my-4 borderd'>
-            <small>2022-11-20 ① a 8.88</small><br />
-            <small>2022-11-21 ② b 0.55</small><br />
-            <small>2022-11-22 ⑧ c 500</small><br />
+            <small>2022-11-20 外卖/快餐 支付宝 8.88</small><br />
+            <small>2022-11-21 3C 微信 0.55</small><br />
+            <small>2022-11-22 衣服 信用卡 500</small><br />
             <small>...</small>
           </p>
           <Divider orientation="left" style={{ fontSize: '12px', color: '#00f' }}>其中支付途径如下：</Divider>
           <p className='mb-4 pl-4'>
-            {PAY_WAY_LIST.map((item, index) => <code key={index}>{`${alphabet[index]} => ${item.label} `}<br /></code>)}
+            {PAY_WAY_LIST.map((item, index) => <code key={index} className="mr-2">{item.label}</code>)}
           </p>
           <Divider orientation="left" style={{ fontSize: '12px', color: '#00f' }}>消费类别分类如下：</Divider>
           {
-            <List size="small" bordered dataSource={props.ledgerSubTypes} renderItem={(_, index) => (
+            <List size="small" bordered dataSource={props.ledgerCategory} renderItem={(_, i) => (
               <List.Item className='font-13'>
                 {
-                  <>
-                    <span className='mr-2'>{llop[index]}  &nbsp;=&gt;</span>
-                    <RenderSubtype subtype={_} category={props.ledgerCategory.find(item => item._id === _.categoryID)} />
-                  </>
+                  <div>
+                    <strong className='user-select-none mr-2'>{_.text}: </strong>
+                    {props.ledgerSubTypes.filter(item => item.categoryID === _._id).map((item, index) => <Tag key={index} className='my-1'>{item.text}</Tag>)}
+                  </div>
                 }
               </List.Item>
             )} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { Button, Form, DatePicker, InputNumber, Select, Card } from 'antd';
+import { Button, Form, DatePicker, InputNumber, Select, Card, Input } from 'antd';
 
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
@@ -20,11 +20,12 @@ const ControlPanelForm = props => {
         amount: parseFloat(formFields.amount),
         subtype_id: props.ledgerSubTypes[formFields.subtype]._id,
         payway: formFields.payway,
+        description: formFields.description,
       })
     }).then(response => response.json())
       .then(response => {
         props.get_ledger_list().then(() => {
-          form.setFieldsValue({ amount: '', date: '', subtype: [''], payway: [''] })
+          form.setFieldsValue({ amount: '', date: '', subtype: '', payway: '', description: '' })
           props.set_app_spinning(false)
         })
       });
@@ -38,10 +39,7 @@ const ControlPanelForm = props => {
         </Form.Item>
 
         <Form.Item name="amount" rules={[{ required: true, message: 'Required Amount!' }]} >
-          <InputNumber
-            style={{ width: 100, }}
-            placeholder="金额"
-          />
+          <InputNumber style={{ width: 140, }} placeholder="金额" />
         </Form.Item>
 
         <Form.Item name="subtype" rules={[{ required: true, message: 'Required Subtypes!' }]}>
@@ -57,18 +55,22 @@ const ControlPanelForm = props => {
         </Form.Item>
 
         <Form.Item name="payway" rules={[{ required: true, message: 'Required Payway!' }]}>
-          <Select style={{ width: 100, }} placeholder="支付途径"  className='font-13'>
+          <Select style={{ width: 140, }} placeholder="支付途径" className='font-13'>
             {
               PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)
             }
           </Select>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ span: 24, }} >
+        <Form.Item name="description">
+          <Input placeholder="备注" className='font-13' />
+        </Form.Item>
+
+        <Form.Item className='mt-2'>
           <Button type="primary" htmlType="submit">记一笔</Button>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ span: 24, }} >
+        <Form.Item className='mt-2'>
           <Button type="primary" onClick={() => props.onShowMultiRecordsModal(true)} icon={<IconFont type="icon-edit" style={{ fontSize: '16px' }} />}>点我，新增多条</Button>
         </Form.Item>
       </Form>

@@ -14,6 +14,12 @@ function map_list_insert_key(list) {
   return list
 }
 
+function calcu_char_code(str) {
+  var sum = 0;
+  for (let c of str) { sum += c.charCodeAt(0) }
+  return sum;
+}
+
 
 Date.prototype.Format = function (fmt) {
   const week_strings = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -92,6 +98,6 @@ function get_day_ago_date(n = 0) {
 
 
 export {
-  map_list_insert_key, generate_guid,
+  map_list_insert_key, generate_guid, calcu_char_code,
   get_format_date, get_year_ago_date, get_month_ago_date, get_day_ago_date
 }
