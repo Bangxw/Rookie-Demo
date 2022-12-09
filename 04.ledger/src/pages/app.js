@@ -39,17 +39,12 @@ const App = props => {
         <Layout.Content>
           <div className='container'>
             {
-              menuKey === 'list' ? (
-                <>
-                  <ControlPanelForm onShowMultiRecordsModal={value => setShowAddMultiModal(value)} />
-                  <LedgerListTable />
-                </>
-              ) : ''
+              menuKey === 'list' &&  <>
+                <ControlPanelForm />
+                <LedgerListTable onShowMultiRecordsModal={value => setShowAddMultiModal(value)} />
+              </>
             }
-
-            {
-              menuKey === 'manage' ? <CategorySubtypesManage /> : ''
-            }
+            { menuKey === 'manage' ? <CategorySubtypesManage /> : '' }
           </div>
         </Layout.Content>
       </Layout>

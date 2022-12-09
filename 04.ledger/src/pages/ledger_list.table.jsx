@@ -8,7 +8,7 @@ import localeData from "dayjs/plugin/localeData"
 
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { PAY_WAY_LIST } from '@/const'
+import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 import { get_format_date, get_year_ago_date, get_month_ago_date, get_day_ago_date } from '@utils/common'
 
 
@@ -167,9 +167,11 @@ const LedgerListTable = props => {
   };
 
   const pagination = {
-    pageSize: 20,
+    showSizeChanger: true,
+    defaultPageSize: 50,
     showQuickJumper: true,
-    showTotal: (total) => `Total ${total} items`
+    onShowSizeChange: (current, size) => { console.log(current, size) },
+    showTotal: total => `Total ${total} items`
   }
 
   const rowSelection = {
@@ -213,7 +215,7 @@ const LedgerListTable = props => {
       ),
       onFilter: (...rest) => DateOnFilter(rest),
       onFilterDropdownOpenChange: (visible) => { },
-      render: text => <>{get_format_date(text, 'yy.MM.dd w')}</>
+      render: text => <>{get_format_date(text, 'yy/MM/dd w')}</>
     },
     {
       title: 'Amount',
@@ -295,7 +297,10 @@ const LedgerListTable = props => {
 
   return (
     <Card type="inner" bordered={false} className='mb-4'>
-      <Button type='primary' danger disabled={selectedRowKeys.length === 0} className='mb-2' onClick={handleDeleteMany}>Delete All</Button>
+      <Space className='mb-2'>
+        <Button type="primary" onClick={() => props.onShowMultiRecordsModal(true)} icon={<IconFont type="icon-edit" style={{ fontSize: '16px' }} />}>点我，新增多条</Button>
+        <Button type='primary' danger disabled={selectedRowKeys.length === 0} onClick={handleDeleteMany}>Delete All</Button>
+      </Space>
       <Form form={form} component={false}>
         <Table size="middle"
           components={{

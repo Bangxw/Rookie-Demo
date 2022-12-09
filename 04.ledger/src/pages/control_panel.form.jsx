@@ -4,7 +4,7 @@ import { Button, Form, DatePicker, InputNumber, Select, Card, Input } from 'antd
 
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
+import { PAY_WAY_LIST } from '@/const'
 
 const ControlPanelForm = props => {
   const [form] = Form.useForm();
@@ -35,15 +35,15 @@ const ControlPanelForm = props => {
     <Card type="inner" bordered={false} className='mb-4'>
       <Form form={form} name="basic" layout="inline" autoComplete="off" onFinish={addNewRecord}>
         <Form.Item name="date" rules={[{ required: true, message: 'Required Date!' }]}>
-          <DatePicker style={{ width: 140, }} placeholder="日期" />
+          <DatePicker style={{ width: 125, }} placeholder="日期" />
         </Form.Item>
 
         <Form.Item name="amount" rules={[{ required: true, message: 'Required Amount!' }]} >
-          <InputNumber style={{ width: 140, }} placeholder="金额" />
+          <InputNumber style={{ width: 80, }} placeholder="金额" />
         </Form.Item>
 
         <Form.Item name="subtype" rules={[{ required: true, message: 'Required Subtypes!' }]}>
-          <Select style={{ width: 200, }} placeholder="消费类型" className='font-13'>
+          <Select style={{ width: 180, }} placeholder="消费类型" className='font-13'>
             {
               props.ledgerSubTypes.map((_, i) => (
                 <Select.Option key={i} className="font-13">
@@ -55,7 +55,7 @@ const ControlPanelForm = props => {
         </Form.Item>
 
         <Form.Item name="payway" rules={[{ required: true, message: 'Required Payway!' }]}>
-          <Select style={{ width: 140, }} placeholder="支付途径" className='font-13'>
+          <Select style={{ width: 100, }} placeholder="支付途径" className='font-13'>
             {
               PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)
             }
@@ -66,12 +66,8 @@ const ControlPanelForm = props => {
           <Input placeholder="备注" className='font-13' />
         </Form.Item>
 
-        <Form.Item className='mt-2'>
+        <Form.Item >
           <Button type="primary" htmlType="submit">记一笔</Button>
-        </Form.Item>
-
-        <Form.Item className='mt-2'>
-          <Button type="primary" onClick={() => props.onShowMultiRecordsModal(true)} icon={<IconFont type="icon-edit" style={{ fontSize: '16px' }} />}>点我，新增多条</Button>
         </Form.Item>
       </Form>
     </Card>

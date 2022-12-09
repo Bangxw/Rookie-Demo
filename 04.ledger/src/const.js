@@ -1,7 +1,7 @@
 import { createFromIconfontCN } from '@ant-design/icons';
 
 const ICON_FONT = createFromIconfontCN({
-  scriptUrl: ['//at.alicdn.com/t/c/font_3663002_ocs3ngjnmjp.js'],
+  scriptUrl: ['//at.alicdn.com/t/c/font_3663002_dt44meukv34.js'],
 });
 
 const MENU_ITEMS = [
@@ -10,11 +10,11 @@ const MENU_ITEMS = [
 ];
 
 const ICON_LIST = [
-  'icon-fastfood', 'icon-cooking', 'icon-fruits', 'icon-snacks',
+  'icon-fastfood', 'icon-cooking', 'icon-fruits', 'icon-snacks', 'icon-feast',
   'icon-clothing', 'icon-daily',
   'icon-bus', 'icon-taxi', 'icon-plain', 'icon-fuel-up', 'icon-parking',
   'icon-switch', 'icon-call-plan', 'icon-badminton',
-  'icon-house-rent', 'icon-red-envelope', 'icon-family',
+  'icon-house-rent', 'icon-red-envelope', 'icon-family', 'icon-baby', 'icon-gift',
   'icon-unknown'
 ]
 
