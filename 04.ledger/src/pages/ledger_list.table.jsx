@@ -5,7 +5,7 @@ import { SearchOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import dayjs from 'dayjs'
 import weekday from "dayjs/plugin/weekday"
 import localeData from "dayjs/plugin/localeData"
-
+import 'dayjs/locale/zh-cn';
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
 import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
@@ -15,13 +15,16 @@ import { get_format_date, get_year_ago_date, get_month_ago_date, get_day_ago_dat
 //https://github.com/ant-design/ant-design/issues/26190#issuecomment-703673400
 dayjs.extend(weekday)
 dayjs.extend(localeData)
+dayjs.locale('zh-cn')
 
 
 const LedgerListTable = props => {
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [rangePickerDefineValue, setRangePickerDefineValue] = useState()
+  const [rangePickerSummary, setRangePickerSummary] = useState(dayjs(new Date('20220101')), dayjs(new Date()))
   const [editingKey, setEditingKey] = useState('');
+  const [paginationInfo, setPaginationInfo] = useState('1,1');
 
   const handleEdit = record => {
     form.setFieldsValue({
@@ -166,23 +169,47 @@ const LedgerListTable = props => {
     );
   };
 
+  const RenderSummary = () => {
+    let summary = 0
+    try {
+      let date = rangePickerSummary.map(item => new Date(item._d).getTime())
+      summary = props.ledgerList.filter(item => item.date < date[1] && item.date > date[0]).reduce((a, b) => (a + b.amount), 0)
+    } catch (e) { }
+    return (
+      <Table.Summary fixed>
+        <Table.Summary.Row>
+          <Table.Summary.Cell index={0} colSpan={2}>Summary</Table.Summary.Cell>
+          <Table.Summary.Cell index={1} colSpan={1}>{summary}</Table.Summary.Cell>
+          <Table.Summary.Cell index={1} colSpan={2}>
+            <DatePicker.RangePicker className="ml-2" onChange={value => { setRangePickerSummary(value) }} />
+          </Table.Summary.Cell>
+        </Table.Summary.Row>
+      </Table.Summary>
+    )
+  }
+
   const pagination = {
     showSizeChanger: true,
     defaultPageSize: 50,
     showQuickJumper: true,
-    onShowSizeChange: (current, size) => { console.log(current, size) },
-    showTotal: total => `Total ${total} items`
+    showTotal: total => `Total ${total} items`,
+    onChange: (page, pageSize) => { setPaginationInfo(`${page},${pageSize}`) }
   }
 
   const rowSelection = {
     selectedRowKeys,
     onChange: newSelectedRowKeys => {
-      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
 
   const ledgerListColumns = [
+    {
+      title: 'ID',
+      width: '50px',
+      editable: false,
+      render: (text, record, index) => (paginationInfo.split(',')[0] * paginationInfo.split(',')[1]) + index + 1
+    },
     {
       title: 'Date',
       dataIndex: 'date',
@@ -215,7 +242,7 @@ const LedgerListTable = props => {
       ),
       onFilter: (...rest) => DateOnFilter(rest),
       onFilterDropdownOpenChange: (visible) => { },
-      render: text => <>{get_format_date(text, 'yy/MM/dd w')}</>
+      render: text => <>{get_format_date(text, 'yyyy/MM/dd w')}</>
     },
     {
       title: 'Amount',
@@ -256,6 +283,11 @@ const LedgerListTable = props => {
       render: _ => (
         PAY_WAY_LIST.find(item => item.key === _)?.label
       ),
+    },
+    {
+      title: '备注',
+      dataIndex: 'description',
+      editable: true
     },
     {
       title: 'operation',
@@ -312,7 +344,11 @@ const LedgerListTable = props => {
           dataSource={props.ledgerList}
           pagination={pagination}
           sortDirections={['ascend', 'descend', 'ascend']}
-          rowSelection={rowSelection} />
+          rowSelection={rowSelection}
+          scroll={{
+            y: 500,
+          }}
+          summary={() => RenderSummary()} />
       </Form>
     </Card>
   );
