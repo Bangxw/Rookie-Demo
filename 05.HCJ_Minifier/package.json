@@ -2,13 +2,14 @@
   "dependencies": {
     "html-minifier": "^4.0.0",
     "javascript-obfuscator": "^4.0.0",
+    "terser": "^5.16.1",
     "uglify-js": "^3.17.4"
   },
   "scripts": {
     "build": "node config.js"
   },
   "author": {
-    "name" : "basir",
-    "email" : "wangbx@we-wins.com"
+    "name": "basir",
+    "email": "wangbx@we-wins.com"
   }
 }

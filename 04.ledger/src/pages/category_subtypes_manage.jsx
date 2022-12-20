@@ -254,7 +254,7 @@ const CategorySubtypesManage = props => {
                         <IconFont type='icon-delete' className='operation-icon' onClick={() => fetchDeleteSubtype(_._id)} />
                       </div>
                       <div className='icon-wrap'>
-                        <IconFont type={_.icon} style={{ fontSize: '36px' }} />
+                        <IconFont type={_.icon || ' '} style={{ fontSize: '36px' }} />
                         <span>{_.text}</span>
                       </div>
                     </div>
@@ -289,7 +289,7 @@ const CategorySubtypesManage = props => {
                   <div className='icons-collection clearfix'>
                     {
                       ICON_LIST.map((icon, index) => (
-                        <IconFont type={icon}
+                        <IconFont type={icon || ' '}
                           key={index + 1}
                           style={{ fontSize: '32px' }}
                           className={`block-icon-link ${icon === activeSubtypeIcon ? 'active' : ''}`}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { Button, Form, DatePicker, InputNumber, Select, Card, Input } from 'antd';
+import { Button, Form, DatePicker, InputNumber, Select, Card, Input, Col, Row } from 'antd';
 
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { PAY_WAY_LIST } from '@/const'
+import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
 
 const ControlPanelForm = props => {
   const [form] = Form.useForm();
@@ -33,20 +33,25 @@ const ControlPanelForm = props => {
 
   return (
     <Card type="inner" bordered={false} className='mb-4'>
-      <Form form={form} name="basic" layout="inline" autoComplete="off" onFinish={addNewRecord}>
-        <Form.Item name="date" rules={[{ required: true, message: 'Required Date!' }]}>
-          <DatePicker style={{ width: 125, }} placeholder="日期" />
+      <Form name="basic" autoComplete="off"
+        form={form}
+        labelCol={{ span: 6, }}
+        wrapperCol={{ span: 18, }}
+        onFinish={addNewRecord}
+      >
+        <Form.Item name="date" label="日期" rules={[{ required: true, message: 'Required Date!' }]}>
+          <DatePicker placeholder="日期" className="width-100" />
         </Form.Item>
 
-        <Form.Item name="amount" rules={[{ required: true, message: 'Required Amount!' }]} >
-          <InputNumber style={{ width: 80, }} placeholder="金额" />
+        <Form.Item name="amount" label="金额" rules={[{ required: true, message: 'Required Amount!' }]} >
+          <InputNumber placeholder="金额" className="width-100" />
         </Form.Item>
 
-        <Form.Item name="subtype" rules={[{ required: true, message: 'Required Subtypes!' }]}>
-          <Select style={{ width: 180, }} placeholder="消费类型" className='font-13'>
+        <Form.Item name="subtype" label="类型" rules={[{ required: true, message: 'Required Subtypes!' }]}>
+          <Select placeholder="消费类型">
             {
               props.ledgerSubTypes.map((_, i) => (
-                <Select.Option key={i} className="font-13">
+                <Select.Option key={i} className="font-12">
                   <RenderSubtype subtype={_} category={props.ledgerCategory.find(item => item._id === _.categoryID)} />
                 </Select.Option>)
               )
@@ -54,21 +59,22 @@ const ControlPanelForm = props => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="payway" rules={[{ required: true, message: 'Required Payway!' }]}>
-          <Select style={{ width: 100, }} placeholder="支付途径" className='font-13'>
+        <Form.Item name="payway" label="途径" rules={[{ required: true, message: 'Required Payway!' }]}>
+          <Select placeholder="支付途径" className='font-13'>
             {
               PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)
             }
           </Select>
         </Form.Item>
 
-        <Form.Item name="description">
-          <Input placeholder="备注" className='font-13' />
+        <Form.Item name="description" label="备注">
+          <Input placeholder="备注" />
         </Form.Item>
 
-        <Form.Item >
-          <Button type="primary" htmlType="submit">记一笔</Button>
-        </Form.Item>
+        <Row>
+          <Col span={24}><Button type="primary" className='width-100 mb-2' htmlType="submit">记一笔</Button></Col>
+          <Col span={24}><Button type="primary" className="width-100" onClick={() => props.onShowMultiRecordsModal(true)}><IconFont type="icon-edit" style={{ fontSize: '16px' }} />新增多条</Button></Col>
+        </Row>
       </Form>
     </Card>
   );

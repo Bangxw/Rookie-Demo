@@ -1,35 +1,29 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux'
-import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal, Tooltip } from 'antd';
+import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal, Tooltip, Radio, Tag } from 'antd';
 import { SearchOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import dayjs from 'dayjs'
-import weekday from "dayjs/plugin/weekday"
-import localeData from "dayjs/plugin/localeData"
-import 'dayjs/locale/zh-cn';
+import * as moment from 'moment';
+import 'moment/locale/zh-cn'
+
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
-import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
-import { get_format_date, get_year_ago_date, get_month_ago_date, get_day_ago_date } from '@utils/common'
+import { PAY_WAY_LIST } from '@/const'
 
-
-//https://github.com/ant-design/ant-design/issues/26190#issuecomment-703673400
-dayjs.extend(weekday)
-dayjs.extend(localeData)
-dayjs.locale('zh-cn')
 
 
 const LedgerListTable = props => {
   const [form] = Form.useForm();
+  const [displayMode, setDisplayMode] = useState('COMBINE');   // 展示模式：详细展示/源数据展示(ORIGIN)、按天合并数据展示(FILTER)
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [rangePickerDefineValue, setRangePickerDefineValue] = useState()
-  const [rangePickerSummary, setRangePickerSummary] = useState(dayjs(new Date('20220101')), dayjs(new Date()))
+  const [rangePickerSummary, setRangePickerSummary] = useState()
   const [editingKey, setEditingKey] = useState('');
   const [paginationInfo, setPaginationInfo] = useState('1,1');
 
   const handleEdit = record => {
     form.setFieldsValue({
       ...record,
-      'date': dayjs(new Date(), 'YYYY-MM-DD'),
+      'date': moment.now(),
     });
     setEditingKey(record._id);
   };
@@ -111,12 +105,13 @@ const LedgerListTable = props => {
       return record['date'] > date[0] && record['date'] < date[1]
     } else {
       switch (value) {
-        case 7: date = get_day_ago_date(7); break;
-        case 30: date = get_month_ago_date(1); break;
-        case 182: date = get_month_ago_date(6); break;
-        case 365: date = get_year_ago_date(1); break;
+        case 7: date = moment(new Date()).subtract(7, 'd').toDate().getTime(); break;
+        case 30: date = moment(new Date()).subtract(1, 'M').toDate().getTime(); break;
+        case 182: date = moment(new Date()).subtract(6, 'M').toDate().getTime(); break;
+        case 365: date = moment(new Date()).subtract(1, 'y').toDate().getTime(); break;
         default: date = 0;
       }
+
       return record['date'] > date
     }
   }
@@ -178,14 +173,42 @@ const LedgerListTable = props => {
     return (
       <Table.Summary fixed>
         <Table.Summary.Row>
-          <Table.Summary.Cell index={0} colSpan={2}>Summary</Table.Summary.Cell>
-          <Table.Summary.Cell index={1} colSpan={1}>{summary}</Table.Summary.Cell>
-          <Table.Summary.Cell index={1} colSpan={2}>
-            <DatePicker.RangePicker className="ml-2" onChange={value => { setRangePickerSummary(value) }} />
+          <Table.Summary.Cell colSpan={3}>
+            <Button type='primary' danger disabled={selectedRowKeys.length === 0} onClick={handleDeleteMany}>Delete Selected</Button>
           </Table.Summary.Cell>
+          <Table.Summary.Cell colSpan={4}>Summary: ￥{summary}</Table.Summary.Cell>
         </Table.Summary.Row>
       </Table.Summary>
     )
+  }
+
+  // 同一天的数据合并展示
+  const combineData = () => {
+    const ledgerListByDay = []
+    let temp = { date: null, amount: 0, subtype: [], payway: [] }
+    props.ledgerList.sort((a, b) => b.date - a.date).forEach((item, index) => {
+      if (!moment(item.date).isSame(temp.date, 'day')) { // 判断是不是同一天的数据
+        if (index !== 0) {
+          ledgerListByDay.push({
+            ...temp,
+            key: index,
+            amount: temp.amount.toFixed(2),
+            subtype: Array.from(new Set(temp.subtype)), // 数组去重
+            payway: Array.from(new Set(temp.payway)),   // 数组去重
+          })
+        }
+        temp = {
+          date: item.date,
+          amount: 0,
+          subtype: [],
+          payway: []
+        }
+      }
+      temp.amount += item.amount;
+      temp.subtype.push(item.subtype_id);
+      temp.payway.push(item.payway);
+    })
+    return ledgerListByDay
   }
 
   const pagination = {
@@ -203,19 +226,59 @@ const LedgerListTable = props => {
     },
   };
 
-  const ledgerListColumns = [
+  const radioGroupOptions = [{
+    label: '按天展示',
+    value: 'COMBINE',
+  }, {
+    label: '详细列表',
+    value: 'ORIGIN',
+  }, {
+    label: '总结',
+    value: 'DASHBOARD',
+  },];
+
+  const ledgerListTableColumns = [
     {
       title: 'ID',
       width: '50px',
       editable: false,
-      render: (text, record, index) => (paginationInfo.split(',')[0] * paginationInfo.split(',')[1]) + index + 1
+      render(text, record, index) { return index + 1 }
     },
     {
       title: 'Date',
       dataIndex: 'date',
+      sorter: (a, b) => a.date - b.date,
+      render(text) { return moment(text).format('YYYY-MM-DD') }
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      sorter: (a, b) => a.amount - b.amount,
+      render(text) { return `￥${text}` }
+    },
+    {
+      title: '支付通道',
+      dataIndex: 'payway',
+      render(payway) { return payway.map(_ => <span className='mr-2 font-12' key={_}>{PAY_WAY_LIST.find(item => item.key === _)?.label}</span>) },
+    },
+    {
+      title: '交易类型',
+      dataIndex: 'subtype',
+      render: _ids => <Space>{_ids.map(_id => <RenderSubtype key={_id} subtype={props.ledgerSubTypes.find(item => item._id === _id)} />)}</Space>
+    }
+  ];
+
+  const originTableColumns = [
+    {
+      ...ledgerListTableColumns[0],
+      render: (text, record, index) => (paginationInfo.split(',')[0] * paginationInfo.split(',')[1]) + index + 1
+    },
+    {
+      ...ledgerListTableColumns[1],
       width: '150px',
       editable: true,
-      sorter: (a, b) => a.date - b.date,
+      onFilter: (...rest) => DateOnFilter(rest),
+      onFilterDropdownOpenChange: (visible) => { },
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
         <div className='p-2 font-13'>
           <Select
@@ -240,20 +303,22 @@ const LedgerListTable = props => {
           </Space>
         </div>
       ),
-      onFilter: (...rest) => DateOnFilter(rest),
-      onFilterDropdownOpenChange: (visible) => { },
-      render: text => <>{get_format_date(text, 'yyyy/MM/dd w')}</>
     },
     {
-      title: 'Amount',
-      dataIndex: 'amount',
-      width: '150px',
+      ...ledgerListTableColumns[2],
+      width: '100px',
       editable: true,
-      sorter: (a, b) => a.amount - b.amount,
-      render: (text, record) => record.description ? <Tooltip title={record.description} color='gold'>{`￥${text}`}</Tooltip> : `￥${text}`
     },
     {
-      title: '交易类型',
+      ...ledgerListTableColumns[3],
+      editable: true,
+      filterSearch: true,
+      filters: PAY_WAY_LIST.map(item => ({ text: item.label, value: item.key })),
+      onFilter: (value, record) => record.payway.startsWith(value),
+      render(_) { return <span className="font-12">{PAY_WAY_LIST.find(item => item.key === _)?.label}</span> }
+    },
+    {
+      ...ledgerListTableColumns,
       dataIndex: 'subtype_id',
       width: '180px',
       editable: true,
@@ -274,20 +339,10 @@ const LedgerListTable = props => {
       }
     },
     {
-      title: '支付通道',
-      dataIndex: 'payway',
-      editable: true,
-      filterSearch: true,
-      filters: PAY_WAY_LIST.map(item => ({ text: item.label, value: item.key })),
-      onFilter: (value, record) => record.payway.startsWith(value),
-      render: _ => (
-        PAY_WAY_LIST.find(item => item.key === _)?.label
-      ),
-    },
-    {
       title: '备注',
       dataIndex: 'description',
-      editable: true
+      editable: true,
+      render(text) { return <span className='font-12'>{text}</span> }
     },
     {
       title: 'operation',
@@ -314,7 +369,7 @@ const LedgerListTable = props => {
     },
   ];
 
-  const mergedColumns = ledgerListColumns.map(col => {
+  const originTableMergedColumns = originTableColumns.map(col => {
     if (!col.editable) return col;
     return {
       ...col,
@@ -329,27 +384,49 @@ const LedgerListTable = props => {
 
   return (
     <Card type="inner" bordered={false} className='mb-4'>
-      <Space className='mb-2'>
-        <Button type="primary" onClick={() => props.onShowMultiRecordsModal(true)} icon={<IconFont type="icon-edit" style={{ fontSize: '16px' }} />}>点我，新增多条</Button>
-        <Button type='primary' danger disabled={selectedRowKeys.length === 0} onClick={handleDeleteMany}>Delete All</Button>
-      </Space>
-      <Form form={form} component={false}>
-        <Table size="middle"
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          columns={mergedColumns}
-          dataSource={props.ledgerList}
-          pagination={pagination}
-          sortDirections={['ascend', 'descend', 'ascend']}
-          rowSelection={rowSelection}
-          scroll={{
-            y: 500,
-          }}
-          summary={() => RenderSummary()} />
-      </Form>
+      <div className="ledger-list-controls">
+        <Radio.Group optionType="button" className='mb-2 font-12'
+          options={radioGroupOptions}
+          value={displayMode}
+          onChange={(e) => setDisplayMode(e.target?.value)}
+        />
+        <div>
+          <Space>
+            <Typography.Link onClick={() => { }}>本周</Typography.Link>
+            <Typography.Link onClick={() => { }}>本月</Typography.Link>
+            <Typography.Link onClick={() => { }}>本年</Typography.Link>
+            <DatePicker.RangePicker className="ml-2"
+              onChange={value => { setRangePickerDefineValue(value) }}
+              defaultValue={[moment(moment.now()).subtract(1, 'Y'), moment(moment.now())]}
+            />
+          </Space>
+        </div>
+      </div>
+      {
+        displayMode === 'COMBINE' && <Table size="small"
+          className="font-12"
+          columns={ledgerListTableColumns}
+          dataSource={combineData()}
+          pagination={false}
+        />
+      }
+      {
+        displayMode === 'ORIGIN' && <Form form={form} component={false}>
+          <Table size="small"
+            className="font-12"
+            columns={originTableMergedColumns}
+            summary={RenderSummary}
+            dataSource={props.ledgerList}
+            pagination={pagination}
+            sortDirections={['ascend', 'descend', 'ascend']}
+            rowSelection={rowSelection}
+            scroll={{ y: 500, }}
+            components={{
+              body: { cell: EditableCell, },
+            }}
+          />
+        </Form>
+      }
     </Card>
   );
 };

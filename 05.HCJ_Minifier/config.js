@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const minify = require('html-minifier').minify;
+const htmlMinify = require('html-minifier').minify;
 const JO = require("javascript-obfuscator");
+const { minify } = require("terser");
 
 
 let TARGET_DIR = null, FILTER_PATH = null, COMPILED_DIR = null, HTML_MINIFIER = null, JS_OBFUSCATOR = null;
@@ -15,7 +16,7 @@ try {
   JS_OBFUSCATOR = js_obfuscator_config;
 
   clear_dir(COMPILED_DIR)
-  setTimeout(function() {
+  setTimeout(function () {
     travel_dir(TARGET_DIR)
   }, 1000)
 } catch (error) { console.log(error) }
@@ -49,7 +50,7 @@ function compress_html_css(path) {
   if (!path.includes('img') && !path.includes('fonts')) {
     data = fs.readFileSync(path, 'utf8')
     if (!path.endsWith('.min.css')) {
-      sCompressData = minify(data, HTML_MINIFIER)
+      sCompressData = htmlMinify(data, HTML_MINIFIER)
     }
   }
   let result = sCompressData ? sCompressData : data;
@@ -97,6 +98,6 @@ function clear_dir(path) {
       if (fs.statSync(curPath).isDirectory()) clear_dir(curPath)
       else fs.unlinkSync(curPath)
     });
-    if(path != COMPILED_DIR) fs.rmdirSync(path);
+    if (path != COMPILED_DIR) fs.rmdirSync(path);
   }
 }
