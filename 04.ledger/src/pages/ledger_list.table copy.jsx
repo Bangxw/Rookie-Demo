@@ -10,116 +10,15 @@ import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
 import { PAY_WAY_LIST } from '@/const'
 
-function date_range_data_filter(data, dateRange) {
+function filter_range_data(data, dateRange) {
   return data.filter(item => moment(item.date).isAfter(dateRange[0], 'day') && moment(item.date).isBefore(dateRange[1], 'day'))
-}
-
-function combine_same_one_date_data(data) {
-  const combineData = []
-  let temp = { date: null, amount: 0, subtype: [], payway: [] }
-  data.sort((a, b) => b.date - a.date).forEach((item, index) => {
-    if (!moment(item.date).isSame(temp.date, 'day')) { // 判断是不是同一天的数据
-      if (index !== 0) {
-        combineData.push({
-          ...temp,
-          key: index,
-          amount: temp.amount.toFixed(2),
-          subtype: Array.from(new Set(temp.subtype)), // 数组去重
-          payway: Array.from(new Set(temp.payway)),   // 数组去重
-        })
-      }
-      temp = {
-        date: item.date,
-        amount: 0,
-        subtype: [],
-        payway: []
-      }
-    }
-    temp.amount += item.amount;
-    temp.subtype.push(item.subtype_id);
-    temp.payway.push(item.payway);
-  })
-  return combineData
-}
-
-const CombineSameOneDateTable = props => {
-  // 同一天的数据合并展示
-  return <Table size="small" className="font-12"
-    pagination={false}
-    columns={props.ledgerListTableColumns}
-    dataSource={ // 同一天的数据合并  然后根据右上角指定时间范围再次过滤
-      date_range_data_filter(combine_same_one_date_data(props.ledgerList), props.datePickerRange)
-    }
-  />
-}
-
-const Dashboard = props => {
-  const dashboardConfig = {
-    data: date_range_data_filter(combine_same_one_date_data(props.ledgerList).reverse(), props.datePickerRange).map(item => ({
-      ...item,
-      amount: parseInt(item.amount),
-      date: moment(item.date).format('yy-MM-DD')
-    })),
-    xField: 'date',
-    yField: 'amount',
-    xAxis: {
-      label: {
-        autoRotate: false,
-      },
-    },
-    slider: {
-      start: '',
-      height: 50,
-    },
-    tooltip: {
-      customContent: (value, items) => {
-        const currentDayList = props.ledgerList.filter(item => moment(value).isSame(moment(item.date), 'day'))
-        return currentDayList.map(item => (
-          <div className='space-between-flex my-2'>
-            <RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />
-            <div className="clearfix font-12">
-              <span style={{ float: 'right' }}>{`￥${item.amount}`}</span>
-              {item.description && <><br />({item.description})</>}
-            </div>
-          </div>
-        ))
-      },
-    },
-    label: {
-      content: '111',
-      position: 'top', // 'top', 'bottom', 'middle',
-      style: {  // 配置样式
-        fill: '#FFFFFF',
-        opacity: 0.6,
-      },
-    },
-  };
-
-  return <Row>
-    <Col span={18} > <Column {...dashboardConfig} className="pt-5" /></Col>
-    <Col span={5} offset={1}>
-      <List
-        size="small"
-        header={<div>Top 10消费:</div>}
-        dataSource={props.ledgerList.sort((a, b) => b.amount - a.amount).slice(0, 10)}
-        renderItem={(item, index) => <List.Item>
-          <Popover content={<RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />}>
-            <div className="space-between-flex width-100">
-              <span>{`${index}. ${moment(item.date).format('YY-MM-DD')}`}</span>
-              <span>￥{item.amount}</span>
-            </div>
-          </Popover>
-        </List.Item>}
-      />
-    </Col>
-  </Row >
 }
 
 const LedgerListTable = props => {
   const [form] = Form.useForm();
   const [displayMode, setDisplayMode] = useState('DASHBOARD');   // 展示模式：详细展示/源数据展示(ORIGIN)、按天合并数据展示(FILTER)
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [datePickerRange, setRangePickerSummary] = useState([moment().startOf('year'), moment().endOf('year')])
+  const [rangePickerSummary, setRangePickerSummary] = useState([moment().startOf('year'), moment().endOf('year')])
   const [editingKey, setEditingKey] = useState('');
   const [paginationInfo, setPaginationInfo] = useState('1,1');
 
@@ -258,7 +157,7 @@ const LedgerListTable = props => {
       <Typography.Link onClick={() => setRangePickerSummary(currentMonth)}>本月</Typography.Link>
       <Typography.Link onClick={() => setRangePickerSummary(currentYear)}>本年</Typography.Link>
       <DatePicker.RangePicker className="ml-2"
-        value={datePickerRange}
+        value={rangePickerSummary}
         onChange={value => { setRangePickerSummary(value) }}
       />
     </Space>)
@@ -268,7 +167,7 @@ const LedgerListTable = props => {
     let summary = 0
     try {
       // 过滤在选择的时间内的数据，精度到天（day）
-      summary = date_range_data_filter(props.ledgerList, datePickerRange).reduce((a, b) => (a + b.amount), 0)
+      summary = filter_range_data(props.ledgerList, rangePickerSummary).reduce((a, b) => (a + b.amount), 0)
     } catch (e) { }
     return (
       <Table.Summary fixed>
@@ -281,6 +180,7 @@ const LedgerListTable = props => {
       </Table.Summary>
     )
   }
+
 
   const pagination = {
     showSizeChanger: true,
@@ -427,15 +327,88 @@ const LedgerListTable = props => {
     };
   });
 
+  const dashboardConfig = {
+    data: filter_range_data(combineSameDateData().reverse(), rangePickerSummary).map(item => ({
+      ...item,
+      amount: parseInt(item.amount),
+      date: moment(item.date).format('yy-MM-DD')
+    })),
+    xField: 'date',
+    yField: 'amount',
+    xAxis: {
+      label: {
+        autoRotate: false,
+      },
+    },
+    slider: {
+      start: '',
+      height: 50,
+    },
+    tooltip: {
+      customContent: (value, items) => {
+        const currentDayList = props.ledgerList.filter(item => moment(value).isSame(moment(item.date), 'day'))
+        return currentDayList.map(item => (
+          <div className='space-between-flex my-2'>
+            <RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />
+            <div className="clearfix font-12">
+              <span style={{ float: 'right' }}>{`￥${item.amount}`}</span>
+              {item.description && <><br />({item.description})</>}
+            </div>
+          </div>
+        ))
+      },
+    },
+    label: {
+      content: '111',
+      position: 'top', // 'top', 'bottom', 'middle',
+      style: {  // 配置样式
+        fill: '#FFFFFF',
+        opacity: 0.6,
+      },
+    },
+  };
+
+  // 同一天的数据合并展示
+  const combineSameDateData = () => {
+    const ledgerListByDay = []
+    let temp = { date: null, amount: 0, subtype: [], payway: [] }
+    props.ledgerList.sort((a, b) => b.date - a.date).forEach((item, index) => {
+      if (!moment(item.date).isSame(temp.date, 'day')) { // 判断是不是同一天的数据
+        if (index !== 0) {
+          ledgerListByDay.push({
+            ...temp,
+            key: index,
+            amount: temp.amount.toFixed(2),
+            subtype: Array.from(new Set(temp.subtype)), // 数组去重
+            payway: Array.from(new Set(temp.payway)),   // 数组去重
+          })
+        }
+        temp = {
+          date: item.date,
+          amount: 0,
+          subtype: [],
+          payway: []
+        }
+      }
+      temp.amount += item.amount;
+      temp.subtype.push(item.subtype_id);
+      temp.payway.push(item.payway);
+    })
+    return ledgerListByDay
+  }
+
+  // 配置项
+
+  // 视图组件
 
   const LedgerContent = () => {
     switch (displayMode) {
       // 合并同一天的数据展示（一天有多次消费）
       case 'COMBINE':
-        return <CombineSameOneDateTable
-          ledgerList={props.ledgerList}
-          ledgerListTableColumns={ledgerListTableColumns}
-          datePickerRange={datePickerRange}
+        return <Table size="small" className="font-12"
+          columns={ledgerListTableColumns}
+          dataSource={filter_range_data(combineSameDateData(), rangePickerSummary)}
+          pagination={false}
         />;
 
       // 详细展示 源数据展示
@@ -445,7 +418,7 @@ const LedgerListTable = props => {
             className="font-12"
             columns={originTableMergedColumns}
             summary={RenderSummary}
-            dataSource={date_range_data_filter(props.ledgerList, datePickerRange)}
+            dataSource={filter_range_data(props.ledgerList, rangePickerSummary)}
             pagination={pagination}
             sortDirections={['ascend', 'descend', 'ascend']}
             rowSelection={rowSelection}
@@ -458,10 +431,24 @@ const LedgerListTable = props => {
 
       // 图标展示
       case 'DASHBOARD':
-        return <Dashboard
-          ledgerList={props.ledgerList}
-          datePickerRange={datePickerRange}
-        />
+        return <Row>
+          <Col span={18}><Column {...dashboardConfig} className="pt-5" /></Col>
+          <Col span={5} offset={1}>
+            <List
+              size="small"
+              header={<div>Top 10消费:</div>}
+              dataSource={props.ledgerList.sort((a, b) => b.amount - a.amount).slice(0, 10)}
+              renderItem={(item, index) => <List.Item>
+                <Popover content={<RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />}>
+                  <div className="space-between-flex width-100">
+                    <span>{`${index}. ${moment(item.date).format('YY-MM-DD')}`}</span>
+                    <span>￥{item.amount}</span>
+                  </div>
+                </Popover>
+              </List.Item>}
+            />
+          </Col>
+        </Row>
 
       default: return '';
     }
