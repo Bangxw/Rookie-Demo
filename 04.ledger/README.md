@@ -33,3 +33,4 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 3. 前端使用redux、react-redux管理数据
 4. 使用fetch进行数据交互
 5. 使用node+mongodb，后台管理数据库
+6. 使用i18n进行国际化封装

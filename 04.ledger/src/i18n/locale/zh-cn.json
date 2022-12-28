@@ -1,0 +1,21 @@
+{
+  "ledger_list": "消费列表",
+  "subtypes_control": "消费类型管理",
+  "details": "详细列表",
+  "display_by_day": "合并天展示",
+  "dashboard": "图表展示",
+  "current_week": "本周",
+  "current_month": "本月",
+  "current_year": "本年",
+  "date": "日期",
+  "amount": "消费金额",
+  "amount_1": "金额",
+  "pay_way": "支付途径",
+  "pay_way_1": "途径",
+  "subtype": "消费类型",
+  "subtype_1": "类型",
+  "description": "备注",
+  "operation": "操作",
+  "delete_selected": "删除选中",
+  "summary": "小结"
+}

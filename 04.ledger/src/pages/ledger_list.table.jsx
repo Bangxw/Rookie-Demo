@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux'
-import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal, Radio, List, Row, Col, Popover } from 'antd';
+import { Table, Popconfirm, message, Card, Button, Select, Space, DatePicker, InputNumber, Input, Form, Typography, Modal, Radio, List, Row, Col, Popover, Badge } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Column } from '@ant-design/plots';
 import * as moment from 'moment';
@@ -9,6 +9,7 @@ import 'moment/locale/zh-cn'
 import { RenderSubtype } from '@components'
 import { set_app_spinning, get_ledger_list } from '@redux/actions'
 import { PAY_WAY_LIST } from '@/const'
+import i18n from '@i18n'
 
 function date_range_data_filter(data, dateRange) {
   return data.filter(item => moment(item.date).isAfter(dateRange[0], 'day') && moment(item.date).isBefore(dateRange[1], 'day'))
@@ -95,17 +96,30 @@ const Dashboard = props => {
     },
   };
 
+  const PopHoverConteng = (item) => {
+    return <div className='font-12'>
+      <RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />
+      <span className='mx-2'>{PAY_WAY_LIST.find(_ => _.key === item.payway)?.label}</span>
+      {item?.description}
+    </div>
+  }
+
+  const colorPresets = ['yellow', 'orange', 'cyan', 'green', 'blue', 'purple', 'geekblue', 'geekblue']
+
   return <Row>
     <Col span={18} > <Column {...dashboardConfig} className="pt-5" /></Col>
     <Col span={5} offset={1}>
       <List
         size="small"
         header={<div>Top 10消费:</div>}
-        dataSource={props.ledgerList.sort((a, b) => b.amount - a.amount).slice(0, 10)}
+        dataSource={date_range_data_filter(props.ledgerList, props.datePickerRange).sort((a, b) => b.amount - a.amount).slice(0, 10)}
         renderItem={(item, index) => <List.Item>
-          <Popover content={<RenderSubtype subtype={props.ledgerSubTypes.find(_ => _._id === item.subtype_id)} />}>
+          <Popover title={false} content={PopHoverConteng(item)}>
             <div className="space-between-flex width-100">
-              <span>{`${index}. ${moment(item.date).format('YY-MM-DD')}`}</span>
+              <span>
+                {index <= 2 ? <Badge count={index + 1} /> : <Badge color={colorPresets[index - 3]} className="px-2" />}
+                <span className='ml-1'>{moment(item.date).format('YY-MM-DD')}</span>
+              </span>
               <span>￥{item.amount}</span>
             </div>
           </Popover>
@@ -117,9 +131,9 @@ const Dashboard = props => {
 
 const LedgerListTable = props => {
   const [form] = Form.useForm();
-  const [displayMode, setDisplayMode] = useState('DASHBOARD');   // 展示模式：详细展示/源数据展示(ORIGIN)、按天合并数据展示(FILTER)
+  const [displayMode, setDisplayMode] = useState('ORIGIN');   // 展示模式：详细展示/源数据展示(ORIGIN)、按天合并数据展示(FILTER)
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [datePickerRange, setRangePickerSummary] = useState([moment().startOf('year'), moment().endOf('year')])
+  const [datePickerRange, setRangePickerSummary] = useState([moment().startOf('month'), moment().endOf('month')])
   const [editingKey, setEditingKey] = useState('');
   const [paginationInfo, setPaginationInfo] = useState('1,1');
 
@@ -233,78 +247,26 @@ const LedgerListTable = props => {
 
     return (
       <td {...restProps}>
-        {editing ? (
-          <Form.Item name={dataIndex} className="m-0"
-            rules={[
-              {
-                required: true,
-                message: `Required ${title}!`,
-              },
-            ]}
-          >{inputNode}</Form.Item>
-        ) : (
-          children
-        )}
+        {
+          editing ? <Form.Item name={dataIndex} className="m-0" rules={[
+            {
+              required: true,
+              message: `Required ${title}!`,
+            },
+          ]}>{inputNode}</Form.Item> : children
+        }
       </td>
     );
   };
 
-  const RenderDatePickerControl = () => {
-    const currentWeek = [moment().startOf('week'), moment().endOf('week')]
-    const currentMonth = [moment().startOf('month'), moment().endOf('month')]
-    const currentYear = [moment().startOf('year'), moment().endOf('year')]
-    return (<Space>
-      <Typography.Link onClick={() => setRangePickerSummary(currentWeek)}>本周</Typography.Link>
-      <Typography.Link onClick={() => setRangePickerSummary(currentMonth)}>本月</Typography.Link>
-      <Typography.Link onClick={() => setRangePickerSummary(currentYear)}>本年</Typography.Link>
-      <DatePicker.RangePicker className="ml-2"
-        value={datePickerRange}
-        onChange={value => { setRangePickerSummary(value) }}
-      />
-    </Space>)
-  }
-
-  const RenderSummary = () => {
-    let summary = 0
-    try {
-      // 过滤在选择的时间内的数据，精度到天（day）
-      summary = date_range_data_filter(props.ledgerList, datePickerRange).reduce((a, b) => (a + b.amount), 0)
-    } catch (e) { }
-    return (
-      <Table.Summary fixed>
-        <Table.Summary.Row>
-          <Table.Summary.Cell colSpan={3}>
-            <Button type='primary' danger disabled={selectedRowKeys.length === 0} onClick={handleDeleteMany}>Delete Selected</Button>
-          </Table.Summary.Cell>
-          <Table.Summary.Cell colSpan={4}>Summary: ￥{summary.toFixed(2)}</Table.Summary.Cell>
-        </Table.Summary.Row>
-      </Table.Summary>
-    )
-  }
-
-  const pagination = {
-    showSizeChanger: true,
-    defaultPageSize: 50,
-    showQuickJumper: true,
-    showTotal: total => `Total ${total} items`,
-    onChange: (page, pageSize) => { setPaginationInfo(`${page},${pageSize}`) }
-  }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: newSelectedRowKeys => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
-
   const displayModeOptions = [{
-    label: '按天展示',
-    value: 'COMBINE',
-  }, {
-    label: '详细列表',
+    label: i18n.t('details'),
     value: 'ORIGIN',
   }, {
-    label: 'DASHBOARD',
+    label: i18n.t('display_by_day'),
+    value: 'COMBINE',
+  }, {
+    label: i18n.t('dashboard'),
     value: 'DASHBOARD',
   },];
 
@@ -316,24 +278,24 @@ const LedgerListTable = props => {
       render(text, record, index) { return index + 1 }
     },
     {
-      title: 'Date',
+      title: i18n.t('date'),
       dataIndex: 'date',
       sorter: (a, b) => a.date - b.date,
       render(text) { return moment(text).format('YYYY-MM-DD') }
     },
     {
-      title: 'Amount',
+      title: i18n.t('amount_1'),
       dataIndex: 'amount',
       sorter: (a, b) => a.amount - b.amount,
       render(text) { return `￥${text}` }
     },
     {
-      title: '支付通道',
+      title: i18n.t('pay_way'),
       dataIndex: 'payway',
       render(payway) { return payway.map(_ => <span className='mr-2 font-12' key={_}>{PAY_WAY_LIST.find(item => item.key === _)?.label}</span>) },
     },
     {
-      title: '交易类型',
+      title: i18n.t('subtype'),
       dataIndex: 'subtype',
       render: _ids => <Space>{_ids.map(_id => <RenderSubtype key={_id} subtype={props.ledgerSubTypes.find(item => item._id === _id)} />)}</Space>
     }
@@ -363,7 +325,7 @@ const LedgerListTable = props => {
       render(_) { return <span className="font-12">{PAY_WAY_LIST.find(item => item.key === _)?.label}</span> }
     },
     {
-      ...ledgerListTableColumns,
+      ...ledgerListTableColumns[4],
       dataIndex: 'subtype_id',
       width: '180px',
       editable: true,
@@ -390,7 +352,7 @@ const LedgerListTable = props => {
       render(text) { return <span className='font-12'>{text}</span> }
     },
     {
-      title: 'operation',
+      title: i18n.t('operation'),
       dataIndex: 'operation',
       render: (_, record) => (
         <>
@@ -418,17 +380,49 @@ const LedgerListTable = props => {
     if (!col.editable) return col;
     return {
       ...col,
-      onCell: (record) => ({
-        record,
+      onCell: record => ({
+        record: { ...record, date: moment(record.date) },
         dataIndex: col.dataIndex,
         title: col.title,
         editing: record._id === editingKey,
-      }),
+      })
     };
   });
 
+  const RenderDatePickerControl = () => {
+    const currentWeek = [moment().startOf('week'), moment().endOf('week')]
+    const currentMonth = [moment().startOf('month'), moment().endOf('month')]
+    const currentYear = [moment().startOf('year'), moment().endOf('year')]
+    return (<Space>
+      <Typography.Link onClick={() => setRangePickerSummary(currentWeek)}>{i18n.t('current_week')}</Typography.Link>
+      <Typography.Link onClick={() => setRangePickerSummary(currentMonth)}>{i18n.t('current_month')}</Typography.Link>
+      <Typography.Link onClick={() => setRangePickerSummary(currentYear)}>{i18n.t('current_year')}</Typography.Link>
+      <DatePicker.RangePicker className="ml-2"
+        value={datePickerRange}
+        onChange={value => { setRangePickerSummary(value) }}
+      />
+    </Space>)
+  }
 
-  const LedgerContent = () => {
+  const RenderSummary = () => {
+    let summary = 0
+    try {
+      // 过滤在选择的时间内的数据，精度到天（day）
+      summary = date_range_data_filter(props.ledgerList, datePickerRange).reduce((a, b) => (a + b.amount), 0)
+    } catch (e) { }
+    return (
+      <Table.Summary fixed>
+        <Table.Summary.Row>
+          <Table.Summary.Cell colSpan={3}>
+            <Button type='primary' danger disabled={selectedRowKeys.length === 0} onClick={handleDeleteMany}>Delete Selected</Button>
+          </Table.Summary.Cell>
+          <Table.Summary.Cell colSpan={4}>Summary: ￥{summary.toFixed(2)}</Table.Summary.Cell>
+        </Table.Summary.Row>
+      </Table.Summary>
+    )
+  }
+
+  const RenderLedgerInfoContent = () => {
     switch (displayMode) {
       // 合并同一天的数据展示（一天有多次消费）
       case 'COMBINE':
@@ -441,18 +435,28 @@ const LedgerListTable = props => {
       // 详细展示 源数据展示
       case 'ORIGIN':
         return <Form form={form} component={false}>
-          <Table size="small"
-            className="font-12"
+          <Table size="small" className="font-12"
+            dataSource={date_range_data_filter(props.ledgerList, datePickerRange)} // 根据选择的时间范围过滤数据
             columns={originTableMergedColumns}
-            summary={RenderSummary}
-            dataSource={date_range_data_filter(props.ledgerList, datePickerRange)}
-            pagination={pagination}
-            sortDirections={['ascend', 'descend', 'ascend']}
-            rowSelection={rowSelection}
-            scroll={{ y: 500, }}
             components={{
               body: { cell: EditableCell, },
             }}
+            summary={RenderSummary}
+            sortDirections={['ascend', 'descend', 'ascend']}
+            pagination={{
+              showSizeChanger: true,
+              defaultPageSize: 50,
+              showQuickJumper: true,
+              showTotal: total => `Total ${total} items`,
+              onChange: (page, pageSize) => { setPaginationInfo(`${page},${pageSize}`) }
+            }}
+            rowSelection={{
+              selectedRowKeys,
+              onChange: newSelectedRowKeys => {
+                setSelectedRowKeys(newSelectedRowKeys);
+              },
+            }}
+            scroll={{ y: 500, }}
           />
         </Form>
 
@@ -460,6 +464,7 @@ const LedgerListTable = props => {
       case 'DASHBOARD':
         return <Dashboard
           ledgerList={props.ledgerList}
+          ledgerSubTypes={props.ledgerSubTypes}
           datePickerRange={datePickerRange}
         />
 
@@ -469,15 +474,16 @@ const LedgerListTable = props => {
 
   return (
     <Card type="inner" bordered={false} className='mb-4'>
-      <div className="space-between-flex">
-        <Radio.Group optionType="button" className='mb-2 font-12'
+      <div className="space-between-flex mb-3">
+        <Radio.Group optionType="button" buttonStyle="solid" className='font-12'
           options={displayModeOptions}
           value={displayMode}
-          onChange={(e) => setDisplayMode(e.target?.value)}
+          onChange={e => setDisplayMode(e.target?.value)}
         />
         <RenderDatePickerControl />
       </div>
-      <LedgerContent />
+
+      <RenderLedgerInfoContent />
     </Card>
   );
 };

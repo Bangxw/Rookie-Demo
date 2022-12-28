@@ -10,7 +10,7 @@ import { get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spin
 import { MENU_ITEMS } from '@/const'
 import zhCN from 'antd/es/locale/zh_CN';
 
-let hasInitData = false; // 初始化只请求一次数据
+let hasInitData = false; // 控制初始化只请求一次数据
 
 const App = props => {
   const [showAddMultiModal, setShowAddMultiModal] = useState(false);

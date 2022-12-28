@@ -12,6 +12,7 @@ module.exports = {
       '@styles': pathResolve('src/styles'),
       '@redux': pathResolve('src/redux'),
       '@utils': pathResolve('src/utils'),
+      '@i18n': pathResolve('src/i18n'),
     }
   },
   babel: {
