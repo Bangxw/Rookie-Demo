@@ -11,6 +11,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "antd": "^4.23.5",
+    "axios": "^1.2.2",
     "babel-plugin-import": "^1.13.5",
     "craco-less": "^2.1.0-alpha.0",
     "i18next": "^22.4.6",

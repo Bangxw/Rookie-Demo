@@ -140,7 +140,7 @@ const LedgerListTable = props => {
   const handleEdit = record => {
     form.setFieldsValue({
       ...record,
-      'date': moment.now(),
+      'date': moment(record.date),
     });
     setEditingKey(record._id);
   };
@@ -236,9 +236,7 @@ const LedgerListTable = props => {
       case 'payway':
         inputNode = (
           <Select className='font-13'>
-            {
-              PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)
-            }
+            {PAY_WAY_LIST.map((item, index) => <Select.Option value={item.key} key={index}>{item.label}</Select.Option>)}
           </Select>
         )
         break;
@@ -357,19 +355,15 @@ const LedgerListTable = props => {
       render: (_, record) => (
         <>
           {
-            record._id === editingKey ? (
-              <span>
-                <Typography.Link onClick={() => handleSave(record._id)} className='mr-2'>Save</Typography.Link>
-                <Typography.Link onClick={() => { setEditingKey('') }}>Cancel</Typography.Link>
-              </span>
-            ) : <Typography.Link disabled={editingKey !== ''} onClick={() => handleEdit(record)}>Edit</Typography.Link>
+            record._id === editingKey ? <>
+              <Typography.Link onClick={() => handleSave(record._id)} className='mr-2'>Save</Typography.Link>
+              <Typography.Link onClick={() => { setEditingKey('') }}>Cancel</Typography.Link>
+            </> : <Typography.Link disabled={editingKey !== ''} onClick={() => handleEdit(record)}>Edit</Typography.Link>
           }
           {
-            props.ledgerList.length >= 1 ? (
-              <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
-                <Typography.Link disabled={editingKey !== ''} type="link" className='ml-2'>Delete</Typography.Link>
-              </Popconfirm>
-            ) : null
+            props.ledgerList.length >= 1 ? <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
+              <Typography.Link disabled={editingKey !== ''} type="link" className='ml-2'>Delete</Typography.Link>
+            </Popconfirm> : null
           }
         </>
       ),
@@ -381,7 +375,7 @@ const LedgerListTable = props => {
     return {
       ...col,
       onCell: record => ({
-        record: { ...record, date: moment(record.date) },
+        record,
         dataIndex: col.dataIndex,
         title: col.title,
         editing: record._id === editingKey,

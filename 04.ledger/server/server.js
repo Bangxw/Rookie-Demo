@@ -4,8 +4,9 @@ const url = require("url")
 
 const MONGO_CLIENT = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
+const { dataOperate, record } = require('./sync.db');
+// const { dataOperate, record } = require('./sync.db');
 
-// mpx7cvod2iC980R8
 // const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
 const DB_URL = 'mongodb://127.0.0.1:27017';
 
@@ -96,6 +97,18 @@ const server = http.createServer((request, response) => {
       if (params.pathname === "/ledger/category") connect_db_find_data(...actualParameter, 'Category')
       if (params.pathname === "/ledger/sub_types") connect_db_find_data(...actualParameter, 'SubTypes')
       if (params.pathname === "/ledger/bill_list") connect_db_find_data(...actualParameter, 'BillList')
+
+      // 查询数据库同步进度
+      if (params.pathname === "/sync.db/progress") {
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify(record));
+      }
+
+      // 查询数据库同步进度
+      if (params.pathname === "/export.ledger_list") {
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify(record));
+      }
       break;
 
     case 'POST':
@@ -111,18 +124,29 @@ const server = http.createServer((request, response) => {
           return;
         }
 
+        // INSERT DATA
         if (params.pathname === "/ledger/bill_list/insert") connect_db_insert_many_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/sub_types/insert") connect_db_insert_many_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/insert") connect_db_insert_many_data(...actualParameter, 'Category')
 
+        //  DELETE DATA
         if (params.pathname === "/ledger/bill_list/delete_one:id") connect_db_delete_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/bill_list/delete:ids") connect_db_delete_many_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/sub_types/delete_one:id") connect_db_delete_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/delete_one:id") connect_db_delete_data(...actualParameter, 'Category')
 
+        // UPDATE DATA
         if (params.pathname === "/ledger/bill_list/update_one:id") connect_db_update_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/sub_types/update_one:id") connect_db_update_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/update_one:id") connect_db_update_data(...actualParameter, 'Category')
+
+        // SYNC DB DATA
+        if (params.pathname === "/sync.db") {
+          let urls = JSON.parse(data)
+          dataOperate(urls?.url1, urls?.url2)
+          response.writeHead(200, { 'Content-Type': 'application/json' })
+          response.end(JSON.stringify(record));
+        }
       })
       break;
 

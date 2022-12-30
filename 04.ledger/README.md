@@ -34,3 +34,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 4. 使用fetch进行数据交互
 5. 使用node+mongodb，后台管理数据库
 6. 使用i18n进行国际化封装
+
+
+ssh root@43.139.239.207
+
+const DB_URL1 = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
+const DB_URL2 = 'mongodb://127.0.0.1:27017';
+const DB_URL3 = 'mongodb://43.139.239.207:27017';
