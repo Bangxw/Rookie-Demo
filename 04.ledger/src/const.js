@@ -24,9 +24,12 @@ const PAY_WAY_LIST = [
   { key: 'Credit_Card', label: '信用卡' }
 ]
 
+const REMOTE_ADDRESS = 'http://43.139.239.207:8800'
+
 export {
   ICON_FONT,
   MENU_ITEMS,
   ICON_LIST,
   PAY_WAY_LIST,
+  REMOTE_ADDRESS
 }

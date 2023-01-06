@@ -1,6 +1,8 @@
+import { REMOTE_ADDRESS } from '@/const'
+
 export const get_ledger_category = () => {
   return dispatch => {
-    return fetch('http://127.0.0.1:8800/ledger/category')
+    return fetch(REMOTE_ADDRESS+ '/ledger/category')
       .then(response => response.json())
       .then(response => {
         dispatch({
@@ -18,7 +20,7 @@ export const get_ledger_category = () => {
 
 export const get_ledger_subtypes = () => {
   return dispatch => {
-    return fetch('http://127.0.0.1:8800/ledger/sub_types')
+    return fetch(REMOTE_ADDRESS+ '/ledger/sub_types')
       .then(response => response.json())
       .then(response => {
         dispatch({
@@ -36,7 +38,7 @@ export const get_ledger_subtypes = () => {
 
 export const get_ledger_list = () => {
   return dispatch => {
-    return fetch('http://127.0.0.1:8800/ledger/bill_list')
+    return fetch(REMOTE_ADDRESS+ '/ledger/bill_list')
       .then(response => response.json())
       .then(response => {
         dispatch({
