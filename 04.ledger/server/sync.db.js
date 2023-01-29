@@ -1,24 +1,29 @@
 const MONGO_CLIENT = require('mongodb').MongoClient;
+const PROMPT_SYNC = require('prompt-sync')();
+
 
 const DB_COLLECTIONS = ['Category', 'SubTypes', 'BillList']
-const record = {
-  status: 'PENDING', // PENDING ON-GOING COMPLETE FAILED
-  messages: []
-};
 
-async function dataOperate(connUrl1, connUrl2) {
+
+async function dataOperate() {
   let mongoConn1 = null;
   let mongoConn2 = null;
 
   const connectDB = async () => {
-    mongoConn1 = await MONGO_CLIENT.connect(connUrl1);
-    record.messages.push('与源数据库成功搭线___')
+    let connUrl1 = PROMPT_SYNC('👉请输入源数据库地址: ');
+    let connUrl2 = PROMPT_SYNC('👉请输入待克隆地址: ');
 
+    mongoConn1 = await MONGO_CLIENT.connect(connUrl1);
+    console.log('  与源数据库成功搭线___')
     mongoConn2 = await MONGO_CLIENT.connect(connUrl2);
-    record.messages.push('与需备份数据库成功搭线___')
+    console.log('  与待克隆数据库成功搭线___')
   }
 
   const dropThenCreateDB = async () => {
+    let confirm = PROMPT_SYNC('⚠️待克隆数据库将被覆盖，此操作无法恢复，建议备份原有数据，确认是否继续(y/n):')
+    if (!confirm || (confirm.toUpperCase() !== 'Y' && confirm.toUpperCase() !== 'YES')) {
+      process.exit(1);
+    }
     for (let i = 0; i < DB_COLLECTIONS.length; i++) {
       await mongoConn2.db("ledger").collection(DB_COLLECTIONS[i]).drop()
       await mongoConn2.db("ledger").createCollection(DB_COLLECTIONS[i])
@@ -41,34 +46,25 @@ async function dataOperate(connUrl1, connUrl2) {
     }
   }
 
-  record.messages = ['准备搞事！！！']
-  record.messages.push('CLONE-ADDRESS: ' + connUrl1)
-  record.messages.push('TO-DO ADDRESS: ' + connUrl2)
-  record.status = 'ON-GOING'
 
+
+  console.log('准备搞事！！！\n------------------------')
   connectDB().then(() => {
     return dropThenCreateDB()
   }).then(() => {
-    record.messages.push('成功删库可以跑路。。。🤡')
+    console.log('  成功删库可以跑路。。。🤡')
     return getOriginData()
   }).then(originData => {
-    record.messages.push('成功获取源数据! collections.length: ' + originData.length)
+    console.log('  成功获取源数据! collections.length: ' + originData.length)
     return cloneDB(originData)
   }).then(() => {
-    record.messages.push('克隆成功👉👈。。。')
-    record.status = 'COMPLETE'
+    console.log('  克隆成功👉👈')
     if (mongoConn1 != null) mongoConn1.close();
     if (mongoConn2 != null) mongoConn2.close();
     // process.exit(1)
   }).catch(error => {
-    record.messages.push(error.message)
-    record.status = 'FAILED';
-  }).finally(() => {
-    console.log(record)
+    console.log(error.message)
   })
 }
 
-// dataOperate('mongodb://127.0.0.1:27017', 'mongodb://43.139.239.207:27017')
-
-exports.dataOperate = dataOperate
-exports.record = record
+dataOperate()

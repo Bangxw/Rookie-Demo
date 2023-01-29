@@ -228,48 +228,51 @@ const CategorySubtypesManage = props => {
   }
 
   return (
-    <>
-      <Card type="inner" bordered={false}>
-        <Tabs tabPosition='left' className='category-ant-tabs'
-          activeKey={activeTabKey}
-          onChange={handleTabsChange}
-          tabBarExtraContent={
-            <span className='category-control-button' onClick={() => { setCategoryControlModal(true) }}>
-              <IconFont type='icon-setting' />
-            </span>
-          }
-          items={
-            props.ledgerCategory.map((item, index) => ({
-              label: item.text,
-              key: item._id,
-              children: <div className='subtype-fields'>
-                {
-                  props.ledgerSubTypes.filter(item => item.categoryID === activeTabKey).map((_, i) => (
-                    <div className='subtype' key={i}
-                      onMouseEnter={() => setShowIndex(`${index},${i}`)}
-                      onMouseLeave={() => setShowIndex('-1,-1')}
-                    >
-                      <div className='mask-layer' hidden={showIndex === `${index},${i}` ? false : true} >
-                        <IconFont type='icon-edit' className='operation-icon' onClick={() => openSubtypeOperateModal(_)} />
-                        <IconFont type='icon-delete' className='operation-icon' onClick={() => fetchDeleteSubtype(_._id)} />
-                      </div>
-                      <div className='icon-wrap'>
-                        <IconFont type={_.icon || ' '} style={{ fontSize: '36px' }} />
-                        <span>{_.text}</span>
-                      </div>
+    <Modal
+      width={800}
+      closable={false}
+      maskClosable={false}
+      open={props.showSubtypeManageModal}
+      onCancel={() => props.onShowSubtypeManageModal(false)}>
+      <Tabs tabPosition='left' className='category-ant-tabs'
+        activeKey={activeTabKey}
+        onChange={handleTabsChange}
+        tabBarExtraContent={
+          <span className='category-control-button' onClick={() => { setCategoryControlModal(true) }}>
+            <IconFont type='icon-setting' />
+          </span>
+        }
+        items={
+          props.ledgerCategory.map((item, index) => ({
+            label: item.text,
+            key: item._id,
+            children: <div className='subtype-fields'>
+              {
+                props.ledgerSubTypes.filter(item => item.categoryID === activeTabKey).map((_, i) => (
+                  <div className='subtype' key={i}
+                    onMouseEnter={() => setShowIndex(`${index},${i}`)}
+                    onMouseLeave={() => setShowIndex('-1,-1')}
+                  >
+                    <div className='mask-layer' hidden={showIndex === `${index},${i}` ? false : true} >
+                      <IconFont type='icon-edit' className='operation-icon' onClick={() => openSubtypeOperateModal(_)} />
+                      <IconFont type='icon-delete' className='operation-icon' onClick={() => fetchDeleteSubtype(_._id)} />
                     </div>
-                  ))
-                }
-                <div className='subtype' onClick={() => openSubtypeOperateModal()}>
-                  <div className='add-new-subtag'>
-                    <IconFont type='icon-add' style={{ fontSize: '24px' }} />
+                    <div className='icon-wrap'>
+                      <IconFont type={_.icon || ' '} style={{ fontSize: '36px' }} />
+                      <span>{_.text}</span>
+                    </div>
                   </div>
+                ))
+              }
+              <div className='subtype' onClick={() => openSubtypeOperateModal()}>
+                <div className='add-new-subtag'>
+                  <IconFont type='icon-add' style={{ fontSize: '24px' }} />
                 </div>
-              </div>,
-            }))
-          }
-        />
-      </Card>
+              </div>
+            </div>,
+          }))
+        }
+      />
 
       <Modal maskClosable={false} closable={false} okText='Apply' width={400}
         open={subtypeAddEditModal}
@@ -311,7 +314,7 @@ const CategorySubtypesManage = props => {
         handleGetLedgerCategroy={props.get_ledger_category}
         categoryControlModal={categoryControlModal}
         setCategoryControlModal={setCategoryControlModal} />
-    </>
+    </Modal>
   );
 };
 

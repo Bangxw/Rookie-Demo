@@ -4,12 +4,9 @@ const url = require("url")
 
 const MONGO_CLIENT = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-const { dataOperate, record } = require('./sync.db');
-// const { dataOperate, record } = require('./sync.db');
 
-// const DB_URL = 'mongodb+srv://root:mpx7cvod2iC980R8@cluster0.rdnj9ik.mongodb.net/?retryWrites=true&w=majority';
+
 const DB_URL = 'mongodb://127.0.0.1:27017';
-
 
 
 function connect_db_find_data(...rest) {
@@ -139,14 +136,6 @@ const server = http.createServer((request, response) => {
         if (params.pathname === "/ledger/bill_list/update_one:id") connect_db_update_data(...actualParameter, 'BillList')
         if (params.pathname === "/ledger/sub_types/update_one:id") connect_db_update_data(...actualParameter, 'SubTypes')
         if (params.pathname === "/ledger/category/update_one:id") connect_db_update_data(...actualParameter, 'Category')
-
-        // SYNC DB DATA
-        if (params.pathname === "/sync.db") {
-          let urls = JSON.parse(data)
-          dataOperate(urls?.url1, urls?.url2)
-          response.writeHead(200, { 'Content-Type': 'application/json' })
-          response.end(JSON.stringify(record));
-        }
       })
       break;
 

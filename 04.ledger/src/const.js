@@ -4,11 +4,6 @@ const ICON_FONT = createFromIconfontCN({
   scriptUrl: ['//at.alicdn.com/t/c/font_3663002_dt44meukv34.js'],
 });
 
-const MENU_ITEMS = [
-  { label: '列表', key: 'list' },
-  { label: '消费类型管理', key: 'manage' },
-];
-
 const ICON_LIST = [
   'icon-fastfood', 'icon-cooking', 'icon-fruits', 'icon-snacks', 'icon-feast',
   'icon-clothing', 'icon-daily',
@@ -24,11 +19,11 @@ const PAY_WAY_LIST = [
   { key: 'Credit_Card', label: '信用卡' }
 ]
 
-const REMOTE_ADDRESS = 'http://43.139.239.207:8800'
+// const REMOTE_ADDRESS = 'http://43.139.239.207:8800'
+const REMOTE_ADDRESS = 'http://127.0.0.1:8800'
 
 export {
   ICON_FONT,
-  MENU_ITEMS,
   ICON_LIST,
   PAY_WAY_LIST,
   REMOTE_ADDRESS

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux'
-import { Modal, Input, List, Spin, Drawer, Button, Divider, message, Tag } from 'antd';
+import { Modal, Input, List, Spin, Drawer, Button, Divider, message, Tag, Form, Space } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { get_ledger_list } from '@redux/actions'
 import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
@@ -82,6 +83,10 @@ const AddMultipleModal = props => {
     setMultiRecords('');
   }
 
+  const onFinish = (values) => {
+    console.log('Received values of form:', values);
+  };
+
   return (
     <>
       <Modal title="新增多条" open={props.showAddMultiModal}
@@ -89,7 +94,61 @@ const AddMultipleModal = props => {
         onCancel={handleModalCancel}
       >
         <Spin tip="Loading..." spinning={showSpinning}>
-          <Input.TextArea rows={5} style={{ resize: 'none' }} ref={multiRecordsRef} value={multiRecords} onChange={handleChange} />
+          <Form name="dynamic_form_nest_item" onFinish={onFinish}  style={{ maxWidth: 600, }} autoComplete="off">
+            <Form.List name="users">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{
+                        display: 'flex',
+                        marginBottom: 8,
+                      }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'first']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Missing first name',
+                          },
+                        ]}
+                      >
+                        <Input placeholder="First Name" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'last']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Missing last name',
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Last Name" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                      Add field
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+          {/* <Input.TextArea rows={5} style={{ resize: 'none' }} ref={multiRecordsRef} value={multiRecords} onChange={handleChange} /> */}
           <div className="text-danger font-12 mt-2">{errorMessages}</div>
         </Spin>
       </Modal>
