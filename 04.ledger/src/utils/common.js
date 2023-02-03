@@ -9,9 +9,21 @@ function generate_guid() {
   return uuid;
 };
 
+// 来自源数据mongodb默认生成的_id替换为key，
+// 1. react组件循环渲染就不用再手动添加key
+// 2. eslint no-underscore-dangle， eslint也不建议这种命名格式
 function map_list_insert_key(list) {
-  if (Array.isArray(list)) list.map(i => i.key = i._id || generate_guid())
-  return list
+  if (Array.isArray(list)) {
+    return list.map(i => {
+      let key = i._id || generate_guid();
+      delete i._id;
+      console.log(key)
+      return {
+        ...i,
+        key,
+      }
+    })
+  } else return []
 }
 
 function calcu_char_code(str) {

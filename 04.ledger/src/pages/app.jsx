@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {Layout, Spin, ConfigProvider} from 'antd';
-
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { Layout, Spin, ConfigProvider } from 'antd';
 import {
-  get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spinning,
+  get_ledger_category, get_ledger_subtypes, get_ledger_list, handle_app_spinning,
 } from '@redux/actions';
 import zhCN from 'antd/es/locale/zh_CN';
 import AddMultipleModal from './add_multiple.modal';
@@ -13,22 +12,33 @@ import LedgerListTable from './ledger_list.table';
 let hasInitData = false; // 控制初始化只请求一次数据
 
 function App(props) {
-  const [showAddMultiModal, setShowAddMultiModal] = useState(false);
-  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(false);
+  const [showAddMultiModal, setShowAddMultiModal] = useState(true); // 是否展示添加多行记录的模态框
+  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(false); // 是否展示类型管理的模态框
+  const {
+    handle_app_spinning: handle_app_spingning_status, // 控制spinning展示
+    get_ledger_category: get_ledger_category_data,
+    get_ledger_subtypes: get_ledger_subtypes_data,
+    get_ledger_list: get_ledger_list_data,
+    appSpinning,
+  } = props;
 
   useEffect(() => {
     if (!hasInitData) {
       hasInitData = true;
-      props.set_app_spinning(true);
-      Promise.all([props.get_ledger_category(), props.get_ledger_subtypes(), props.get_ledger_list()]).then(() => {
-        props.set_app_spinning(false);
+      handle_app_spingning_status(true);
+      Promise.all([
+        get_ledger_category_data(),
+        get_ledger_subtypes_data(),
+        get_ledger_list_data(),
+      ]).then(() => {
+        handle_app_spingning_status(false);
       });
     }
   });
 
   return (
     <ConfigProvider locale={zhCN}>
-      <Spin tip="Loading..." spinning={props.appSpinning}>
+      <Spin tip="Loading..." spinning={appSpinning}>
         <Layout>
           <Layout.Content className="container font-14 py-4">
             <LedgerListTable
@@ -56,5 +66,5 @@ export default connect((state) => ({
   ledgerList: state.ledgerList,
   appSpinning: state.appSpinning,
 }), {
-  get_ledger_category, get_ledger_subtypes, get_ledger_list, set_app_spinning,
+  get_ledger_category, get_ledger_subtypes, get_ledger_list, handle_app_spinning,
 })(App);

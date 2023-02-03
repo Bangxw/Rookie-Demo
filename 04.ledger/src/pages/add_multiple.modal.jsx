@@ -1,199 +1,174 @@
-import React, { useState, useRef } from 'react';
-import { connect } from 'react-redux'
-import { Modal, Input, List, Spin, Drawer, Button, Divider, message, Tag, Form, Space } from 'antd';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import {
+  Modal,
+  Input,
+  Spin,
+  Button,
+  Divider,
+  Form,
+  Space,
+  DatePicker,
+  InputNumber,
+  Select,
+  message,
+} from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import RenderSubtype from '@components';
+import { get_ledger_list } from '@redux/actions';
+import { PAY_WAY_LIST } from '@/const';
 
-import { get_ledger_list } from '@redux/actions'
-import { ICON_FONT as IconFont, PAY_WAY_LIST } from '@/const'
+function meraged_subtype_by_category(data) {
+  const categorySubtypes = {};
+  data.forEach((item) => {
+    if (!categorySubtypes[item.categoryID]) categorySubtypes[item.categoryID] = [];
+    categorySubtypes[item.categoryID].push(item);
+  });
+  return categorySubtypes;
+}
 
-
-const AddMultipleModal = props => {
-  const multiRecordsRef = useRef(null);
-  const [multiRecords, setMultiRecords] = useState('')
+function AddMultipleModal(props) {
+  const {
+    ledgerCategory,
+    ledgerSubTypes,
+    onShowAddMultiModal,
+    showAddMultiModal,
+    get_ledger_list: get_ledger_list_data,
+  } = props;
+  const mergedSubtypes = meraged_subtype_by_category(ledgerSubTypes);
   const [showSpinning, setShowSpinning] = useState(false);
-  const [showDrawer, setShowshowDrawer] = useState(true);
-  const [errorMessages, setErrorMessages] = useState('');
+  const [form] = Form.useForm();
 
-  const handleChange = e => {
-    setMultiRecords(e.target.value)
-  }
-
-  const handleOkSubmit = e => {
-    const insetData = []
-    setErrorMessages('')
-    try {
-      if (multiRecords.replace(/\s/g, '') === '') throw new Error(`请至少输入一组数据`)
-      let arrMutiRecords = multiRecords.split('\n')
-      if (Array.isArray(arrMutiRecords)) {
-        arrMutiRecords.forEach((rowItem, index) => {
-          const arrRowItem = rowItem.split(' ')
-          if (arrRowItem.length < 4) throw new Error(`第${index + 1}行数据校验出错，请检查是否有多的空格、多输入或少输入数据`)
-
-          const [date, subtype, payway, amount, description] = arrRowItem
-          if ((new Date(date)).toString() === 'Invalid Date') throw new Error(`第${index + 1}行数据检验出错，请检查时间格式`)
-
-          let subtypeID = null;
-          props.ledgerSubTypes.forEach(item => {
-            if (item.text.includes(subtype)) subtypeID = item._id;
-          })
-          if (!subtypeID) throw new Error(`第${index + 1}行数据-类别校验异常，请输入预定义的类别`)
-
-          let strPayway = null
-          PAY_WAY_LIST.forEach((item, index) => {
-            if (item.label.includes(payway)) strPayway = item.key;
-          })
-          if (!strPayway) throw new Error(`第${index + 1}行数据-支付途径校验异常，请输入预定义的支付途径`)
-
-          // eslint-disable-next-line eqeqeq
-          if (parseFloat(amount) != amount) throw new Error(`第${index + 1}行数据-金额校验异常，金额只支持数字和小数点`)
-
-          insetData.push({
-            date: new Date(date).getTime(),
-            amount: parseFloat(amount),
-            subtype_id: subtypeID,
-            payway: strPayway,
-            description
-          })
-        })
-      }
-    } catch (error) {
-      multiRecordsRef.current?.focus();
-      setErrorMessages(error.toString())
-      return;
+  const handleOkSubmit = async () => {
+    const formFields = await form.validateFields();
+    let formData = formFields.billlist;
+    if (Array.isArray(formData)) {
+      formData = formData.map((item) => ({
+        ...item,
+        date: new Date(item.date.format('YYYY-MM-DD')).getTime(), // 把时间精确到天
+        amount: parseFloat(item.amount),
+      }));
     }
-
-    setShowSpinning(true)
+    setShowSpinning(true);
     fetch('http://127.0.0.1:8800/ledger/bill_list/insert', {
       method: 'POST',
-      body: JSON.stringify(insetData)
-    }).then(response => response.json())
-      .then(response => {
-        props.get_ledger_list().then(() => {
-          setShowSpinning(false)
+      body: JSON.stringify(formData),
+    }).then((response) => response.json())
+      .then((response) => {
+        get_ledger_list_data().then(() => {
+          setShowSpinning(false);
           message.success(response.message);
-          props.onShowAddMultiModal(false)
-        })
+          onShowAddMultiModal(false);
+        });
       });
-  }
+  };
 
   const handleModalCancel = () => {
-    setShowshowDrawer(true)
-    props.onShowAddMultiModal(false);
-    setErrorMessages('');
-    setMultiRecords('');
-  }
-
-  const onFinish = (values) => {
-    console.log('Received values of form:', values);
+    onShowAddMultiModal(false);
   };
 
   return (
-    <>
-      <Modal title="新增多条" open={props.showAddMultiModal}
-        onOk={handleOkSubmit}
-        onCancel={handleModalCancel}
-      >
-        <Spin tip="Loading..." spinning={showSpinning}>
-          <Form name="dynamic_form_nest_item" onFinish={onFinish}  style={{ maxWidth: 600, }} autoComplete="off">
-            <Form.List name="users">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Space
-                      key={key}
-                      style={{
-                        display: 'flex',
-                        marginBottom: 8,
-                      }}
-                      align="baseline"
+    <Modal
+      title="新增消费记录"
+      width="650px"
+      open={showAddMultiModal}
+      onOk={handleOkSubmit}
+      onCancel={handleModalCancel}
+    >
+      <Spin tip="Loading..." spinning={showSpinning}>
+        <Form name="dynamic_form_nest_item" autoComplete="off" form={form}>
+          {/* Form.List initialValue初始化渲染就展示一项 */}
+          <Form.List name="billlist" initialValue={[{}]}>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Space
+                    key={key}
+                    style={{ display: 'flex' }}
+                    align="baseline"
+                  >
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'date']}
+                      className="my-1"
+                      rules={[{ message: 'Required!', required: true }]}
                     >
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'first']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Missing first name',
-                          },
-                        ]}
-                      >
-                        <Input placeholder="First Name" />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'last']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Missing last name',
-                          },
-                        ]}
-                      >
-                        <Input placeholder="Last Name" />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={() => remove(name)} />
-                    </Space>
-                  ))}
-                  <Form.Item>
-                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                      Add field
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
-          {/* <Input.TextArea rows={5} style={{ resize: 'none' }} ref={multiRecordsRef} value={multiRecords} onChange={handleChange} /> */}
-          <div className="text-danger font-12 mt-2">{errorMessages}</div>
-        </Spin>
-      </Modal>
-
-      <Drawer placement="left" mask={false}
-        title={<IconFont type='icon-help' className="font-24 text-purple" />}
-        closable={false}
-        open={props.showAddMultiModal && showDrawer}
-        extra={<Button type="primary" danger onClick={() => setShowshowDrawer(false)}>Close</Button>}
-      >
-        <div className='multi-records-desc font-13'>
-          <p>示例：每组数据之间用空格分隔，分别表示<strong className='text-purple'>日期、消费类别、支付途径和金额</strong></p>
-          <p className='p-2 my-4 borderd'>
-            <small>2022-11-20 外卖/快餐 支付宝 8.88</small><br />
-            <small>2022-11-21 3C 微信 0.55</small><br />
-            <small>2022-11-22 衣服 信用卡 500</small><br />
-            <small>...</small>
-          </p>
-          <Divider orientation="left" style={{ fontSize: '12px', color: '#00f' }}>其中支付途径如下：</Divider>
-          <p className='mb-4 pl-4'>
-            {PAY_WAY_LIST.map((item, index) => <code key={index} className="mr-2">{item.label}</code>)}
-          </p>
-          <Divider orientation="left" style={{ fontSize: '12px', color: '#00f' }}>消费类别分类如下：</Divider>
-          {
-            <List size="small" bordered dataSource={props.ledgerCategory} renderItem={(_, i) => (
-              <List.Item className='font-13'>
-                {
-                  <div>
-                    <strong className='user-select-none mr-2'>{_.text}: </strong>
-                    {props.ledgerSubTypes.filter(item => item.categoryID === _._id).map((item, index) => <Tag key={index} className='my-1'>{item.text}</Tag>)}
-                  </div>
-                }
-              </List.Item>
-            )} />
-          }
-        </div>
-      </Drawer>
-    </>
+                      <DatePicker placeholder="日期" style={{ width: '110px' }} />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'amount']}
+                      className="my-1"
+                      rules={[{ message: 'Required!', required: true }]}
+                    >
+                      <InputNumber placeholder="金额" style={{ width: '70px' }} />
+                    </Form.Item>
+                    <Form.Item
+                      width="100px"
+                      {...restField}
+                      name={[name, 'subtype_id']}
+                      className="my-1"
+                      rules={[{ message: 'Required!', required: true }]}
+                    >
+                      <Select placeholder="消费类型" style={{ width: '140px' }}>
+                        {Object.keys(mergedSubtypes).map((record) => (
+                          <Select.OptGroup
+                            key={record}
+                            label={(
+                              <Divider orientation="left" plain className="m-0">
+                                { ledgerCategory.find((item) => item.key === record)?.text }
+                              </Divider>
+                            )}
+                          >
+                            {
+                              mergedSubtypes[record].map((_) => (
+                                <Select.Option key={_.key} className="font-12">
+                                  <RenderSubtype subtype={_} />
+                                </Select.Option>
+                              ))
+                            }
+                          </Select.OptGroup>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'payway']}
+                      className="my-1"
+                      rules={[{ message: 'Required!', required: true }]}
+                    >
+                      <Select placeholder="支付途径" style={{ width: '100px' }}>
+                        {PAY_WAY_LIST.map((item) => (
+                          <Select.Option value={item.key} key={item.key}>
+                            {item.label}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item {...restField} className="my-1" name={[name, 'description']}>
+                      <Input placeholder="备注" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </Space>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                    Add field
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        </Form>
+      </Spin>
+    </Modal>
   );
-};
+}
 
 export default connect(
-  state => ({
-    ledgerSubTypes: state.ledgerSubTypes,
+  (state) => ({
     ledgerCategory: state.ledgerCategory,
+    ledgerSubTypes: state.ledgerSubTypes,
   }),
-  { get_ledger_list }
+  { get_ledger_list },
 )(AddMultipleModal);

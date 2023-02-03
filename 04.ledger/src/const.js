@@ -10,21 +10,21 @@ const ICON_LIST = [
   'icon-bus', 'icon-taxi', 'icon-plain', 'icon-fuel-up', 'icon-parking',
   'icon-switch', 'icon-call-plan', 'icon-badminton',
   'icon-house-rent', 'icon-red-envelope', 'icon-family', 'icon-baby', 'icon-gift',
-  'icon-unknown'
-]
+  'icon-unknown',
+];
 
 const PAY_WAY_LIST = [
   { key: 'Alipay', label: '支付宝' },
   { key: 'WeChat_pay', label: '微信' },
-  { key: 'Credit_Card', label: '信用卡' }
-]
+  { key: 'Credit_Card', label: '信用卡' },
+];
 
 // const REMOTE_ADDRESS = 'http://43.139.239.207:8800'
-const REMOTE_ADDRESS = 'http://127.0.0.1:8800'
+const REMOTE_ADDRESS = 'http://127.0.0.1:8800';
 
 export {
   ICON_FONT,
   ICON_LIST,
   PAY_WAY_LIST,
-  REMOTE_ADDRESS
-}
+  REMOTE_ADDRESS,
+};

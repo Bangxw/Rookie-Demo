@@ -1,14 +1,17 @@
-import { map_list_insert_key } from '@utils/common'
+import { map_list_insert_key } from '@utils/common';
 
 const ORIGIN_DATA = {
-  ledgerCategory: map_list_insert_key([]),
-  ledgerSubTypes: map_list_insert_key([]),
-  ledgerList: map_list_insert_key([]),
-  appSpinning: false
-}
+  ledgerCategory: [],
+  ledgerSubTypes: [],
+  ledgerList: [],
+  appSpinning: false,
+};
 
+// eslint-disable-next-line default-param-last
 export default function countReduce(preState = ORIGIN_DATA, action) {
-  const { type, ledgerCategory, ledgerSubTypes, ledgerList, appSpinning } = action
+  const {
+    type, ledgerCategory, ledgerSubTypes, ledgerList, appSpinning,
+  } = action;
   switch (type) {
     case 'UPDATE_LEDGER_CATEGORY': return { ...preState, ledgerCategory: map_list_insert_key(ledgerCategory) };
     case 'UPDATE_LEDGER_SUBTYPES': return { ...preState, ledgerSubTypes: map_list_insert_key(ledgerSubTypes) };
