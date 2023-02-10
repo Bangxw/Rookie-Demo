@@ -83,8 +83,8 @@ const server = http.createServer((request, response) => {
   switch (method) {
     case 'GET':
       if (pathname === '/ledger/category') connect_db_find_data(COLLECTION_CATEGORY, ...actualParameter);
-      if (pathname === '/ledger/sub_types') connect_db_find_data(COLLECTION_SUBTYPES, ...actualParameter);
-      if (pathname === '/ledger/bill_list') connect_db_find_data(COLLECTION_BILLLIST, ...actualParameter);
+      if (pathname === '/ledger/subtypes') connect_db_find_data(COLLECTION_SUBTYPES, ...actualParameter);
+      if (pathname === '/ledger/billlist') connect_db_find_data(COLLECTION_BILLLIST, ...actualParameter);
       break;
 
     case 'POST':
@@ -100,19 +100,19 @@ const server = http.createServer((request, response) => {
         }
 
         // INSERT DATA
-        if (pathname === '/ledger/bill_list/insert') connect_db_insert_many_data(COLLECTION_BILLLIST, ...actualParameter);
-        if (pathname === '/ledger/sub_types/insert') connect_db_insert_many_data(COLLECTION_SUBTYPES, ...actualParameter);
+        if (pathname === '/ledger/billlist/insert') connect_db_insert_many_data(COLLECTION_BILLLIST, ...actualParameter);
+        if (pathname === '/ledger/subtypes/insert') connect_db_insert_many_data(COLLECTION_SUBTYPES, ...actualParameter);
         if (pathname === '/ledger/category/insert') connect_db_insert_many_data(COLLECTION_CATEGORY, ...actualParameter);
 
         //  DELETE DATA
-        if (pathname === '/ledger/bill_list/delete_one:id') connect_db_delete_data(COLLECTION_BILLLIST, ...actualParameter);
-        if (pathname === '/ledger/bill_list/delete:ids') connect_db_delete_many_data(COLLECTION_BILLLIST, ...actualParameter);
-        if (pathname === '/ledger/sub_types/delete_one:id') connect_db_delete_data(COLLECTION_SUBTYPES, ...actualParameter);
+        if (pathname === '/ledger/billlist/delete_one:id') connect_db_delete_data(COLLECTION_BILLLIST, ...actualParameter);
+        if (pathname === '/ledger/billlist/delete:ids') connect_db_delete_many_data(COLLECTION_BILLLIST, ...actualParameter);
+        if (pathname === '/ledger/subtypes/delete_one:id') connect_db_delete_data(COLLECTION_SUBTYPES, ...actualParameter);
         if (pathname === '/ledger/category/delete_one:id') connect_db_delete_data(COLLECTION_CATEGORY, ...actualParameter);
 
         // UPDATE DATA
-        if (pathname === '/ledger/bill_list/update_one:id') connect_db_update_data(COLLECTION_BILLLIST, ...actualParameter);
-        if (pathname === '/ledger/sub_types/update_one:id') connect_db_update_data(COLLECTION_SUBTYPES, ...actualParameter);
+        if (pathname === '/ledger/billlist/update_one:id') connect_db_update_data(COLLECTION_BILLLIST, ...actualParameter);
+        if (pathname === '/ledger/subtypes/update_one:id') connect_db_update_data(COLLECTION_SUBTYPES, ...actualParameter);
         if (pathname === '/ledger/category/update_one:id') connect_db_update_data(COLLECTION_CATEGORY, ...actualParameter);
       });
       break;

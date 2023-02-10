@@ -1,0 +1,18 @@
+{
+  "ledger_list": "Ledger List",
+  "subtypes_control": "Subtypes Control",
+  "details": "Details",
+  "display_by_day": "Display By Day",
+  "dashboard": "Dashboard",
+  "current_week": "Current Week",
+  "current_month": "Current Month",
+  "current_year": "Current Year",
+  "date": "Date",
+  "amount": "Amount",
+  "pay_way": "Pay Way",
+  "subtype": "Subtype",
+  "description": "Description",
+  "operation": "Operation",
+  "delete_selected": "Delete Selected",
+  "summary": "Summary"
+}
