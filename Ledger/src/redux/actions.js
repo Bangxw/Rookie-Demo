@@ -45,7 +45,7 @@ export const fetch_ledger_billlist_data = () => (dispatch) => fetch_plus(`${FETC
   .then((response) => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST,
-      ledgerCategory: response.data,
+      ledgerBilllist: response.data,
     });
   })
   .catch(() => {

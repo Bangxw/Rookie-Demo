@@ -66,6 +66,7 @@ function BilllistTable({
   const [billlistForm] = Form.useForm();
   const [editingRowKey, setEditingRowKey] = useState(''); // 当前正在编辑行的key值
   const [datePickerRange, setDatePickerRange] = useState(-1); // -1 => 展示所有数据，其它展示指定时间段数据
+  // eslint-disable-next-line no-unused-vars
   const [showDashboard, setShowDashboard] = useState(false); // 是否展示dashboard
 
   // 编辑当前行
@@ -122,8 +123,8 @@ function BilllistTable({
       });
   };
 
-  let rDate = null;
-  const rowSpanIndex = null;
+  // const rDate = null;
+  // const rowSpanIndex = null;
   const basicTableColumns = [{ // ID
     title: 'ID',
     width: '50px',
@@ -140,17 +141,17 @@ function BilllistTable({
     render(text) {
       return moment(text).format('YYYY-MM-DD');
     },
-    onCell(_, index) {
-      // 同一天的数据合并天展示
-      // 调试发现每组数据会有多次渲染，所以把rowSpan记录到index上
-      if (_.date !== rDate) {
-        rDate = _.date;
-        rowSpanIndex[index] = ledgerBilllist.filter(
-          (item) => item.date === rDate,
-        ).length;
-      }
-      return { rowSpan: rowSpanIndex[index] || 0 };
-    },
+    // onCell(_, index) {
+    //   // 同一天的数据合并天展示
+    //   // 调试发现每组数据会有多次渲染，所以把rowSpan记录到index上
+    //   if (_.date !== rDate) {
+    //     rDate = _.date;
+    //     rowSpanIndex[index] = ledgerBilllist.filter(
+    //       (item) => item.date === rDate,
+    //     ).length;
+    //   }
+    //   return { rowSpan: rowSpanIndex[index] || 0 };
+    // },
   }, { // 金额
     dataIndex: 'amount',
     title: i18n.t('amount_1'),
@@ -245,49 +246,29 @@ function BilllistTable({
   });
 
   return (
-    <>
-      {/* 书签式菜单 */}
-      <div className="bookmarks-menu">
-        <ul>
-          <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
-            Toggle Show
-          </li>
-        </ul>
+    <Card type="inner" className="mb-4">
+      <div className="space-between-flex">
+        <div>
+          <Button
+            type="primary"
+            className="mr-3"
+          >
+            Add Items
+          </Button>
+          <Button
+            type="primary"
+            danger
+          >
+            Delete Selected
+          </Button>
+        </div>
+        <RenderDatePickerControl
+          datePickerRange={datePickerRange}
+          setDatePickerRange={setDatePickerRange}
+        />
       </div>
 
-      <Card type="inner" className="mb-4">
-        <div className="space-between-flex">
-          <div>
-            <Button
-              type="primary"
-              className="mr-3"
-            // onClick={() => onShowAddMultiModal(true)}
-            >
-              Add Items
-            </Button>
-            <Button
-              type="primary"
-              className="mr-3"
-            // onClick={() => onShowSubtypeManageModal(true)}
-            >
-              Subtype Manage
-            </Button>
-            <Button
-              type="primary"
-              danger
-            // disabled={selectedRowKeys.length === 0}
-            // onClick={handleDeleteMany}
-            >
-              Delete Selected
-            </Button>
-          </div>
-          <RenderDatePickerControl
-            datePickerRange={datePickerRange}
-            setDatePickerRange={setDatePickerRange}
-          />
-        </div>
-
-        {
+      {
           showDashboard
             ? <div>111</div>
             : (
@@ -306,8 +287,7 @@ function BilllistTable({
               </Form>
             )
         }
-      </Card>
-    </>
+    </Card>
   );
 }
 BilllistTable.propTypes = {

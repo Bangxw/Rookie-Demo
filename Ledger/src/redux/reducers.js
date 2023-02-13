@@ -34,7 +34,7 @@ export default function reducer(preState = originData, {
     case ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST:
       return {
         ...preState,
-        ledgerSubtypes: map_list_insert_key(ledgerBilllist),
+        ledgerBilllist: map_list_insert_key(ledgerBilllist),
       };
 
     case ACTIONS_TYPE_UPDATE_APP_SPINNING:

@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Layout, Spin, ConfigProvider } from 'antd';
+import { Spin, ConfigProvider } from 'antd';
 import { PropTypes } from 'prop-types';
 import * as actions from '@redux/actions';
 import BilllistTable from '@pages/ledger_billlist.table';
+import CategorySubtypesModal from '@pages/ledger_category_subtypes';
 
 let hasInitData = false; // 控制初始化只请求一次数据
 
@@ -14,6 +15,9 @@ function App({
   fetch_ledger_subtypes_data,
   fetch_ledger_billlist_data,
 }) {
+  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(true);
+  const [showDashboard, setShowDashboard] = useState(true);
+
   // init 请求所有数据
   useEffect(() => {
     if (!hasInitData) {
@@ -32,12 +36,26 @@ function App({
   return (
     <ConfigProvider>
       <Spin spinning={appSpinning}>
-        {/* layout布局 */}
-        <Layout>
-          <Layout.Content className="container font-14 py-4">
-            <BilllistTable />
-          </Layout.Content>
-        </Layout>
+        {/* 消费列表 */}
+        <main className="container font-14 py-4">
+          {/* 书签式菜单 */}
+          <div className="bookmarks-menu">
+            <ul>
+              <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
+                Toggle Show
+              </li>
+              <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
+                Subtype Manage
+              </li>
+            </ul>
+          </div>
+          <BilllistTable setShowSubtypeManageModal={setShowSubtypeManageModal} />
+        </main>
+
+        <CategorySubtypesModal
+          showSubtypeManageModal={showSubtypeManageModal}
+          onShowSubtypeManageModal={(value) => setShowSubtypeManageModal(value)}
+        />
       </Spin>
     </ConfigProvider>
   );
