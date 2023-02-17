@@ -1,9 +1,10 @@
-export const FETCH_URL = 'http://127.0.0.1:8800';
+export const FETCH_URL = 'http://43.139.232.124:8800';
+export const ICON_FONT_URL = '//at.alicdn.com/t/c/font_3663002_y8pqqde4mcm.js';
 
-export const ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY = 'update ledger category';
-export const ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES = 'update ledger subtypes';
-export const ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST = 'update ledger billlist';
-export const ACTIONS_TYPE_UPDATE_APP_SPINNING = 'update app spinning';
+export const ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY = 'update_ledger_category';
+export const ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES = 'update_ledger_subtypes';
+export const ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST = 'update_ledger_billlist';
+export const ACTIONS_TYPE_UPDATE_APP_SPINNING = 'update_app_spinning';
 
 export const ICON_LIST = [
   'icon-fastfood', 'icon-cooking', 'icon-fruits', 'icon-snacks', 'icon-feast',

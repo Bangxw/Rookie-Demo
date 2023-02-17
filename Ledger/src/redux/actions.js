@@ -29,13 +29,13 @@ export const fetch_ledger_subtypes_data = () => (dispatch) => fetch_plus(`${FETC
   .then((response) => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES,
-      ledgerCategory: response.data,
+      ledgerSubtypes: response.data,
     });
   })
   .catch(() => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES,
-      ledgerCategory: [],
+      ledgerSubtypes: [],
     });
   });
 

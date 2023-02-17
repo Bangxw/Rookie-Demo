@@ -14,5 +14,6 @@
   "description": "Description",
   "operation": "Operation",
   "delete_selected": "Delete Selected",
-  "summary": "Summary"
+  "summary": "Summary",
+  "add_new_record": "Add new record"
 }

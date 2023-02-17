@@ -1,43 +1,24 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
 import {
-  Modal,
-  Input,
-  Spin,
-  Button,
-  Divider,
-  Form,
-  Space,
-  DatePicker,
-  InputNumber,
-  Select,
-  message,
+  Modal, Input, Spin, Button, Form, Space, DatePicker, InputNumber, Select, message,
 } from 'antd';
+import * as actions from '@redux/actions';
+import { FETCH_URL, PAY_WAY_LIST } from '@src/const';
+import { RenderSubtypesByCategory } from '@components/render_subtype';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import RenderSubtype from '@components';
-import { get_ledger_list } from '@redux/actions';
-import { PAY_WAY_LIST } from '@/const';
 
-function meraged_subtype_by_category(data) {
-  const categorySubtypes = {};
-  data.forEach((item) => {
-    if (!categorySubtypes[item.categoryID]) categorySubtypes[item.categoryID] = [];
-    categorySubtypes[item.categoryID].push(item);
-  });
-  return categorySubtypes;
-}
-
-function AddMultipleModal(props) {
-  const {
-    ledgerCategory,
-    ledgerSubTypes,
-    onShowAddMultiModal,
-    showAddMultiModal,
-    get_ledger_list: get_ledger_list_data,
-  } = props;
-  const mergedSubtypes = meraged_subtype_by_category(ledgerSubTypes);
-  const [showSpinning, setShowSpinning] = useState(false);
+// 新增分类模态框
+function LedgerAddModal({
+  ledgerCategory,
+  ledgerSubtypes,
+  showLedgerAddModal,
+  setShowLedgerAddModal,
+  fetch_ledger_billlist_data,
+}) {
   const [form] = Form.useForm();
+  const [showSpinning, setShowSpinning] = useState(false);
 
   const handleOkSubmit = async () => {
     const formFields = await form.validateFields();
@@ -50,30 +31,26 @@ function AddMultipleModal(props) {
       }));
     }
     setShowSpinning(true);
-    fetch('http://127.0.0.1:8800/ledger/bill_list/insert', {
+    fetch(`${FETCH_URL}/ledger/billlist/insert`, {
       method: 'POST',
       body: JSON.stringify(formData),
     }).then((response) => response.json())
       .then((response) => {
-        get_ledger_list_data().then(() => {
+        fetch_ledger_billlist_data().then(() => {
           setShowSpinning(false);
           message.success(response.message);
-          onShowAddMultiModal(false);
+          setShowLedgerAddModal(false);
         });
       });
-  };
-
-  const handleModalCancel = () => {
-    onShowAddMultiModal(false);
   };
 
   return (
     <Modal
       title="新增消费记录"
-      width="650px"
-      open={showAddMultiModal}
+      width="750px"
+      open={showLedgerAddModal}
       onOk={handleOkSubmit}
-      onCancel={handleModalCancel}
+      onCancel={() => setShowLedgerAddModal(false)}
     >
       <Spin tip="Loading..." spinning={showSpinning}>
         <Form name="dynamic_form_nest_item" autoComplete="off" form={form}>
@@ -81,58 +58,41 @@ function AddMultipleModal(props) {
           <Form.List name="billlist" initialValue={[{}]}>
             {(fields, { add, remove }) => (
               <>
-                {fields.map(({ key, name, ...restField }) => (
+                {fields.map(({ key, name }) => (
                   <Space
                     key={key}
                     style={{ display: 'flex' }}
                     align="baseline"
                   >
                     <Form.Item
-                      {...restField}
                       name={[name, 'date']}
                       className="my-1"
                       rules={[{ message: 'Required!', required: true }]}
                     >
                       <DatePicker placeholder="日期" style={{ width: '110px' }} />
                     </Form.Item>
+
                     <Form.Item
-                      {...restField}
                       name={[name, 'amount']}
                       className="my-1"
                       rules={[{ message: 'Required!', required: true }]}
                     >
-                      <InputNumber placeholder="金额" style={{ width: '70px' }} />
+                      <InputNumber placeholder="金额" style={{ width: '100px' }} />
                     </Form.Item>
+
                     <Form.Item
                       width="100px"
-                      {...restField}
                       name={[name, 'subtype_id']}
                       className="my-1"
                       rules={[{ message: 'Required!', required: true }]}
                     >
-                      <Select placeholder="消费类型" style={{ width: '140px' }}>
-                        {Object.keys(mergedSubtypes).map((record) => (
-                          <Select.OptGroup
-                            key={record}
-                            label={(
-                              <Divider orientation="left" plain className="m-0">
-                                { ledgerCategory.find((item) => item.key === record)?.text }
-                              </Divider>
-                            )}
-                          >
-                            {
-                              mergedSubtypes[record].map((_) => (
-                                <Select.Option key={_.key} className="font-12">
-                                  <RenderSubtype subtype={_} />
-                                </Select.Option>
-                              ))
-                            }
-                          </Select.OptGroup>
-                        ))}
-                      </Select>
+                      <RenderSubtypesByCategory
+                        ledgerCategory={ledgerCategory}
+                        ledgerSubtypes={ledgerSubtypes}
+                      />
                     </Form.Item>
+
                     <Form.Item
-                      {...restField}
                       name={[name, 'payway']}
                       className="my-1"
                       rules={[{ message: 'Required!', required: true }]}
@@ -145,13 +105,15 @@ function AddMultipleModal(props) {
                         ))}
                       </Select>
                     </Form.Item>
-                    <Form.Item {...restField} className="my-1" name={[name, 'description']}>
+
+                    <Form.Item className="my-1" name={[name, 'description']}>
                       <Input placeholder="备注" />
                     </Form.Item>
                     <MinusCircleOutlined onClick={() => remove(name)} />
                   </Space>
                 ))}
-                <Form.Item>
+
+                <Form.Item className="mt-2">
                   <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add field
                   </Button>
@@ -164,11 +126,30 @@ function AddMultipleModal(props) {
     </Modal>
   );
 }
+LedgerAddModal.propTypes = {
+  ledgerCategory: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
+  ledgerSubtypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      icon: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+      categoryID: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
+  showLedgerAddModal: PropTypes.bool.isRequired,
+  setShowLedgerAddModal: PropTypes.func.isRequired,
+  fetch_ledger_billlist_data: PropTypes.func.isRequired,
+};
 
 export default connect(
   (state) => ({
     ledgerCategory: state.ledgerCategory,
-    ledgerSubTypes: state.ledgerSubTypes,
+    ledgerSubtypes: state.ledgerSubtypes,
   }),
-  { get_ledger_list },
-)(AddMultipleModal);
+  { fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data },
+)(LedgerAddModal);

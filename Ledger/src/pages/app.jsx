@@ -1,10 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Spin, ConfigProvider } from 'antd';
 import { PropTypes } from 'prop-types';
 import * as actions from '@redux/actions';
-import BilllistTable from '@pages/ledger_billlist.table';
-import CategorySubtypesModal from '@pages/ledger_category_subtypes';
+
+import LedgerList from '@pages/ledger_list';
+import LedgerAddModal from '@pages/ledger_add.modal';
+import CategorySubtypesModal from '@pages/ledger_category_subtypes/index';
 
 let hasInitData = false; // 控制初始化只请求一次数据
 
@@ -15,8 +18,9 @@ function App({
   fetch_ledger_subtypes_data,
   fetch_ledger_billlist_data,
 }) {
-  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(true);
-  const [showDashboard, setShowDashboard] = useState(true);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [showLedgerAddModal, setShowLedgerAddModal] = useState(false);
+  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(false); // categorysubtypes管理
 
   // init 请求所有数据
   useEffect(() => {
@@ -36,7 +40,6 @@ function App({
   return (
     <ConfigProvider>
       <Spin spinning={appSpinning}>
-        {/* 消费列表 */}
         <main className="container font-14 py-4">
           {/* 书签式菜单 */}
           <div className="bookmarks-menu">
@@ -44,13 +47,20 @@ function App({
               <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
                 Toggle Show
               </li>
-              <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
+              <li onClick={() => { setShowSubtypeManageModal(true); }} aria-hidden="true">
                 Subtype Manage
               </li>
             </ul>
           </div>
-          <BilllistTable setShowSubtypeManageModal={setShowSubtypeManageModal} />
+          {/* 消费列表 */}
+          <LedgerList setShowLedgerAddModal={setShowLedgerAddModal} />
         </main>
+
+        {/* 新增消费记录模态框 */}
+        <LedgerAddModal
+          showLedgerAddModal={showLedgerAddModal}
+          setShowLedgerAddModal={(value) => setShowLedgerAddModal(value)}
+        />
 
         <CategorySubtypesModal
           showSubtypeManageModal={showSubtypeManageModal}

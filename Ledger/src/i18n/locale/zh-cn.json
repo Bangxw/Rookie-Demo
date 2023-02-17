@@ -17,5 +17,6 @@
   "description": "备注",
   "operation": "操作",
   "delete_selected": "删除选中",
-  "summary": "小结"
+  "summary": "小结",
+  "add_items": "新增"
 }

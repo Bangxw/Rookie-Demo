@@ -1,13 +1,27 @@
 /* eslint-disable no-console */
+// const express = require('express');
+
+// const app = express();
+
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+// });
+
+// app.listen(8800, () => {
+//   console.log('server listen at http://127.0.0.1:8800!');
+// });
+
+// return;
+
 const http = require('http');
 const url = require('url');
 const { MongoClient } = require('mongodb');
 const { ObjectId } = require('mongodb');
 
 const DB_URL = 'mongodb://127.0.0.1:27017';
-const COLLECTION_BILLLIST = 'BillList';
-const COLLECTION_CATEGORY = 'Category';
-const COLLECTION_SUBTYPES = 'SubTypes';
+const COLLECTION_BILLLIST = 'billlist';
+const COLLECTION_CATEGORY = 'category';
+const COLLECTION_SUBTYPES = 'subtypes';
 
 function handle_mongo_connect(handleDBaseOperate, [
   collectionName, response,
@@ -65,11 +79,12 @@ function connect_db_delete_many_data(...rest) {
 
 function connect_db_update_data(...rest) {
   const payload = rest[2];
+  console.log(payload);
   handle_mongo_connect((dbase) => dbase.updateOne({ _id: ObjectId(payload.id) }, { $set: payload.data }), rest, 'UPDATE');
 }
 
 const server = http.createServer((request, response) => {
-  response.setHeader('Access-Control-Allow-Origin', '*');
+  // response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type'); // 可以支持的消息首部列表
   response.setHeader('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS'); // 可以支持的提交方式
   response.setHeader('Content-Type', 'application/json;charset=utf-8'); // 响应头中定义的类型

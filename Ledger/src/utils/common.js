@@ -17,7 +17,6 @@ export const map_list_insert_key = (list) => {
     return list.map((i) => {
       const key = i._id || generate_guid();
       delete i._id;
-      console.log(key);
       return {
         ...i,
         key,
@@ -39,4 +38,14 @@ export async function fetch_plus(resource, options = {}) {
   });
   clearTimeout(timer);
   return response;
+}
+
+// 按日期排序并且过滤为指定时间段内的数据
+export function filter_sort_data_by_date_range(data, dateRange) {
+  const newData = data.sort((a, b) => a.date - b.date);
+  if (dateRange === -1) return newData;
+  return newData.filter(
+    (item) => moment(item.date).isAfter(dateRange[0], 'day')
+      && moment(item.date).isBefore(dateRange[1], 'day'),
+  );
 }
