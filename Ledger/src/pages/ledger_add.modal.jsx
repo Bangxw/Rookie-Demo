@@ -5,7 +5,8 @@ import {
   Modal, Input, Spin, Button, Form, Space, DatePicker, InputNumber, Select, message,
 } from 'antd';
 import * as actions from '@redux/actions';
-import { FETCH_URL, PAY_WAY_LIST } from '@src/const';
+import { PAY_WAY_LIST } from '@src/const';
+import { fetch_plus } from '@utils/common';
 import { RenderSubtypesByCategory } from '@components/render_subtype';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -31,10 +32,14 @@ function LedgerAddModal({
       }));
     }
     setShowSpinning(true);
-    fetch(`${FETCH_URL}/ledger/billlist/insert`, {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    fetch_plus('/ledger/billlist', {
       method: 'POST',
-      body: JSON.stringify(formData),
-    }).then((response) => response.json())
+      body: JSON.stringify(formData[0]),
+      headers: myHeaders,
+    })
       .then((response) => {
         fetch_ledger_billlist_data().then(() => {
           setShowSpinning(false);
@@ -63,6 +68,7 @@ function LedgerAddModal({
                     key={key}
                     style={{ display: 'flex' }}
                     align="baseline"
+                    wrap
                   >
                     <Form.Item
                       name={[name, 'date']}
@@ -82,7 +88,7 @@ function LedgerAddModal({
 
                     <Form.Item
                       width="100px"
-                      name={[name, 'subtype_id']}
+                      name={[name, 'subtype']}
                       className="my-1"
                       rules={[{ message: 'Required!', required: true }]}
                     >

@@ -4,7 +4,8 @@ import {
 } from 'antd';
 import { PropTypes } from 'prop-types';
 import { DeleteOutlined } from '@ant-design/icons';
-import { ICON_LIST, FETCH_URL } from '@src/const';
+import { ICON_LIST } from '@src/const';
+import { fetch_plus } from '@utils/common';
 import { ledgerCategoryPropTypes, ledgerSubtypesPropTypes } from '@utils/proptypes.config';
 import IconFont from '@components/iconfont';
 
@@ -44,12 +45,12 @@ export default function SubtypesManage({
       title: 'Confirm',
       onOk: () => {
         handle_app_spinning(true);
-        fetch(`${FETCH_URL}/ledger/subtypes/delete_one:id`, {
+        fetch_plus('/ledger/subtypes/delete_one:id', {
           method: 'POST',
           body: JSON.stringify({
             id,
           }),
-        }).then((response) => response.json())
+        })
           .then((response) => {
             fetch_ledger_subtypes_data().then(() => {
               handle_app_spinning(false);
@@ -64,7 +65,7 @@ export default function SubtypesManage({
     if (!activeSubtypeName) { message.warning('请输入类别名称', 5); return; }
     if (!activeSubtypeIcon) { message.warning('请选择一个图标', 5); return; }
 
-    let url = `${FETCH_URL}/ledger/subtypes/insert`;
+    let url = '/ledger/subtypes/insert';
     let data = {
       text: activeSubtypeName,
       icon: activeSubtypeIcon,
@@ -72,7 +73,7 @@ export default function SubtypesManage({
     };
 
     if (activeSubtypeID !== -1) { // 当前为编辑 subtype
-      url = `${FETCH_URL}/ledger/subtypes/update_one:id`;
+      url = '/ledger/subtypes/update_one:id';
       data = {
         id: activeSubtypeID,
         data,
@@ -80,10 +81,10 @@ export default function SubtypesManage({
     }
 
     setSubtypeAddEditModalSpinning(true);
-    fetch(url, {
+    fetch_plus(url, {
       method: 'POST',
       body: JSON.stringify(data),
-    }).then((response) => response.json())
+    })
       .then((response) => {
         fetch_ledger_subtypes_data().then(() => {
           setSubtypeAddEditModalSpinning(false);

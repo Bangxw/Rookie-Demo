@@ -7,10 +7,10 @@ import {
   Form, Table, Popconfirm, message, DatePicker, InputNumber, Input, Select, Typography,
 } from 'antd';
 import i18n from '@i18n';
+import * as actions from '@redux/actions';
 import RenderSubtype, { RenderSubtypesByCategory } from '@components/render_subtype';
-import { PAY_WAY_LIST, FETCH_URL } from '@src/const';
-import { fetch_ledger_billlist_data, handle_app_spinning } from '@redux/actions';
-import { filter_sort_data_by_date_range } from '@utils/common';
+import { PAY_WAY_LIST } from '@src/const';
+import { fetch_plus, filter_sort_data_by_date_range } from '@utils/common';
 
 // 渲染列表
 function LedgerListTable({
@@ -18,6 +18,8 @@ function LedgerListTable({
   ledgerCategory,
   ledgerSubtypes,
   datePickerRange,
+  handle_app_spinning,
+  fetch_ledger_billlist_data,
 }) {
   const [billlistForm] = Form.useForm();
   const [editingRowKey, setEditingRowKey] = useState(''); // 当前正在编辑行的key值
@@ -39,18 +41,18 @@ function LedgerListTable({
     const data = {
       date: new Date(row.date).getTime(),
       amount: parseFloat(row.amount),
-      subtype_id: row.subtype_id,
+      subtype: row.subtype,
       payway: row.payway,
     };
 
     handle_app_spinning(true);
-    fetch(`${FETCH_URL}/ledger/bill_list/update_one:id`, {
+    fetch_plus('/ledger/bill_list/update_one:id', {
       method: 'POST',
       body: JSON.stringify({
         id,
         data,
       }),
-    }).then((response) => response.json())
+    })
       .then(() => {
         // 修改成功后刷新列表
         fetch_ledger_billlist_data().then(() => {
@@ -63,12 +65,9 @@ function LedgerListTable({
   // 删除当前行
   const handleRecordDelete = (id) => {
     handle_app_spinning(true);
-    fetch('http://127.0.0.1:8800/ledger/bill_list/delete_one:id', {
-      method: 'POST',
-      body: JSON.stringify({
-        id,
-      }),
-    }).then((response) => response.json())
+    fetch_plus(`/ledger/billlist/${id}`, {
+      method: 'DELETE',
+    })
       .then((response) => {
         fetch_ledger_billlist_data().then(() => {
           handle_app_spinning(false);
@@ -91,12 +90,12 @@ function LedgerListTable({
     switch (dataIndex) {
       case 'date': inputNode = <DatePicker />; break;
       case 'amount': inputNode = <InputNumber />; break;
-      case 'subtype_id':
+      case 'subtype':
         inputNode = (
           <RenderSubtypesByCategory
             ledgerCategory={ledgerCategory}
             ledgerSubtypes={ledgerSubtypes}
-            initialValues={record.subtype_id}
+            initialValues={record.subtype}
           />
         );
         break;
@@ -193,7 +192,7 @@ function LedgerListTable({
       );
     },
   }, { // 消费类型
-    dataIndex: 'subtype_id',
+    dataIndex: 'subtype',
     title: i18n.t('subtype'),
     width: '180px',
     editable: true,
@@ -294,7 +293,7 @@ LedgerListTable.propTypes = { // 使用prop-type进行类型检查
       date: PropTypes.number.isRequired,
       amount: PropTypes.number.isRequired,
       payway: PropTypes.string.isRequired,
-      subtype_id: PropTypes.string.isRequired,
+      subtype: PropTypes.string.isRequired,
       description: PropTypes.string,
     }).isRequired,
   ).isRequired,
@@ -311,6 +310,8 @@ LedgerListTable.propTypes = { // 使用prop-type进行类型检查
     }).isRequired,
   ).isRequired,
   datePickerRange: PropTypes.number.isRequired,
+  fetch_ledger_billlist_data: PropTypes.func.isRequired,
+  handle_app_spinning: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -319,4 +320,8 @@ export default connect(
     ledgerSubtypes: state.ledgerSubtypes,
     ledgerBilllist: state.ledgerBilllist,
   }),
+  {
+    handle_app_spinning: actions.handle_app_spinning,
+    fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data,
+  },
 )(LedgerListTable);

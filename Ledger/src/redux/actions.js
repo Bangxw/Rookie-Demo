@@ -1,5 +1,4 @@
 import {
-  FETCH_URL,
   ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY,
   ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES,
   ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST,
@@ -8,12 +7,11 @@ import {
 import { fetch_plus } from '@utils/common';
 
 // 请求category的数据，并且dispatch指令给store
-export const fetch_ledger_category_data = () => (dispatch) => fetch_plus(`${FETCH_URL}/ledger/category`)
-  .then((response) => response.json())
+export const fetch_ledger_category_data = () => (dispatch) => fetch_plus('/ledger/category')
   .then((response) => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY,
-      ledgerCategory: response.data,
+      ledgerCategory: response,
     });
   })
   .catch(() => {
@@ -24,12 +22,11 @@ export const fetch_ledger_category_data = () => (dispatch) => fetch_plus(`${FETC
   });
 
 // 请求subtypes的数据，并且dispatch指令给store
-export const fetch_ledger_subtypes_data = () => (dispatch) => fetch_plus(`${FETCH_URL}/ledger/subtypes`)
-  .then((response) => response.json())
+export const fetch_ledger_subtypes_data = () => (dispatch) => fetch_plus('/ledger/subtype')
   .then((response) => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES,
-      ledgerSubtypes: response.data,
+      ledgerSubtypes: response,
     });
   })
   .catch(() => {
@@ -40,12 +37,11 @@ export const fetch_ledger_subtypes_data = () => (dispatch) => fetch_plus(`${FETC
   });
 
 // 请求billlist的数据，并且dispatch指令给store
-export const fetch_ledger_billlist_data = () => (dispatch) => fetch_plus(`${FETCH_URL}/ledger/billlist`)
-  .then((response) => response.json())
+export const fetch_ledger_billlist_data = () => (dispatch) => fetch_plus('/ledger/billlist')
   .then((response) => {
     dispatch({
       type: ACTIONS_TYPE_UPDATE_LEDGER_BILLLIST,
-      ledgerBilllist: response.data,
+      ledgerBilllist: response,
     });
   })
   .catch(() => {

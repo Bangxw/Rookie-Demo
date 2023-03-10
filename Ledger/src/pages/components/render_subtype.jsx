@@ -36,10 +36,11 @@ export function RenderSubtypesByCategory({
   ledgerSubtypes,
   ledgerCategory,
   initialValues,
+  onChange,
 }) {
   const mergeCategorySubtypes = meraged_subtype_by_category(ledgerSubtypes); // 整理后的小分类列表
   return (
-    <Select initialvalues={initialValues} placeholder="消费类型" style={{ width: '180px' }}>
+    <Select initialvalues={initialValues} placeholder="消费类型" style={{ width: '180px' }} onChange={onChange}>
       {
         Object.keys(mergeCategorySubtypes).map((categoryID) => (
           <Select.OptGroup
@@ -79,7 +80,9 @@ RenderSubtypesByCategory.propTypes = {
     }).isRequired,
   ).isRequired,
   initialValues: PropTypes.string,
+  onChange: PropTypes.func,
 };
 RenderSubtypesByCategory.defaultProps = {
   initialValues: '',
+  onChange() {},
 };

@@ -8,6 +8,7 @@ import * as actions from '@redux/actions';
 import LedgerList from '@pages/ledger_list';
 import LedgerAddModal from '@pages/ledger_add.modal';
 import CategorySubtypesModal from '@pages/ledger_category_subtypes/index';
+import Login from '@pages/login';
 
 let hasInitData = false; // 控制初始化只请求一次数据
 
@@ -21,6 +22,7 @@ function App({
   const [showDashboard, setShowDashboard] = useState(false);
   const [showLedgerAddModal, setShowLedgerAddModal] = useState(false);
   const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(false); // categorysubtypes管理
+  const [loginShow, setLoginShow] = useState(false); // categorysubtypes管理
 
   // init 请求所有数据
   useEffect(() => {
@@ -50,11 +52,18 @@ function App({
               <li onClick={() => { setShowSubtypeManageModal(true); }} aria-hidden="true">
                 Subtype Manage
               </li>
+              <li onClick={() => { setLoginShow(!loginShow); }} aria-hidden="true">
+                Login
+              </li>
             </ul>
           </div>
           {/* 消费列表 */}
           <LedgerList setShowLedgerAddModal={setShowLedgerAddModal} />
         </main>
+
+        <div style={{ display: loginShow ? 'block' : 'none' }}>
+          <Login />
+        </div>
 
         {/* 新增消费记录模态框 */}
         <LedgerAddModal

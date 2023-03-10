@@ -7,7 +7,8 @@ import {
 } from 'antd';
 import i18n from '@i18n';
 import RenderSubtype from '@components/render_subtype';
-import { PAY_WAY_LIST, FETCH_URL } from '@src/const';
+import { PAY_WAY_LIST } from '@src/const';
+import { fetch_plus } from '@utils/common';
 import { fetch_ledger_billlist_data, handle_app_spinning } from '@redux/actions';
 
 function combine_same_one_date_data(data) {
@@ -331,13 +332,13 @@ function BilllistTable({
     };
 
     handle_app_spinning(true);
-    fetch(`${FETCH_URL}/ledger/bill_list/update_one:id`, {
+    fetch_plus('/ledger/bill_list/update_one:id', {
       method: 'POST',
       body: JSON.stringify({
         id,
         data,
       }),
-    }).then((response) => response.json())
+    })
       .then(() => {
         // 修改成功后刷新列表
         fetch_ledger_billlist_data().then(() => {
@@ -350,12 +351,12 @@ function BilllistTable({
   // 删除当前行
   const handleRecordDelete = (id) => {
     handle_app_spinning(true);
-    fetch('http://127.0.0.1:8800/ledger/bill_list/delete_one:id', {
+    fetch_plus('/ledger/bill_list/delete_one:id', {
       method: 'POST',
       body: JSON.stringify({
         id,
       }),
-    }).then((response) => response.json())
+    })
       .then((response) => {
         fetch_ledger_billlist_data().then(() => {
           handle_app_spinning(false);

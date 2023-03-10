@@ -25,19 +25,25 @@ export const map_list_insert_key = (list) => {
   } return [];
 };
 
-
 // 改进版fetch, 支持timeout
 export async function fetch_plus(resource, options = {}) {
   const { timeout = 8000 } = options;
+  const urlPre = process.env.NODE_ENV === 'development' ? 'http://43.139.232.124:9527' : 'http://10.0.8.7:9527'
+
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", localStorage.getItem('token'));
+  myHeaders.append("Content-Type", "application/json");
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
-  const response = await fetch(resource, {
+  const response = await fetch(urlPre + resource, {
     ...options,
     signal: controller.signal,
+    headers: myHeaders,
+    redirect: 'follow'
   });
   clearTimeout(timer);
-  return response;
+  return response.json();
 }
 
 // 按日期排序并且过滤为指定时间段内的数据

@@ -3,7 +3,7 @@ import {
   Modal, message, Spin, List, Input, Popconfirm,
 } from 'antd';
 import { PropTypes } from 'prop-types';
-import { FETCH_URL } from '@src/const';
+import { fetch_plus } from '@utils/common';
 import { ledgerCategoryPropTypes, ledgerSubtypesPropTypes } from '@utils/proptypes.config';
 import IconFont from '@components/iconfont';
 
@@ -35,12 +35,12 @@ export default function CategoryManage({
     }
 
     setSpinning(true);
-    fetch(`${FETCH_URL}/ledger/category/delete_one:id`, {
+    fetch_plus('/ledger/category/delete_one:id', {
       body: JSON.stringify({
         id,
       }),
       method: 'POST',
-    }).then((response) => response.json())
+    })
       .then((response) => {
         handleGetLedgerCategroy().then(() => {
           setSpinning(false);
@@ -50,19 +50,19 @@ export default function CategoryManage({
   };
 
   const fetchInsertUpdateCategory = (id) => {
-    let url = `${FETCH_URL}/ledger/category/insert`;
+    let url = '/ledger/category/insert';
     let data = { text: newCategoryText };
 
     if (id) { // 编辑
-      url = `${FETCH_URL}/ledger/category/update_one:id`;
+      url = '/ledger/category/update_one:id';
       data = { data, id };
     }
 
     setSpinning(true);
-    fetch(url, {
+    fetch_plus(url, {
       body: JSON.stringify(data),
       method: 'POST',
-    }).then((response) => response.json())
+    })
       .then((response) => {
         handleGetLedgerCategroy().then(() => {
           resetOperateStatus();

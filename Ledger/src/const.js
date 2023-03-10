@@ -1,4 +1,3 @@
-export const FETCH_URL = 'http://43.139.232.124:8800';
 export const ICON_FONT_URL = '//at.alicdn.com/t/c/font_3663002_y8pqqde4mcm.js';
 
 export const ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY = 'update_ledger_category';
@@ -17,6 +16,6 @@ export const ICON_LIST = [
 
 export const PAY_WAY_LIST = [
   { key: 'Alipay', label: '支付宝' },
-  { key: 'WeChat_pay', label: '微信' },
+  { key: '微信', label: '微信' },
   { key: 'Credit_Card', label: '信用卡' },
 ];
