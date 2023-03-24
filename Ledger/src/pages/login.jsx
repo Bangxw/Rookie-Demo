@@ -2,44 +2,33 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { fetch_plus } from '@utils/common';
 import {
-  Button, Checkbox, Form, Input, message,
+  Button, Form, Input, message,
 } from 'antd';
 
 function App() {
   const onFinish = (values) => {
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-    const raw = JSON.stringify({
-      username: values.username,
-      password: values.password,
-    });
-
-    const requestOptions = {
+    fetch_plus('/login', {
       method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
-    };
-
-    fetch_plus('/login', requestOptions)
+      body: JSON.stringify({
+        username: values.username,
+        password: values.password,
+      }),
+    })
       .then((result) => {
         if (result.status === 0) {
           message.error(result.message);
         } else {
           localStorage.setItem('token', result.token);
+          window.location.href = '/';
         }
       });
   };
 
   return (
-    <main className="container font-14 py-4">
+    <main className="login-control font-14 py-4">
+      <img src="../images/Road trip_Isometric.png" alt="" />
       <Form
-        name="normal_login"
         className="login-form"
-        initialValues={{
-          remember: true,
-        }}
         onFinish={onFinish}
       >
         <Form.Item
@@ -51,7 +40,10 @@ function App() {
             },
           ]}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+          <Input
+            placeholder="请输入用户名"
+            prefix={<UserOutlined className="site-form-item-icon" />}
+          />
         </Form.Item>
         <Form.Item
           name="password"
@@ -62,23 +54,14 @@ function App() {
             },
           ]}
         >
-          <Input
+          <Input.Password
+            placeholder="请输入密码"
             prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
           />
         </Form.Item>
-        <Form.Item>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
-          </Button>
-        </Form.Item>
+        <Button htmlType="submit" className="login-form-button">
+          Log in
+        </Button>
       </Form>
     </main>
   );

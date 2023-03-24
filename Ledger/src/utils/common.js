@@ -27,7 +27,7 @@ export const map_list_insert_key = (list) => {
 
 // 改进版fetch, 支持timeout
 export async function fetch_plus(resource, options = {}) {
-  const { timeout = 8000 } = options;
+  const { timeout = 20000 } = options;
   const urlPre = process.env.NODE_ENV === 'development' ? 'http://43.139.232.124:9527' : 'http://10.0.8.7:9527'
 
   const myHeaders = new Headers();
@@ -43,7 +43,14 @@ export async function fetch_plus(resource, options = {}) {
     redirect: 'follow'
   });
   clearTimeout(timer);
-  return response.json();
+
+  if (
+    (response.status === 401 || response.statusText === "Unauthorized") &&
+    location.href.indexOf('login') === -1
+  ) {
+    location.href = "/login"
+  }
+  return response.json()
 }
 
 // 按日期排序并且过滤为指定时间段内的数据

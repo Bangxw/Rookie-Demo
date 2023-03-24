@@ -7,6 +7,7 @@ const CreateIconFont = createFromIconfontCN({
 });
 
 export default function IconFont(props) {
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <CreateIconFont {...props} />;
+  // eslint-disable-next-line max-len
+  // eslint-disable-next-line react/jsx-props-no-spreading, react/destructuring-assignment, react/prop-types
+  return <CreateIconFont {...props} type={props.type || 'icon-unknown'} />;
 }

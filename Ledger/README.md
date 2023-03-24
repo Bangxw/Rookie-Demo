@@ -15,6 +15,9 @@ In the project directory, you can run:
 3. 自定义eslint
 4. 用react-redux管理数据，用thunk处理异步actions, 用composeWithDevTools调试redux
 5. 国际化使用 i18next、react-i18next
-6. ui框架使用antd
+6. ui框架使用antd, 适配手机端antd-mobile
 7. 使用 PropTypes 进行类型检查
-8. fetch支持timeout
+8. 增强版，fetch支持timeout，统一处理Headers和response
+9. react-device-detect检测设备, 适配不同终端
+10. react-router-dom路由
+11. @ant-design/charts绘制图表

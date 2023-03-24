@@ -1,16 +1,27 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Spin, ConfigProvider } from 'antd';
+import { ConfigProvider, Spin } from 'antd';
 import { PropTypes } from 'prop-types';
+import { BrowserView, MobileView } from 'react-device-detect';
 import * as actions from '@redux/actions';
+import { TabBar } from 'antd-mobile';
+import IconFont from '@components/iconfont';
 
 import LedgerList from '@pages/ledger_list';
-import LedgerAddModal from '@pages/ledger_add.modal';
-import CategorySubtypesModal from '@pages/ledger_category_subtypes/index';
-import Login from '@pages/login';
+import LedgerListAdd from '@pages/ledger_list/add';
+import LedgerCategorySubtypes from '@pages/ledger_category_subtypes';
+import LedgerListMobile from '@pages/ledger_list.mobile';
 
 let hasInitData = false; // 控制初始化只请求一次数据
+const mobileTabs = [{
+  icon: <IconFont type="icon-details" />,
+  label: '明细',
+  key: 'list',
+}, {
+  icon: <IconFont type="icon-statistics" />,
+  label: '统计',
+  key: 'statistics',
+}];
 
 function App({
   appSpinning,
@@ -19,10 +30,7 @@ function App({
   fetch_ledger_subtypes_data,
   fetch_ledger_billlist_data,
 }) {
-  const [showDashboard, setShowDashboard] = useState(false);
-  const [showLedgerAddModal, setShowLedgerAddModal] = useState(false);
-  const [showSubtypeManageModal, setShowSubtypeManageModal] = useState(false); // categorysubtypes管理
-  const [loginShow, setLoginShow] = useState(false); // categorysubtypes管理
+  const [activeBar, setActiveBar] = useState(mobileTabs[0].key);
 
   // init 请求所有数据
   useEffect(() => {
@@ -41,41 +49,29 @@ function App({
 
   return (
     <ConfigProvider>
-      <Spin spinning={appSpinning}>
-        <main className="container font-14 py-4">
-          {/* 书签式菜单 */}
-          <div className="bookmarks-menu">
-            <ul>
-              <li onClick={() => { setShowDashboard(!showDashboard); }} aria-hidden="true">
-                Toggle Show
-              </li>
-              <li onClick={() => { setShowSubtypeManageModal(true); }} aria-hidden="true">
-                Subtype Manage
-              </li>
-              <li onClick={() => { setLoginShow(!loginShow); }} aria-hidden="true">
-                Login
-              </li>
-            </ul>
-          </div>
-          {/* 消费列表 */}
-          <LedgerList setShowLedgerAddModal={setShowLedgerAddModal} />
+      <BrowserView>
+        <Spin spinning={appSpinning}>
+          <LedgerList />
+        </Spin>
+
+        <LedgerListAdd />
+        <LedgerCategorySubtypes />
+      </BrowserView>
+
+      <MobileView>
+        <main>
+          {activeBar === 'list' && <LedgerListMobile />}
+          {activeBar === 'statistics' && <>111</>}
         </main>
 
-        <div style={{ display: loginShow ? 'block' : 'none' }}>
-          <Login />
+        <div className="mb-tab-bar">
+          <TabBar onChange={setActiveBar}>
+            {mobileTabs.map((item) => (
+              <TabBar.Item key={item.key} icon={item.icon} title={item.label} />
+            ))}
+          </TabBar>
         </div>
-
-        {/* 新增消费记录模态框 */}
-        <LedgerAddModal
-          showLedgerAddModal={showLedgerAddModal}
-          setShowLedgerAddModal={(value) => setShowLedgerAddModal(value)}
-        />
-
-        <CategorySubtypesModal
-          showSubtypeManageModal={showSubtypeManageModal}
-          onShowSubtypeManageModal={(value) => setShowSubtypeManageModal(value)}
-        />
-      </Spin>
+      </MobileView>
     </ConfigProvider>
   );
 }

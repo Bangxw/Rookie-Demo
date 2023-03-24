@@ -1,5 +1,9 @@
 @import '~antd/dist/antd.less';
 
+:root:root {
+  --adm-color-primary: #1DA57A;
+}
+
 // 变量
 @color-success: #1DA57A;
 @color-danger: #df2a3f;
@@ -56,19 +60,31 @@
 .text-danger { color: @color-danger; }
 .text-success { color: @color-success; }
 .text-purple { color: @color-purple; }
+.text-white { color: #fff; }
 .font-12 { font-size: 12px; }
 .font-13 { font-size: 13px; }
 .font-14 { font-size: 14px; }
+.font-16 { font-size: 16px; }
 .font-18 { font-size: 18px; }
 .font-24 { font-size: 24px; }
 .borderd { border: 1px dashed #ccc }
 .user-select-none { user-select: none; }
 .width-100 { width: 100%; }
 .space-between-flex { display: flex; justify-content: space-between; align-items: center; }
+.hide { display: none; }
 
 html { font-size: 10px; }
-html, body { min-height: 100%; height: auto; }
 body { font-size: 1.4rem; background: linear-gradient(to right bottom,rgb(230, 240, 229) 50%,rgba(30,87,199,0.28) 100%); margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
+  main.login-control {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(#eda471, #eb6d70);
+    // background: url(../images/R-C.png);
+    form.login-form { position: relative; width: 75vw; margin: 0 auto; background: #fff; border-radius: 5px; padding: 50px;
+      button.login-form-button { position: absolute; width: 80%; left: 10%; bottom: -15px; background: linear-gradient(to right, #eb6d70, #efa582); border: none; color: #fff; }
+    }
+  }
   .container { position:relative; width: 960px; padding: 0 32px; margin: 0 auto; font-family: 'Operator Mono Light'; 
     .bookmarks-menu { position: absolute; left: 0; color: #fff;
       ul,li { list-style-position: outside; list-style: none; padding-inline-start: 0; margin-block-start: 0; }
@@ -76,44 +92,47 @@ body { font-size: 1.4rem; background: linear-gradient(to right bottom,rgb(230, 2
     }
   }
   .filter-buttons { display: flex; justify-content: flex-end; }
-}
-.g2-tooltip { min-width: 180px !important; padding: 2px 6px !important; }
+  .adm-tab-bar { background: #fff; position: fixed; width: 100%; bottom: 0; }
+  .adm-list { background: #fff }
+  .g2-tooltip { min-width: 180px !important; padding: 2px 6px !important; }
 
-// category_subtypes_manage.jsx
-table.subtype-operate-table {
-  td:first-child { min-width: 60px; }
-  td { padding: 8px 0;
-    div.icons-collection { margin: -5px; width: 290px;
-      .block-icon-link { float: left; border: 1px dashed @color-purple; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 5px; }
-      .block-icon-link:hover,
-      .block-icon-link.active { border: 1px dotted #aaa; background: @color-success; }
+
+  // category_subtypes_manage.jsx
+  table.subtype-operate-table {
+    td:first-child { min-width: 60px; }
+    td { padding: 8px 0;
+      div.icons-collection { margin: -5px; width: 290px;
+        .block-icon-link { float: left; border: 1px dashed @color-purple; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 5px; }
+        .block-icon-link:hover,
+        .block-icon-link.active { border: 1px dotted #aaa; background: @color-success; }
+      }
     }
   }
-}
-div.category-ant-tabs {
-  .ant-tabs-extra-content { margin-top: 10px; align-self: flex-start; margin-left: 24px;
-    .category-control-button { font-size: 30px; cursor: pointer;}
-  } 
-  .subtype-fields { display: flex; flex-wrap: wrap;
-    .subtype { position: relative; float: left; cursor: pointer; width: 100px; margin: 9px 8px; padding: 15px 0;
-      .mask-layer { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; width: 100%; height: 100%; background: rgba(13,10,49,.9); border-radius: 5px;
-        >.operation-icon { font-size: 18px; color: #fff;
-          :hover { color: @color-success; }
+  div.category-ant-tabs {
+    .ant-tabs-extra-content { margin-top: 10px; align-self: flex-start; margin-left: 24px;
+      .category-control-button { font-size: 30px; cursor: pointer;}
+    } 
+    .subtype-fields { display: flex; flex-wrap: wrap;
+      .subtype { position: relative; float: left; cursor: pointer; width: 100px; margin: 9px 8px; padding: 15px 0;
+        .mask-layer { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; width: 100%; height: 100%; background: rgba(13,10,49,.9); border-radius: 5px;
+          >.operation-icon { font-size: 18px; color: #fff;
+            :hover { color: @color-success; }
+          }
         }
+        .icon-wrap { display: flex; flex-direction: column; text-align: center; 
+          span:last-child { margin-top: 25px;}
+        }
+        .add-new-subtag { height: 83px; width: 83px; display: flex; justify-content: center; align-items: center; border: 1px dashed #bbb; border-radius: 5px;}
       }
-      .icon-wrap { display: flex; flex-direction: column; text-align: center; 
-        span:last-child { margin-top: 25px;}
-      }
-      .add-new-subtag { height: 83px; width: 83px; display: flex; justify-content: center; align-items: center; border: 1px dashed #bbb; border-radius: 5px;}
     }
   }
-}
-li.category-list-item { display: flex; align-items: center; justify-content: space-between; width: 100%;
-  .btn-ok { cursor: pointer; :hover { color: @color-success; } }
-  .btn-cancel { cursor: pointer; :hover { color: @color-danger; } }
-  .item-operate { align-self: flex-end;
-    span.anticon { cursor: pointer; user-select: none;
-      :first-child{  margin-right: 5px; }
+  li.category-list-item { display: flex; align-items: center; justify-content: space-between; width: 100%;
+    .btn-ok { cursor: pointer; :hover { color: @color-success; } }
+    .btn-cancel { cursor: pointer; :hover { color: @color-danger; } }
+    .item-operate { align-self: flex-end;
+      span.anticon { cursor: pointer; user-select: none;
+        :first-child{  margin-right: 5px; }
+      }
     }
   }
 }

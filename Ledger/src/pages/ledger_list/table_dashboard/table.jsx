@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -11,6 +11,34 @@ import * as actions from '@redux/actions';
 import RenderSubtype, { RenderSubtypesByCategory } from '@components/render_subtype';
 import { PAY_WAY_LIST } from '@src/const';
 import { fetch_plus, filter_sort_data_by_date_range } from '@utils/common';
+import {
+  ledgerCategoryProptypes,
+  ledgerSubtypesProptypes,
+  ledgerBilllistProptypes,
+} from '@utils/proptypes.config';
+
+// eslint-disable-next-line no-unused-vars
+function RenderSummary({
+  ledgerBilllist, datePickerRange,
+}) {
+  let summary = 0;
+  // 过滤在选择的时间内的数据，精度到天（day）
+  summary = filter_sort_data_by_date_range(
+    ledgerBilllist,
+    datePickerRange,
+  ).reduce((a, b) => a + b.amount, 0);
+  return (
+    <Table.Summary fixed>
+      <Table.Summary.Row>
+        <Table.Summary.Cell colSpan={3}>&nbsp;</Table.Summary.Cell>
+        <Table.Summary.Cell colSpan={5} className="text-purple">
+          ￥
+          {summary.toFixed(2)}
+        </Table.Summary.Cell>
+      </Table.Summary.Row>
+    </Table.Summary>
+  );
+}
 
 // 渲染列表
 function LedgerListTable({
@@ -30,7 +58,7 @@ function LedgerListTable({
     setEditingRowKey(record.key);
     billlistForm.setFieldsValue({
       ...record,
-      date: moment(record.date),
+      date: dayjs(record.date),
     });
   };
 
@@ -78,12 +106,8 @@ function LedgerListTable({
 
   // eslint-disable-next-line react/no-unstable-nested-components
   function EditableCell({
-    editing,
-    dataIndex,
-    title,
-    record,
-    index,
-    children,
+    // eslint-disable-next-line react/prop-types
+    editing, dataIndex, title, record, index, children,
     ...restProps
   }) {
     let inputNode = null;
@@ -95,6 +119,7 @@ function LedgerListTable({
           <RenderSubtypesByCategory
             ledgerCategory={ledgerCategory}
             ledgerSubtypes={ledgerSubtypes}
+            // eslint-disable-next-line react/prop-types
             initialValues={record.subtype}
           />
         );
@@ -103,7 +128,7 @@ function LedgerListTable({
         inputNode = (
           <Select className="font-13" style={{ minWidth: '100px' }}>
             {PAY_WAY_LIST.map((item) => (
-              <Select.Option value={item.key} key={item.key}>
+              <Select.Option key={item.value}>
                 {item.label}
               </Select.Option>
             ))}
@@ -152,7 +177,7 @@ function LedgerListTable({
     editable: false,
     // sorter: (a, b) => a.date - b.date,
     render(text) {
-      return moment(text).format('YYYY-MM-DD');
+      return dayjs(text).format('YYYY-MM-DD');
     },
     // onCell(_, index) {
     //   // 同一天的数据合并天展示
@@ -207,7 +232,7 @@ function LedgerListTable({
           value: i.key,
         })),
     })),
-    onFilter(value, record) { return record.subtype_id.startsWith(value); },
+    onFilter(value, record) { return record.subtype.startsWith(value); },
     render(_id) {
       const subtype = ledgerSubtypes.find((item) => item.key === _id);
       const category = ledgerCategory.find(
@@ -265,7 +290,7 @@ function LedgerListTable({
         size="small"
         className="font-12"
         pagination={false}
-        sortDirections={['ascend', 'descend', 'ascend']}
+        // sortDirections={['ascend', 'descend', 'ascend']}
         columns={basicTableMergedColumns}
         dataSource={filter_sort_data_by_date_range(
           ledgerBilllist,
@@ -287,38 +312,19 @@ function LedgerListTable({
   );
 }
 LedgerListTable.propTypes = { // 使用prop-type进行类型检查
-  ledgerBilllist: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      date: PropTypes.number.isRequired,
-      amount: PropTypes.number.isRequired,
-      payway: PropTypes.string.isRequired,
-      subtype: PropTypes.string.isRequired,
-      description: PropTypes.string,
-    }).isRequired,
-  ).isRequired,
-  ledgerCategory: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
-  ledgerSubtypes: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
+  ...ledgerCategoryProptypes,
+  ...ledgerSubtypesProptypes,
+  ...ledgerBilllistProptypes,
   datePickerRange: PropTypes.number.isRequired,
   fetch_ledger_billlist_data: PropTypes.func.isRequired,
   handle_app_spinning: PropTypes.func.isRequired,
 };
-
 export default connect(
   (state) => ({
     ledgerCategory: state.ledgerCategory,
     ledgerSubtypes: state.ledgerSubtypes,
     ledgerBilllist: state.ledgerBilllist,
+    datePickerRange: state.datePickerRange,
   }),
   {
     handle_app_spinning: actions.handle_app_spinning,

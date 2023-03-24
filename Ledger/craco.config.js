@@ -8,6 +8,7 @@ module.exports = {
     alias: { // 支持webpack路径别名
       '@src': pathResolve('src'),
       '@i18n': pathResolve('src/i18n'),
+      '@images': pathResolve('src/images'),
       '@pages': pathResolve('src/pages'),
       '@components': pathResolve('src/pages/components'),
       '@redux': pathResolve('src/redux'),

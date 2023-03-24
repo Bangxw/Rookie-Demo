@@ -1,6 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Select, Divider } from 'antd';
+import {
+  ledgerCategoryProptypes,
+  ledgerSubtypesProptypes,
+} from '@utils/proptypes.config';
 import IconFont from '@components/iconfont';
 
 // 根据大分类整理数据
@@ -14,7 +19,7 @@ function meraged_subtype_by_category(data) {
 }
 
 // 组件：渲染普通的subtypes
-export default function RenderSubtype({ subtype, category }) {
+export default function RenderSubtype({ subtype = {}, category = {} }) {
   return (
     <>
       <IconFont type={subtype.icon} className="font-18 mr-2" />
@@ -23,13 +28,6 @@ export default function RenderSubtype({ subtype, category }) {
     </>
   );
 }
-RenderSubtype.propTypes = {
-  subtype: PropTypes.objectOf(PropTypes.string).isRequired,
-  category: PropTypes.objectOf(PropTypes.string),
-};
-RenderSubtype.defaultProps = {
-  category: {},
-};
 
 // 组件：按照category分类的subtypes
 export function RenderSubtypesByCategory({
@@ -67,22 +65,12 @@ export function RenderSubtypesByCategory({
   );
 }
 RenderSubtypesByCategory.propTypes = {
-  ledgerCategory: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
-  ledgerSubtypes: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
+  ...ledgerCategoryProptypes,
+  ...ledgerSubtypesProptypes,
   initialValues: PropTypes.string,
   onChange: PropTypes.func,
 };
 RenderSubtypesByCategory.defaultProps = {
   initialValues: '',
-  onChange() {},
+  onChange() { },
 };

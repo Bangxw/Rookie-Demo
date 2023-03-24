@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { PropTypes } from 'prop-types';
 import {
   Modal, Input, Spin, Button, Form, Space, DatePicker, InputNumber, Select, message,
 } from 'antd';
@@ -9,14 +8,18 @@ import { PAY_WAY_LIST } from '@src/const';
 import { fetch_plus } from '@utils/common';
 import { RenderSubtypesByCategory } from '@components/render_subtype';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  ledgerCategoryProptypes,
+  ledgerSubtypesProptypes,
+} from '@utils/proptypes.config';
 
 // 新增分类模态框
 function LedgerAddModal({
   ledgerCategory,
   ledgerSubtypes,
-  showLedgerAddModal,
-  setShowLedgerAddModal,
   fetch_ledger_billlist_data,
+  showBilllistAddModal,
+  handle_show_billlist_add_modal,
 }) {
   const [form] = Form.useForm();
   const [showSpinning, setShowSpinning] = useState(false);
@@ -27,24 +30,20 @@ function LedgerAddModal({
     if (Array.isArray(formData)) {
       formData = formData.map((item) => ({
         ...item,
-        date: new Date(item.date.format('YYYY-MM-DD')).getTime(), // 把时间精确到天
         amount: parseFloat(item.amount),
       }));
     }
     setShowSpinning(true);
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
 
     fetch_plus('/ledger/billlist', {
       method: 'POST',
       body: JSON.stringify(formData[0]),
-      headers: myHeaders,
     })
       .then((response) => {
         fetch_ledger_billlist_data().then(() => {
           setShowSpinning(false);
+          handle_show_billlist_add_modal(false);
           message.success(response.message);
-          setShowLedgerAddModal(false);
         });
       });
   };
@@ -53,9 +52,9 @@ function LedgerAddModal({
     <Modal
       title="新增消费记录"
       width="750px"
-      open={showLedgerAddModal}
+      open={showBilllistAddModal}
       onOk={handleOkSubmit}
-      onCancel={() => setShowLedgerAddModal(false)}
+      onCancel={() => handle_show_billlist_add_modal(false)}
     >
       <Spin tip="Loading..." spinning={showSpinning}>
         <Form name="dynamic_form_nest_item" autoComplete="off" form={form}>
@@ -105,7 +104,7 @@ function LedgerAddModal({
                     >
                       <Select placeholder="支付途径" style={{ width: '100px' }}>
                         {PAY_WAY_LIST.map((item) => (
-                          <Select.Option value={item.key} key={item.key}>
+                          <Select.Option value={item.value} key={item.value}>
                             {item.label}
                           </Select.Option>
                         ))}
@@ -133,29 +132,17 @@ function LedgerAddModal({
   );
 }
 LedgerAddModal.propTypes = {
-  ledgerCategory: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
-  ledgerSubtypes: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      icon: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-      categoryID: PropTypes.string.isRequired,
-    }).isRequired,
-  ).isRequired,
-  showLedgerAddModal: PropTypes.bool.isRequired,
-  setShowLedgerAddModal: PropTypes.func.isRequired,
-  fetch_ledger_billlist_data: PropTypes.func.isRequired,
+  ...ledgerCategoryProptypes,
+  ...ledgerSubtypesProptypes,
 };
-
 export default connect(
   (state) => ({
     ledgerCategory: state.ledgerCategory,
     ledgerSubtypes: state.ledgerSubtypes,
+    showBilllistAddModal: state.showBilllistAddModal,
   }),
-  { fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data },
+  {
+    fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data,
+    handle_show_billlist_add_modal: actions.handle_show_billlist_add_modal,
+  },
 )(LedgerAddModal);
