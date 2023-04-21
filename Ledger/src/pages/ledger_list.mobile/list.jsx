@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import * as dayjs from 'dayjs';
 import * as actions from '@redux/actions';
 import {
-  List, SwipeAction, Dialog, Toast,
+  SwipeAction, Dialog, Toast, Card,
 } from 'antd-mobile';
-import { Avatar } from 'antd';
+// import { Avatar } from 'antd';
 import { fetch_plus } from '@utils/common';
 import {
   ledgerCategoryProptypes,
@@ -61,47 +61,41 @@ function LedgerList({
   }];
 
   return (
-    <>
+    <div className="p-2">
       {
         dateList.map((date) => (
-          <List header={dayjs(parseInt(date, 10)).format('YYYY-MM-DD')} className="m-2" key={date}>
+          <Card
+            key={date}
+            title={(
+              <div style={{ fontWeight: 'normal' }}>
+                {dayjs(parseInt(date, 10)).format('YYYY-MM-DD')}
+              </div>
+            )}
+            headerStyle={{ border: 'none', background: '#fbfbfb' }}
+            className="mb-2 mobile-ledger-list"
+          >
             {
               groupedLedgerBilllist[date].map((item, index) => (
                 <SwipeAction key={`${item + index}`} rightActions={rightActions} onAction={() => { schemaKey = item.key; }}>
-                  <List.Item
-                    prefix={(
-                      <Avatar
-                        size={48}
-                        icon={(
-                          <IconFont
-                            type={
-                              ledgerSubtypes.find((_) => _.key === item.subtype)?.icon
-                            }
-                          />
-                        )}
-                        style={{ backgroundColor: '#1DA57A', verticalAlign: 'middle', fontSize: '32px' }}
-                      />
-                    )}
-                    description={`${item.payway}支付`}
-                  >
-                    <div className="space-between-flex">
-                      <span>
-                        {
-                          ledgerSubtypes.find((_) => _.key === item.subtype)?.text
-                        }
-                      </span>
-                      <span>
-                        {`￥${item.amount}`}
-                      </span>
+                  <div className="ledger-grid-item">
+                    <div className="mt-3 subtype-icon">
+                      <IconFont type={ledgerSubtypes.find((_) => _.key === item.subtype)?.icon} />
                     </div>
-                  </List.Item>
+                    <div className={`py-3 ${index > 0 && 'border-top-1'}`}>
+                      <div className="space-between-flex">
+                        <span className="font-14">{ledgerSubtypes.find((_) => _.key === item.subtype)?.text}</span>
+                        <span>{`￥ -${item.amount}`}</span>
+                      </div>
+                      <span className="font-12" style={{ color: '#afafaf' }}>{`${item.payway}支付`}</span>
+                    </div>
+                  </div>
                 </SwipeAction>
               ))
             }
-          </List>
+          </Card>
         ))
       }
-    </>
+    </div>
   );
 }
 

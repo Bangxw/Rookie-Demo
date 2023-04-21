@@ -58,7 +58,7 @@ function App({
         <LedgerCategorySubtypes />
       </BrowserView>
 
-      <MobileView>
+      <MobileView className="mobile-wrap">
         <main>
           {activeBar === 'list' && <LedgerListMobile />}
           {activeBar === 'statistics' && <>111</>}

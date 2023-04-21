@@ -6,7 +6,6 @@ import {
 import { connect } from 'react-redux';
 import { AppstoreOutline } from 'antd-mobile-icons';
 import { ledgerSubtypesProptypes } from '@utils/proptypes.config';
-import IconFont from '@components/iconfont';
 
 function App({
   ledgerSubtypes,
@@ -15,14 +14,14 @@ function App({
   const [calendarPopup] = useState(false);
 
   return (
-    <header className="p-3" style={{ background: '#1DA57A' }}>
+    <header className="p-3 mobile-ledger-list-header">
       <div className="space-between-flex text-white">
         <Button
           size="small"
           onClick={() => setPopVisiable(true)}
           style={{
-            '--background-color': 'rgba(0,0,0,0.25)',
-            '--border-color': 'rgba(0,0,0,0.01)',
+            '--background-color': 'rgba(255,255,255,0.25)',
+            '--border-color': 'rgba(255,255,255,0.01)',
             color: '#fff',
           }}
         >
@@ -30,13 +29,10 @@ function App({
           <span className="mx-2" style={{ borderRight: '1px solid #ccc', display: 'inline-block', height: '14px' }} />
           <AppstoreOutline />
         </Button>
-        <div className="pr-4 font-16">
-          2023年3月
-          <IconFont type="icon-triangle" className="font-12 ml-2" style={{ transform: 'rotate(180deg)', color: '#aaa' }} />
-        </div>
+        <div className="pr-4 calendar-control">2023年3月</div>
       </div>
 
-      <div className="text-white font-16 my-3 ml-2">总支出 ￥5005  总收入￥3456</div>
+      <div className="text-white mt-3 ml-2">总支出 ￥5005</div>
 
       <Popup
         position="top"

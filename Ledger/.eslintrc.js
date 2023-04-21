@@ -27,6 +27,7 @@ module.exports = {
           ['@redux', './src/redux'],
           ['@styles', './src/styles'],
           ['@utils', './src/utils'],
+          ['@images', './src/images'],
         ],
         extensions: ['.ts', '.js', '.jsx', '.json'],
       },

@@ -1,4 +1,4 @@
-export const ICON_FONT_URL = '//at.alicdn.com/t/c/font_3663002_07vsovydjnoe.js';
+export const ICON_FONT_URL = '//at.alicdn.com/t/c/font_3663002_1q93fybodfq.js';
 
 export const ACTIONS_TYPE_UPDATE_LEDGER_CATEGORY = 'update_ledger_category';
 export const ACTIONS_TYPE_UPDATE_LEDGER_SUBTYPES = 'update_ledger_subtypes';

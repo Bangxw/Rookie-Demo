@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -16,6 +15,7 @@ import {
   ledgerSubtypesProptypes,
   ledgerBilllistProptypes,
 } from '@utils/proptypes.config';
+import dayjs from 'dayjs';
 
 function PopHoverConteng(item, ledgerSubtypes) {
   const { subtype_id, payway } = item;
@@ -35,7 +35,6 @@ function PopHoverConteng(item, ledgerSubtypes) {
 }
 
 function combine_same_one_date_data(data) {
-  console.log(data);
   const combineData = [];
   let temp = {
     date: null, amount: 0, subtype: [], payway: [],
@@ -43,7 +42,7 @@ function combine_same_one_date_data(data) {
   data
     .sort((a, b) => b.date - a.date)
     .forEach((item, index) => {
-      if (!moment(item.date).isSame(temp.date, 'day')) {
+      if (!dayjs(item.date).isSame(temp.date, 'day')) {
         // 判断是不是同一天的数据
         if (index !== 0) {
           combineData.push({
@@ -78,7 +77,7 @@ function Dashboard({
     ).map((item) => ({
       ...item,
       amount: parseInt(item.amount, 10),
-      date: moment(item.date).format('yy-MM-DD'),
+      date: dayjs(item.date).format('yy-MM-DD'),
     })),
     xField: 'date',
     yField: 'amount',
@@ -93,7 +92,7 @@ function Dashboard({
     },
     tooltip: {
       customContent: (value) => {
-        const currentDayList = ledgerBilllist.filter((item) => moment(value).isSame(moment(item.date), 'day'));
+        const currentDayList = ledgerBilllist.filter((item) => dayjs(value).isSame(dayjs(item.date), 'day'));
         return currentDayList.map((item) => (
           <div className="space-between-flex my-2">
             <RenderSubtype
@@ -164,7 +163,7 @@ function Dashboard({
                       <Badge color={colorPresets[index - 3]} className="px-2" />
                     )}
                     <span className="ml-1">
-                      {moment(item.date).format('YY-MM-DD')}
+                      {dayjs(item.date).format('YY-MM-DD')}
                     </span>
                   </span>
                   <span>

@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { FloatingBubble } from 'antd-mobile';
+import IconFont from '@components/iconfont';
 
 import Header from './header';
 import LedgerList from './list';
@@ -30,11 +31,13 @@ function App() {
           onClick={() => { setVisibleAddPopup(true); }}
           style={{
             '--initial-position-bottom': '100px',
-            '--initial-position-right': '24px',
-            '--edge-distance': '24px',
+            '--initial-position-right': '6px',
+            '--edge-distance': '6px',
+            '--size': '36px',
           }}
         >
-          记一笔
+          <IconFont type="icon-edit" />
+          <span className="ml-2">记一笔</span>
         </FloatingBubble>
       </main>
     </>

@@ -56,7 +56,6 @@ export default function reducer(preState = originData, {
       return { ...preState, showDashboard };
 
     case ACTIONS_TYPE_UPDATE_SHOW_SUBTYPE_MANAGE_MODAL:
-      console.log(showSubtypeManageModal);
       return { ...preState, showSubtypeManageModal };
 
     case ACTIONS_TYPE_UPDATE_SHOW_BILLLIST_ADD_MODAL:

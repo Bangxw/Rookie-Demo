@@ -7,7 +7,7 @@ import TableDashboard from './table_dashboard';
 
 export default function LedgerList() {
   return (
-    <div className="container hide">
+    <div className="container">
       { /* 左侧导航菜单 */}
       <SideBar />
 

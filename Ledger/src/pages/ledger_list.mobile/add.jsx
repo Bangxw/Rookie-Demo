@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Popup, NumberKeyboard, Tag, Calendar, Form, Selector, Toast,
+  Popup, NumberKeyboard, Calendar, Selector, Toast, Divider, TextArea, Button,
 } from 'antd-mobile';
 import * as actions from '@redux/actions';
 import { fetch_plus } from '@utils/common';
 import { PAY_WAY_LIST } from '@src/const';
 import { ledgerSubtypesProptypes } from '@utils/proptypes.config';
-// import dayjs from 'dayjs';
+import IconFont from '@components/iconfont';
+import dayjs from 'dayjs';
 
-function App({
+function Add({
   ledgerSubtypes,
   fetch_ledger_billlist_data,
   visibleAddPopup,
@@ -18,12 +19,13 @@ function App({
 }) {
   const initAddSchema = { // 初始数据对象
     date: new Date(),
-    payway: [PAY_WAY_LIST[0]],
-    amount: [],
+    payway: PAY_WAY_LIST[0].value,
     subtype: ledgerSubtypes[0]?.key,
     description: '',
+    amount: [],
   };
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showDescriptionPopup, setShowDescriptionPopup] = useState(false);
   const [addSchema, setAddSchema] = useState(initAddSchema);
 
   const numberKeyBoardInput = (key) => {
@@ -43,23 +45,18 @@ function App({
       method: 'POST',
       body: JSON.stringify({
         ...addSchema,
-        date: new Date(addSchema.date).getTime(), // 把时间精确到天
+        subtype: addSchema.subtype ? addSchema.subtype : ledgerSubtypes[0]?.key,
+        date: dayjs(addSchema.date).valueOf(),
         amount,
       }),
-    })
-      .then(() => {
-        fetch_ledger_billlist_data().then(() => {
-          Toast.show({
-            icon: 'success',
-            content: '保存成功',
-          });
+    }).then(() => {
+      fetch_ledger_billlist_data().then(() => {
+        Toast.show({
+          icon: 'success',
+          content: '保存成功',
         });
       });
-  };
-
-  const popupClose = () => {
-    setVisibleAddPopup(false);
-    setAddSchema(initAddSchema);
+    });
   };
 
   return (
@@ -67,74 +64,80 @@ function App({
       <Popup
         showCloseButton
         visible={visibleAddPopup}
-        onClose={popupClose}
-        bodyStyle={{
-          borderTopLeftRadius: '8px',
-          borderTopRightRadius: '8px',
-          minHeight: '70vh',
-        }}
+        onClose={() => { setVisibleAddPopup(false); setAddSchema(initAddSchema); }}
+        bodyStyle={{ borderTopLeftRadius: '8px', borderTopRightRadius: '8px', minHeight: '460px' }}
       >
-        <Form layout="horizontal" className="mt-5">
-          <Form.Item>
-            <div className="p-4" style={{ maxHeight: '20vh', overflowY: 'auto' }}>
-              {
-                ledgerSubtypes.map((item) => (
-                  <Tag
-                    round
-                    color={addSchema.subtype === item.key ? '#123456' : '#ccc'}
-                    className="p-3 m-2"
-                    key={item.key}
-                    onClick={() => setAddSchema({ ...addSchema, subtype: item.key })}
-                  >
-                    {item.text}
-                  </Tag>
-                ))
-              }
-            </div>
-          </Form.Item>
-          <Form.Item label="日期">
-            <div onClick={() => setShowCalendar(true)} aria-hidden="true">
-              {(new Date(addSchema.date)).toLocaleDateString()}
-            </div>
-          </Form.Item>
-          <Form.Item label="支付方式">
+        <div className="p-4 mobile-ledger-add-wrap">
+          <div id="payway_calendar_fields" className="space-between-flex mt-5">
             <Selector
               value={addSchema.payway}
               options={PAY_WAY_LIST}
               onChange={(e) => setAddSchema({ ...addSchema, payway: e.join('') })}
+              style={{
+                '--padding': '5px 10px',
+                '--gap-horizontal': '5px',
+              }}
             />
-          </Form.Item>
-          <Form.Item label="金额">
-            <div>{addSchema.amount.join('')}</div>
-          </Form.Item>
-        </Form>
-        <NumberKeyboard
-          visible
-          customKey="."
-          confirmText="确定"
-          getContainer={null}
-          showCloseButton={false}
-          onInput={numberKeyBoardInput}
-          onConfirm={handleOkSubmit}
-          onDelete={() => setAddSchema({ ...addSchema, amount: addSchema.amount.slice(0, -1) })}
-        />
+            <div className="calendar-control" onClick={() => setShowCalendar(true)} aria-hidden="true">
+              {(new Date(addSchema.date)).toLocaleDateString()}
+            </div>
+          </div>
+          <Divider className="my-3" />
+          <div id="subtype_fields">
+            {
+              ledgerSubtypes.map((item) => (
+                <div
+                  key={item.key}
+                  aria-hidden="true"
+                  className={`subtype my-2 ${(addSchema.subtype || ledgerSubtypes[0].key) === item.key ? 'active' : ''}`}
+                  onClick={() => setAddSchema({ ...addSchema, subtype: item.key })}
+                >
+                  <div className="subtype-icon"><IconFont type={item.icon} /></div>
+                  <div className="subtype-text font-12">{item.text}</div>
+                </div>
+              ))
+            }
+            <div className="subtype">
+              <div className="subtype-icon">...</div>
+              <div className="subtype-text font-12">分类管理</div>
+            </div>
+          </div>
+          <Divider className="my-3" />
+          <div id="amount_description_fields" className="space-between-flex">
+            <div className="add-amount">
+              <strong>￥</strong>
+              {addSchema.amount.join('')}
+            </div>
+            <span
+              className="add-description-link"
+              aria-hidden="true"
+              onClick={() => { setShowDescriptionPopup(true); }}
+            >
+              添加备注
+            </span>
+          </div>
+          <NumberKeyboard
+            visible
+            customKey="."
+            confirmText="确定"
+            getContainer={null}
+            showCloseButton={false}
+            onInput={numberKeyBoardInput}
+            onConfirm={handleOkSubmit}
+            onDelete={() => setAddSchema({ ...addSchema, amount: addSchema.amount.slice(0, -1) })}
+          />
+        </div>
       </Popup>
+
+      {/* 日历 */}
       <Popup
         visible={showCalendar}
-        bodyStyle={{ height: '52vh' }}
-        onMaskClick={() => {
-          setShowCalendar(false);
-        }}
+        bodyStyle={{ height: '420px' }}
+        onMaskClick={() => { setShowCalendar(false); }}
       >
-        <div style={{ padding: '24px' }}>
+        <div className="p-4">
           <Calendar
             selectionMode="single"
-            // renderLabel={(date) => {
-            //   if (dayjs(date).isSame(today, 'day')) return '今天';
-            //   if (date.getDay() === 0 || date.getDay() === 6) {
-            //     return '周末';
-            //   }
-            // }}
             onChange={(val) => {
               setAddSchema({ ...addSchema, date: val });
               setShowCalendar(false);
@@ -142,24 +145,38 @@ function App({
           />
         </div>
       </Popup>
+
+      {/* 添加备注 */}
+      <Popup
+        visible={showDescriptionPopup}
+        bodyStyle={{ height: '240px' }}
+        onMaskClick={() => { setShowDescriptionPopup(false); }}
+        className="add-description-popup"
+      >
+        <header className="pt-2 px-2">
+          <span aria-hidden="true" onClick={() => setShowDescriptionPopup(false)}>&lt;</span>
+          添加备注
+        </header>
+        <div className="px-4 pt-5">
+          <TextArea
+            autoFocus
+            showCount
+            maxLength={30}
+            onChange={(e) => setAddSchema({ ...addSchema, description: e })}
+          />
+          <div className="mt-4 button-wrap"><Button color="primary" block onClick={() => setShowDescriptionPopup(false)}>确定</Button></div>
+        </div>
+      </Popup>
     </>
   );
 }
-
-App.propTypes = { // 使用prop-type进行类型检查
+Add.propTypes = { // 使用prop-type进行类型检查
   ...ledgerSubtypesProptypes,
   fetch_ledger_billlist_data: PropTypes.func.isRequired,
   visibleAddPopup: PropTypes.bool.isRequired,
   setVisibleAddPopup: PropTypes.func.isRequired,
 };
-
 export default connect(
-  (state) => ({
-    ledgerCategory: state.ledgerCategory,
-    ledgerSubtypes: state.ledgerSubtypes,
-    ledgerBilllist: state.ledgerBilllist,
-  }),
-  {
-    fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data,
-  },
-)(App);
+  (state) => ({ ledgerSubtypes: state.ledgerSubtypes }),
+  { fetch_ledger_billlist_data: actions.fetch_ledger_billlist_data },
+)(Add);

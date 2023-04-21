@@ -8,10 +8,7 @@ import { PAY_WAY_LIST } from '@src/const';
 import { fetch_plus } from '@utils/common';
 import { RenderSubtypesByCategory } from '@components/render_subtype';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  ledgerCategoryProptypes,
-  ledgerSubtypesProptypes,
-} from '@utils/proptypes.config';
+import { ledgerCategoryProptypes, ledgerSubtypesProptypes } from '@utils/proptypes.config';
 
 // 新增分类模态框
 function LedgerAddModal({
@@ -38,14 +35,13 @@ function LedgerAddModal({
     fetch_plus('/ledger/billlist', {
       method: 'POST',
       body: JSON.stringify(formData[0]),
-    })
-      .then((response) => {
-        fetch_ledger_billlist_data().then(() => {
-          setShowSpinning(false);
-          handle_show_billlist_add_modal(false);
-          message.success(response.message);
-        });
+    }).then((response) => {
+      fetch_ledger_billlist_data().then(() => {
+        setShowSpinning(false);
+        handle_show_billlist_add_modal(false);
+        message.success(response.message);
       });
+    });
   };
 
   return (

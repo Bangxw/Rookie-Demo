@@ -28,7 +28,7 @@ export const map_list_insert_key = (list) => {
 // 改进版fetch, 支持timeout
 export async function fetch_plus(resource, options = {}) {
   const { timeout = 20000 } = options;
-  const urlPre = process.env.NODE_ENV === 'development' ? 'http://43.139.232.124:9527' : 'http://10.0.8.7:9527'
+  const urlPre = 'http://43.139.232.124:9527'
 
   const myHeaders = new Headers();
   myHeaders.append("Authorization", localStorage.getItem('token'));
@@ -45,8 +45,8 @@ export async function fetch_plus(resource, options = {}) {
   clearTimeout(timer);
 
   if (
-    (response.status === 401 || response.statusText === "Unauthorized") &&
-    location.href.indexOf('login') === -1
+    (response.status === 401 || response.statusText === "Unauthorized")
+    && location.href.indexOf('login') === -1
   ) {
     location.href = "/login"
   }
@@ -58,7 +58,7 @@ export function filter_sort_data_by_date_range(data, dateRange) {
   const newData = data.sort((a, b) => a.date - b.date);
   if (dateRange === -1) return newData;
   return newData.filter(
-    (item) => moment(item.date).isAfter(dateRange[0], 'day')
-      && moment(item.date).isBefore(dateRange[1], 'day'),
+    (item) => dayjs(item.date).isAfter(dateRange[0], 'day')
+      && dayjs(item.date).isBefore(dateRange[1], 'day'),
   );
 }
